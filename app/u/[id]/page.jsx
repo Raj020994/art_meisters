@@ -4,8 +4,8 @@ import Link from "next/link";
 import { MoveLeft, Palette } from "lucide-react";
 import Image from "next/image";
 
-export default function ArtistProfile({ params }) {
-  const { id } = params;
+export default async function ArtistProfile({ params }) {
+    const { id } = await params;
   const artist = data.artists.find((a) => a.id === id);
 
   if (!artist) {
@@ -35,15 +35,15 @@ export default function ArtistProfile({ params }) {
           className="w-full h-full object-cover blur-sm opacity-40 scale-110"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+        <div className="absolute inset-0 bg-linear-to-t from-black via-black/60 to-transparent"></div>
 
         <div className="absolute bottom-0 left-0 w-full p-6 md:p-12">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-end gap-8">
-            <div className="relative -mb-20 md:-mb-24 w-48 h-48 md:w-64 md:h-64 rounded-2xl overflow-hidden border-4 border-black shadow-2xl z-20 group">
+            <div className="relative  md:-mb-10 w-32 h-32 md:w-60 md:h-60 rounded-2xl  shadow-2xl z-20 group">
               <img
                 src={artist.img}
                 alt={artist.name}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                className="w-full h-full rounded-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
             </div>
 

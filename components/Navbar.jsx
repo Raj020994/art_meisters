@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { Search, Plus, User } from "lucide-react";
 import data from "@/data.json";
+import Image from 'next/image';
 
 export const Navbar = () => {
 const [scrolled, setScrolled] = useState(false);
@@ -14,9 +15,11 @@ const [scrolled, setScrolled] = useState(false);
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "glass-nav py-4" : "bg-transparent py-6"}`}>
         <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
-          <div className="flex rounded-full h-16 w-16 bg-white items-center gap-3">
-            
-              <img src="Logo.png" alt="nndnd" className='' />
+          <div className="flex items-center justify-center gap-3">
+            <div className="flex rounded-full h-16 w-16 justify-center bg-white items-center">
+
+              <Image src="/Logo.png" alt="nndnd" height={64} width={64}/>
+            </div>
 
             <span className="font-heading font-bold text-xl tracking-wider">{data.siteName}</span>
           </div>

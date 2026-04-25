@@ -236,7 +236,7 @@ export default function Home() {
                 A community of passionate artists inspiring creativity and celebrating art in all its forms.
               </p>
               <div className="flex gap-4">
-                <a href="" className="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-accent transition-colors"><InstagramIcon size={18} /></a>
+                <a href="https://www.instagram.com/_artmeisters_?igsh=MWl6NmFsa3RsNXRnbQ=="  className="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-accent transition-colors"><InstagramIcon size={18} /></a>
                 <a href="#" className="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-accent transition-colors"><YoutubeIcon size={18} /></a>
               </div>
             </div>

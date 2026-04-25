@@ -14,10 +14,10 @@ const [scrolled, setScrolled] = useState(false);
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "glass-nav py-4" : "bg-transparent py-6"}`}>
         <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-accent text-white font-heading font-bold text-xl flex items-center justify-center transform -skew-x-12">
-              {data.logoLetter}
-            </div>
+          <div className="flex rounded-full h-16 w-16 bg-white items-center gap-3">
+            
+              <img src="Logo.png" alt="nndnd" className='' />
+
             <span className="font-heading font-bold text-xl tracking-wider">{data.siteName}</span>
           </div>
 

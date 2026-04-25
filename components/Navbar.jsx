@@ -18,7 +18,7 @@ const [scrolled, setScrolled] = useState(false);
           <div className="flex items-center justify-center gap-3">
             <div className="flex rounded-full h-16 w-16 justify-center bg-white items-center">
 
-              <Image src="/Logo.png" alt="nndnd" height={64} width={64}/>
+              <Image src="/Logo.jpeg" alt="nndnd" height={64} width={64}/>
             </div>
 
             <span className="font-heading font-bold text-xl tracking-wider">{data.siteName}</span>

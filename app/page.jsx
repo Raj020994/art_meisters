@@ -6,6 +6,7 @@ import data from "@/data.json";
 import { CategoryItem } from "@/components/CategoryItem";
 import { ArtistCard } from "@/components/ArtistCard";
 import { EventListItem } from "@/components/EventListItem";
+import { Footer } from "@/components/Footer";
 
 const iconMap = {
   Palette: Palette,
@@ -94,7 +95,7 @@ export default function Home() {
             </div>
             <h2 className="font-heading font-bold text-4xl">Meet Our Creators</h2>
           </div>
-          <a href="#" className="text-accent hover:text-red-400 flex items-center gap-2 font-medium group transition-colors  sm:flex">
+          <a href="#" className="text-accent hover:text-red-400 items-center gap-2 font-medium group transition-colors hidden sm:flex">
             VIEW ALL ARTISTS
             <MoveRight className="group-hover:translate-x-1 transition-transform" size={16} />
           </a>
@@ -104,6 +105,7 @@ export default function Home() {
           {data.artists.map((artist) => (
             <ArtistCard
               key={artist.id}
+              id={artist.id}
               name={artist.name}
               role={artist.role}
               desc={artist.desc}
@@ -125,7 +127,7 @@ export default function Home() {
             </div>
             <h2 className="font-heading font-bold text-4xl">What's Happening</h2>
           </div>
-          <a href="#" className="text-accent hover:text-red-400 flex items-center gap-2 font-medium group transition-colors hidden sm:flex">
+          <a href="#" className="text-accent hover:text-red-400 items-center gap-2 font-medium group transition-colors hidden sm:flex">
             VIEW ALL EVENTS
             <MoveRight className="group-hover:translate-x-1 transition-transform" size={16} />
           </a>
@@ -150,7 +152,7 @@ export default function Home() {
         <FeaturedEvent/> 
         </div>
       </section>
-
+<Footer/>
      
     </main>
   );

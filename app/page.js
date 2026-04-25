@@ -322,7 +322,7 @@ function ArtistCard({ name, role, desc, img }) {
           {desc}
         </p>
         <div className="flex gap-3">
-          <a href="#" className="w-8 h-8 rounded border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-accent hover:bg-accent/10 transition-colors">
+          <a href="https://www.instagram.com/_artmeisters_?igsh=MWl6NmFsa3RsNXRnbQ==" className="w-8 h-8 rounded border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-accent hover:bg-accent/10 transition-colors">
             <InstagramIcon size={14} />
           </a>
           <a href="#" className="w-8 h-8 rounded border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-accent hover:bg-accent/10 transition-colors">

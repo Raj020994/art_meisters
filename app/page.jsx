@@ -3,6 +3,9 @@ import React from "react";
 import { FeaturedEvent } from "@/components/FeaturedEvent";
 import { Palette, User, Star, GraduationCap, LayoutGrid, MoveRight } from "lucide-react";
 import data from "@/data.json";
+import { CategoryItem } from "@/components/CategoryItem";
+import { ArtistCard } from "@/components/ArtistCard";
+import { EventListItem } from "@/components/EventListItem";
 
 const iconMap = {
   Palette: Palette,
@@ -15,10 +18,8 @@ const iconMap = {
 export default function Home() {
   return (
     <main className="min-h-screen bg-black text-white selection:bg-accent  pb-12">
-      {/* 1. NAVBAR */}
   
 
-      {/* 2. HERO SECTION */}
       <section className="relative h-screen w-full flex items-center pt-20">
         <div className="absolute inset-0 z-0">
           <img 
@@ -156,63 +157,3 @@ export default function Home() {
 }
 
 // Subcomponents for cleaner code
-function CategoryItem({ icon, title, subtitle, active }) {
-  return (
-    <div className="flex items-center gap-4 group cursor-pointer p-2 rounded-xl hover:bg-white/5 transition-colors">
-      <div className={`p-3 rounded-xl transition-all duration-300 ${active ? 'bg-accent/10 shadow-[0_0_15px_rgba(229,9,20,0.3)]' : 'bg-white/5 group-hover:bg-white/10'}`}>
-        {icon}
-      </div>
-      <div>
-        <h4 className={`font-heading font-bold text-lg leading-tight ${active ? 'text-white' : 'text-gray-300 group-hover:text-white transition-colors'}`}>{title}</h4>
-        <p className="text-xs text-gray-400">{subtitle}</p>
-      </div>
-    </div>
-  );
-}
-
-function ArtistCard({ name, role, desc, img, instagram, youtube }) {
-  return (
-    <div className="glass rounded-2xl overflow-hidden group hover:-translate-y-2 transition-all duration-300 hover:shadow-[0_10px_30px_rgba(229,9,20,0.1)] hover:border-white/20">
-      <div className="h-64 overflow-hidden relative">
-        <img 
-          src={img} 
-          alt={name} 
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-        />
-        <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-      </div>
-      <div className="p-6">
-        <h3 className="font-heading font-bold text-xl mb-1">{name}</h3>
-        <p className="text-accent text-sm mb-3 font-medium">{role}</p>
-        <p className="text-gray-400 text-sm mb-6 leading-relaxed">
-          {desc}
-        </p>
-        <div className="flex gap-3">
-          <a href={instagram} className="w-8 h-8 rounded border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-accent hover:bg-accent/10 transition-colors">
-            <img src="/instagram.svg" alt="Instagram" width="14" height="14" />
-          </a>
-          <a href={youtube} className="w-8 h-8 rounded border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-accent hover:bg-accent/10 transition-colors">
-            <img src="/youtube.svg" alt="YouTube" width="14" height="14" />
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function EventListItem({ date, month, title, desc, active }) {
-  return (
-    <div className={`glass rounded-2xl p-6 flex items-center gap-6 cursor-pointer transition-all duration-300 ${active ? 'border-accent/30 shadow-[0_0_20px_rgba(229,9,20,0.1)]' : 'hover:border-white/20 hover:bg-white/5'}`}>
-      <div className="text-center min-w-[60px]">
-        <div className={`font-heading font-bold text-3xl leading-none ${active ? 'text-accent' : 'text-white'}`}>{date}</div>
-        <div className="text-xs font-bold tracking-widest text-gray-500 mt-1">{month}</div>
-      </div>
-      <div className="w-px h-12 bg-white/10"></div>
-      <div className="flex-1">
-        <h4 className="font-heading font-bold text-xl mb-1 text-white">{title}</h4>
-        <p className="text-sm text-gray-400">{desc}</p>
-      </div>
-      <MoveRight className={`transition-transform duration-300 ${active ? 'text-accent' : 'text-gray-600'} ${active ? 'translate-x-0' : '-translate-x-2'}`} size={20} />
-    </div>
-  );
-}

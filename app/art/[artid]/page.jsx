@@ -5,7 +5,6 @@ import { MoveLeft, ArrowRight } from "lucide-react";
 import { ArtCard } from './_component/ArtCard';
 
 export default async function ArtPage({ params }) {
-    console.log("Atleast")
     const resolvedParams = await params;
     const artId = resolvedParams.artid || resolvedParams.artId;
     

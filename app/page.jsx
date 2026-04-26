@@ -7,6 +7,9 @@ import { CategoryItem } from "@/components/CategoryItem";
 import { ArtistCard } from "@/components/ArtistCard";
 import { EventListItem } from "@/components/EventListItem";
 import { Footer } from "@/components/Footer";
+import HeroSection from "@/components/HeroSection";
+import { About } from "@/components/About";
+
 
 const iconMap = {
   Palette: Palette,
@@ -18,54 +21,11 @@ const iconMap = {
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-black text-white selection:bg-accent  pb-12">
+    <main className="min-h-screen bg-black text-white selection:bg-accent">
   
 
-      <section className="relative h-screen w-full flex items-center pt-20">
-        <div className="absolute inset-0 z-0">
-          <img 
-            src={data.heroImage} 
-            alt="Hero abstract art" 
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-linear-to-r from-black via-black/80 to-transparent"></div>
-          <div className="absolute inset-0 bg-linear-to-t from-black via-transparent to-transparent"></div>
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 w-full">
-          <div className="max-w-2xl">
-            <div className="flex items-center gap-4 mb-6">
-              <span className="text-accent font-semibold tracking-widest text-sm uppercase">{data.heroLabel}</span>
-              <div className="h-px w-12 bg-accent"></div>
-            </div>
-            
-            <h1 className="font-heading font-bold text-6xl md:text-8xl leading-none mb-6">
-              ART<br/>MEISTERS
-            </h1>
-            
-            <h2 className="text-2xl md:text-3xl font-light mb-6 text-gray-300">
-              Where <span className="text-accent font-medium">creativity</span> meets <span className="text-accent font-medium">expression.</span>
-            </h2>
-            
-            <p className="text-gray-400 mb-10 text-lg max-w-md">
-              {data.description}
-            </p>
-            
-            <button className="bg-accent hover:bg-red-700 text-white px-8 py-4 rounded-full font-medium flex items-center gap-3 transition-all hover:shadow-[0_0_20px_rgba(229,9,20,0.6)] group">
-              EXPLORE MORE 
-              <MoveRight className="group-hover:translate-x-1 transition-transform" size={20} />
-            </button>
-          </div>
-        </div>
-        
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-3 z-10">
-          <div className="w-8 h-1.5 bg-accent rounded-full"></div>
-          <div className="w-8 h-1.5 bg-white/20 rounded-full hover:bg-white/40 cursor-pointer transition-colors"></div>
-          <div className="w-8 h-1.5 bg-white/20 rounded-full hover:bg-white/40 cursor-pointer transition-colors"></div>
-        </div>
-      </section>
-
-      {/* 3. CATEGORY BAR */}
+      <HeroSection/>
+      <About/>
       <section className="relative z-20 max-w-5xl mx-auto px-6 -mt-16 mb-24">
         <div className="glass rounded-2xl p-6 flex justify-between items-center flex-wrap gap-6 md:gap-0">
           {data.categories.map((cat, index) => {

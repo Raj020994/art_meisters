@@ -63,36 +63,45 @@ const Hero = () => {
 	 },
 	});
 	
-	videoRef.current.onloadedmetadata = () => {
-	 tl.to(videoRef.current, {
-		currentTime: videoRef.current.duration,
-	 });
+	const setupVideoTimeline = () => {
+	 if (videoRef.current && videoRef.current.duration) {
+		tl.to(videoRef.current, {
+		 currentTime: videoRef.current.duration,
+		});
+	 }
 	};
+
+	if (videoRef.current) {
+	 if (videoRef.current.readyState >= 1) {
+		setupVideoTimeline();
+	 } else {
+		videoRef.current.onloadedmetadata = setupVideoTimeline;
+	 }
+	}
  }, []);
  
  return (
 	<>
 	 <section id="hero" >
-		<h1 className="title">Art Meister</h1>
-		
+		<h1 className="title pt-8">Art Meister</h1>
 		
 		<div className="body">
 		 
 		 <div className="content">
 			<div className="space-y-5 hidden md:block">
-			 <p>Cool. Crisp. Classic.</p>
+			 <p>Curate. Create. Connect.</p>
 			 <p className="subtitle">
-				Sip the Spirit <br /> of Summer
+				Unleash Your <br /> Creative Spirit
 			 </p>
 			</div>
 			
-			<div className="view-cocktails">
+			<div className="hero-info">
 			 <p className="subtitle">
-				Every cocktail on our menu is a blend of premium ingredients,
-				creative flair, and timeless recipes — designed to delight your
-				senses.
+				Art Meister is a premier community for artists and enthusiasts. 
+				We provide a space where imagination knows no bounds and 
+				creativity is celebrated in every form.
 			 </p>
-			 <a href="#cocktails">View cocktails</a>
+			 <a href="#art">Explore Gallery</a>
 			</div>
 		 </div>
 		</div>

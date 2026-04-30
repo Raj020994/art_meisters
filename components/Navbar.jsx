@@ -14,12 +14,11 @@ export const Navbar = () => {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
     return (
-        <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "glass-nav py-4" : "bg-transparent py-6"}`}>
+        <nav className={`fixed  w-full z-50 transition-all duration-300 ${scrolled ? "nav py-2 bg-black/20 backdrop-blur-xl text-white h-28 rounded-2xl" : "bg-black backdrop-blur-xl text-white p-6 rounded-2xl "}`}>
             <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
                 <Link href={"/"}>
                     <div className="flex items-center justify-center gap-3">
                         <div className="flex rounded-full h-16 w-16 justify-center bg-white items-center">
-
                             <Image src="/Logo.jpeg" alt="nndnd" height={64} width={64} />
                         </div>
 

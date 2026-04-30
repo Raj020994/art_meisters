@@ -122,14 +122,140 @@
   },
 
   "events": [
-    { "id": "1", "date": "24", "month": "MAY", "title": "Canvas Clash 2026", "desc": "Inter-College Art Competition", "active": true, "image": "/Drawing1.png" },
-    { "id": "art-exhibition", "date": "10", "month": "JUN", "title": "Art Exhibition 2026", "desc": "Showcasing Talents", "active": false, "image": "/Drawing2.png" },
-    { "id": "workshop-watercolor", "date": "21", "month": "JUN", "title": "Workshop: Watercolor", "desc": "Learn. Create. Inspire.", "active": false, "image": "/Drawing3.png" },
-    { "id": "digital-art-fest", "date": "05", "month": "JUL", "title": "Digital Art Fest", "desc": "Explore the future of art.", "active": false, "image": "/Drawing4.png" },
-    { "id": "sketch-night", "date": "15", "month": "JUL", "title": "Sketch Night", "desc": "Evening of raw creativity.", "active": false, "image": "/Drawing5.png" },
-    { "id": "sculpture-expo", "date": "30", "month": "JUL", "title": "Sculpture Expo", "desc": "3D Art Showcase.", "active": false, "image": "/Drawing6.png" }
-  ],
 
+    {
+
+      "id": "1",
+
+      "date": "24",
+
+      "month": "MAY",
+
+      "title": "Canvas Clash 2026",
+
+      "desc": "Inter-College Art Competition",
+
+      "active": true,
+
+      "image": "/Drawing1.png",
+
+      "logo": "/Drawing.png",
+
+      "registerLink": "https://forms.gle/YOUR_GOOGLE_FORM_LINK"
+
+    },
+
+    {
+
+      "id": "art-exhibition",
+
+      "date": "10",
+
+      "month": "JUN",
+
+      "title": "Art Exhibition 2026",
+
+      "desc": "Showcasing Talents",
+
+      "active": false,
+
+      "image": "/Drawing2.png",
+
+      "logo": "/Drawing.png",
+
+      "registerLink": "https://forms.gle/YOUR_GOOGLE_FORM_LINK"
+
+    },
+
+    {
+
+      "id": "workshop-watercolor",
+
+      "date": "21",
+
+      "month": "JUN",
+
+      "title": "Workshop: Watercolor",
+
+      "desc": "Learn. Create. Inspire.",
+
+      "active": false,
+
+      "image": "/Drawing3.png",
+
+      "logo": "/Drawing.png",
+
+      "registerLink": "https://forms.gle/YOUR_GOOGLE_FORM_LINK"
+
+    },
+
+    {
+
+      "id": "digital-art-fest",
+
+      "date": "05",
+
+      "month": "JUL",
+
+      "title": "Digital Art Fest",
+
+      "desc": "Explore the future of art.",
+
+      "active": false,
+
+      "image": "/Drawing4.png",
+
+      "logo": "/Drawing.png",
+
+      "registerLink": "https://forms.gle/YOUR_GOOGLE_FORM_LINK"
+
+    },
+
+    {
+
+      "id": "sketch-night",
+
+      "date": "15",
+
+      "month": "JUL",
+
+      "title": "Sketch Night",
+
+      "desc": "Evening of raw creativity.",
+
+      "active": false,
+
+      "image": "/Drawing5.png",
+
+      "logo": "/Drawing.png",
+
+      "registerLink": "https://forms.gle/YOUR_GOOGLE_FORM_LINK"
+
+    },
+
+    {
+
+      "id": "sculpture-expo",
+
+      "date": "30",
+
+      "month": "JUL",
+
+      "title": "Sculpture Expo",
+
+      "desc": "3D Art Showcase.",
+
+      "active": false,
+
+      "image": "/Drawing6.png",
+
+      "logo": "/Drawing.png",
+
+      "registerLink": "https://forms.gle/YOUR_GOOGLE_FORM_LINK"
+
+    }
+
+  ],
   "footer": {
     "description": "A community of passionate artists inspiring creativity and celebrating art in all its forms.",
     "socialLinks": [

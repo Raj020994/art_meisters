@@ -8,9 +8,11 @@ import { ArtistCard } from "@/components/ArtistCard";
 import { EventListItem } from "@/components/EventListItem";
 import { Footer } from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
-import { About } from "@/components/About";
+import About from "@/components/About";
 
-
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import gsap, { SplitText } from "gsap/all";
+gsap.registerPlugin(ScrollTrigger, SplitText);
 const iconMap = {
   Palette: Palette,
   User: User,

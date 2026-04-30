@@ -1,6 +1,5 @@
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
-import localFont from "next/font/local";
 
 export const metadata = {
   title: "Art Meisters | Art Society",
@@ -13,7 +12,6 @@ export default function RootLayout({ children }) {
     <html
       lang="en"
       >
-    
       <body className="min-h-full flex flex-col font-sans selection:bg-accent ">
         <Navbar />
         {children}

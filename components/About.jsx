@@ -1,9 +1,31 @@
+import { useGSAP } from '@gsap/react'
+import gsap from 'gsap';
 import React from 'react'
 
-export const About = () => {
-  return (
-    <section id="about" className="h-screen bg-zinc-900 flex items-center justify-center">
-      <h2 className="text-6xl font-bold">About Section</h2>
-    </section>
-  )
+const About = () => {
+    useGSAP(()=>{
+const parallaxTimeline=gsap.timeline({
+    scrollTrigger:{
+        trigger:"#cocktails",
+        start:"top 30%",
+        end:"bottom 80%",
+        scrub:true,
+    }
+})
+    }
+    ,[]);
+    return (
+        <section id="cocktails" >
+            <div className="list">
+                <div className="popular">
+                    <h2 className="">Most Popular cocktail: </h2>
+                </div>
+                <div className="loved">
+                    <h2 className="">Most Popular cocktail: </h2>
+                </div>
+            </div>
+        </section>          
+    )
 }
+
+export default About

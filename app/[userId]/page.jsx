@@ -5,6 +5,7 @@ import { MoveLeft, Palette, ExternalLink } from "lucide-react";
 import Image from "next/image";
 
 export default async function ArtistProfile({ params }) {
+
     const { userId } = await params;
     const artist = data.artists.find((a) => a.id === userId);
     const artistArtworks = data.artworks.filter((art) => art.userId === userId);

@@ -12,9 +12,11 @@ export default function RootLayout({ children }) {
     <html
       lang="en"
       >
-      <body className="min-h-full flex flex-col font-sans selection:bg-accent ">
+      <body className="min-h-full bg-black flex flex-col font-sans selection:bg-accent ">
         <Navbar />
+        <main>
         {children}
+        </main>
       </body>
     </html>
   );

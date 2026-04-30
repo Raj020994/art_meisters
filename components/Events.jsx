@@ -4,6 +4,7 @@ import data from "@/data.json";
 import { MoveRight } from 'lucide-react';
 import { FeaturedEvent } from './FeaturedEvent';
 export const Events = () => {
+    const events=data.events.slice(0,3)
   return (
     <section className="max-w-7xl mx-auto px-6  md:px-12 mb-32">
     <div className="flex justify-between items-end mb-12">
@@ -21,9 +22,8 @@ export const Events = () => {
     </div>
 
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Events List */}
         <div className="flex flex-col gap-4 lg:col-span-1">
-            {data.events.map((event) => (
+            {events.map((event) => (
                 <EventListItem
                     key={event.id}
                     id={event.id}
@@ -36,7 +36,6 @@ export const Events = () => {
             ))}
         </div>
 
-        {/* Featured Event */}
         <FeaturedEvent />
     </div>
 </section>

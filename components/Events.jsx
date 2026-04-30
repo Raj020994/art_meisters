@@ -26,6 +26,7 @@ export const Events = () => {
             {data.events.map((event) => (
                 <EventListItem
                     key={event.id}
+                    id={event.id}
                     date={event.date}
                     month={event.month}
                     title={event.title}

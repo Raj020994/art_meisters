@@ -2,10 +2,9 @@ import React from 'react'
 import data from "@/data.json";
 import Link from 'next/link';
 import { MoveLeft, ArrowRight } from "lucide-react";
-import { ArtCard } from './_component/ArtCard';
+import { ArtCard } from './_components/ArtCard';
 
 export default async function ArtPage({ params }) {
-    console.log("Atleast")
     const resolvedParams = await params;
     const artId = resolvedParams.artid || resolvedParams.artId;
     

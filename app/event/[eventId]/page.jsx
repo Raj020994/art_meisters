@@ -34,7 +34,7 @@ export default async function EventDetail({ params }) {
   return (
     <main className="min-h-screen bg-black text-white selection:bg-red-500 pb-20">
       {/* Banner Section */}
-      <section className="w-full mt-6">
+      <section className="w-full ">
         <div className="relative w-full h-[300px] md:h-[480px] overflow-hidden border-y border-white/10">
           <img
             src={isFeatured ? featured.image : event.image}

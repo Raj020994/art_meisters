@@ -49,7 +49,7 @@ export const EventCard = ({ event }) => {
                     alt={event.title} 
                     className="h-full w-full object-cover transition-transform duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-black via-black/30 to-transparent" />
                 
                 {/* Date Badge */}
                 <div className="absolute top-6 left-6 flex flex-col items-center justify-center w-16 h-16 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10 shadow-xl">
@@ -70,7 +70,7 @@ export const EventCard = ({ event }) => {
             </div>
 
             {/* Content Section */}
-            <div className="p-8 flex flex-col flex-grow space-y-4">
+            <div className="p-8 flex flex-col grow space-y-4">
                 <h3 className="text-3xl font-bold text-white group-hover:text-red-400 transition-colors duration-300 leading-tight">
                     {event.title}
                 </h3>

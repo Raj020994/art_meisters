@@ -33,7 +33,6 @@ export default async function EventDetail({ params }) {
 
   return (
     <main className="min-h-screen bg-black text-white selection:bg-red-500 pb-20">
-      {/* Banner Section */}
       <section className="w-full ">
         <div className="relative w-full h-[300px] md:h-[480px] overflow-hidden border-y border-white/10">
           <img
@@ -42,15 +41,11 @@ export default async function EventDetail({ params }) {
             className="w-full h-full blur-sm object-cover scale-105"
           />
 
-          {/* Dark Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+          <div className="absolute inset-0 bg-linear-to-t from-black via-black/50 to-transparent"></div>
 
-          {/* Content Overlay */}
           <div className="absolute inset-0 flex items-end">
             <div className="max-w-6xl mx-auto w-full px-6 md:px-12 pb-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-              {/* Left Side (Logo + Title) */}
               <div className="flex items-center gap-5">
-                {/* Event Logo */}
                 <div className="w-20 h-20 md:w-28 md:h-28 rounded-2xl overflow-hidden bg-black/60 backdrop-blur-md border border-white/10 shadow-xl flex items-center justify-center">
                   <img
                     src={event.logo || "/logo.png"}
@@ -59,7 +54,6 @@ export default async function EventDetail({ params }) {
                   />
                 </div>
 
-                {/* Title */}
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <span
@@ -88,9 +82,7 @@ export default async function EventDetail({ params }) {
                 </div>
               </div>
 
-              {/* Right Side (Date + Register Button) */}
               <div className="flex items-center gap-4">
-                {/* Date Badge */}
                 <div className="flex flex-col items-center justify-center w-20 h-20 md:w-24 md:h-24 rounded-xl bg-black/70 backdrop-blur-md border border-white/10">
                   <span className="text-white font-bold text-2xl md:text-3xl leading-none">
                     {event.date}
@@ -100,7 +92,6 @@ export default async function EventDetail({ params }) {
                   </span>
                 </div>
 
-                {/* Register Button */}
                 {event.active && (
                   <a
                     href={registerLink}
@@ -117,9 +108,7 @@ export default async function EventDetail({ params }) {
         </div>
       </section>
 
-      {/* Event Details & About Section */}
       <section className="max-w-4xl mx-auto px-6 md:px-12 mt-12 space-y-8">
-        {/* Event Details Card */}
         <div className="rounded-2xl p-8 border border-white/10 bg-white/5 backdrop-blur-md">
           <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
             <Calendar size={20} className="text-red-400" />
@@ -170,7 +159,6 @@ export default async function EventDetail({ params }) {
             </div>
           </div>
 
-          {/* Register Button in Details Card */}
           {event.active && (
             <div className="mt-8">
               <a
@@ -185,7 +173,6 @@ export default async function EventDetail({ params }) {
           )}
         </div>
 
-        {/* About This Event */}
         <div className="rounded-2xl p-8 md:p-10 border border-white/10 bg-white/5 backdrop-blur-md">
           <h2 className="text-2xl font-bold mb-4">About This Event</h2>
           <p className="text-gray-300 leading-relaxed text-lg">{event.desc}</p>

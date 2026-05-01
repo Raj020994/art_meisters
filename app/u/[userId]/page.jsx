@@ -7,6 +7,7 @@ import Image from "next/image";
 export default async function ArtistProfile({ params }) {
 
     const { userId } = await params;
+    console.log(userId)
     const artist = data.artists.find((a) => a.id === userId);
     const artistArtworks = data.artworks.filter((art) => art.userId === userId);
 
@@ -169,7 +170,7 @@ export default async function ArtistProfile({ params }) {
                                         <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-6">
                                             <h4 className="text-xl font-bold text-white mb-1">{art.title}</h4>
                                             <p className="text-gray-300 text-sm line-clamp-2">{art.description}</p>
-                                            <a href={`/art/${art.id}`}>
+                                            <a href={`/u/${userId}/${art.id}`}>
                                             <button className="mt-4 text-accent text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:opacity-80 transition-opacity">
                                                 View Details <ExternalLink size={12} />
                                             </button>

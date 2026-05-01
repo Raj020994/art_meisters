@@ -31,10 +31,10 @@ export default async function ArtPage({ params }) {
     const otherArtworks = data.artworks.filter(a => String(a.userId) === String(art.userId) && String(a.id) !== String(artId));
 
     return (
-        <main className='min-h-screen bg-black text-white selection:bg-accent pb-20 pt-32 px-6 md:px-12'>
+        <main className='min-h-screen bg-black text-white selection:bg-accent pb-20 pt-8  px-6 md:px-12'>
             <div className="max-w-7xl mx-auto">
                 <Link 
-                    href={`/${artist?.id}`}
+                    href={`/u/${artist?.id}`}
                     className="inline-flex items-center gap-2 text-gray-500 hover:text-accent transition-colors group mb-8"
                 >
                     <MoveLeft size={18} className="group-hover:-translate-x-1 transition-transform" />

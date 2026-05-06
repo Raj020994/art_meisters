@@ -110,7 +110,7 @@ body {
         @apply flex lg:flex-row flex-col w-full gap-10 justify-between items-center lg:items-end mx-auto;
 
         p:nth-of-type(2) {
-          @apply text-6xl text-yellow max-w-xl;
+          @apply text-6xl text-red-800 max-w-xl;
         }
 
         p:last-of-type {
@@ -118,17 +118,13 @@ body {
         }
 
         .hero-info {
-          @apply space-y-5 text-lg lg:max-w-md md:max-w-xs w-full p-8 rounded-2xl border border-white/10;
-          background: rgba(255, 255, 255, 0.05);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-
-          p {
+          @apply space-y-5 text-lg lg:max-w-md md:max-w-xs w-full p-8 ;
+                  p {
             @apply text-left opacity-90 leading-relaxed;
           }
 
           a {
-            @apply mt-4 font-semibold opacity-80 2xl:text-start text-center hover:text-yellow transition-all hover:translate-x-2 flex items-center gap-2;
+            @apply mt-4 font-semibold opacity-80 2xl:text-start text-center hover:text-red-800 transition-all hover:translate-x-2 flex items-center gap-2;
 
             &::after {
               content: "→";
@@ -176,7 +172,7 @@ body {
           @apply flex justify-between items-start;
 
           h3 {
-            @apply 2xl:text-3xl text-xl text-yellow;
+            @apply 2xl:text-3xl text-xl text-red-800;
           }
 
           p {
@@ -212,7 +208,7 @@ body {
           @apply flex flex-col justify-between md:gap-2 gap-5;
 
           span {
-            @apply text-yellow font-bold text-5xl;
+            @apply text-red-800 font-bold text-5xl;
           }
         }
       }
@@ -296,7 +292,7 @@ body {
       @apply grid md:grid-cols-4 grid-cols-2 md:gap-20 gap-10 sm:mb-32 mb-20 relative z-10 md:max-w-6xl md:mx-auto;
 
       button {
-        @apply md:text-3xl text-xl pb-2 cursor-pointer hover:text-yellow hover:border-yellow border-b transition-colors;
+        @apply md:text-3xl text-xl pb-2 cursor-pointer hover:text-red-800 hover:border-yellow border-b transition-colors;
       }
     }
 
@@ -307,7 +303,7 @@ body {
         @apply flex items-center justify-between w-full absolute;
 
         button {
-          @apply text-white hover:text-yellow cursor-pointer transition-colors max-w-36;
+          @apply text-white hover:text-red-800 cursor-pointer transition-colors max-w-36;
 
           span {
             @apply text-3xl leading-none hidden md:block;
@@ -331,7 +327,7 @@ body {
         @apply space-y-4 lg:translate-y-20;
 
         #title {
-          @apply md:text-4xl text-2xl text-yellow max-w-40;
+          @apply md:text-4xl text-2xl text-red-800 max-w-40;
         }
       }
 

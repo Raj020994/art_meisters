@@ -10,6 +10,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html
+    className="dark"
       lang="en"
       data-scroll-behavior="smooth"
       >

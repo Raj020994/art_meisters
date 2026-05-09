@@ -52,7 +52,7 @@ const Hero = () => {
 			 </p>
 			</div>
 			
-			<div className="hero-info">
+		 <div className="hero-info">
 			 <p className="subtitle">
 				Art Meister is a premier community for artists and enthusiasts. 
 				We provide a space where imagination knows no bounds and 
@@ -62,18 +62,19 @@ const Hero = () => {
 			</div>
 		 </div>
 		</div>
+
+		<div className="absolute bottom-0 right-[10%] pointer-events-none -z-10">
+			<Image
+				src={"/brush.png"}
+				width={500}
+				height={500}
+				alt="brush"
+				className="w-[400px] h-[400px] md:w-[600px] md:h-[600px] opacity-20"
+			/>
+		</div>
 	 </section>
-	 <div className=" relative bottom-120 left-[30%]">
-		<Image
-        src={"/brush.png"}
-        width={100}
-        height={100}
-        alt="hero"
-        className="w-[500px] h-[500px]"
-        />
-	 </div>
 	</>
- );
+);
 };
 
 export default Hero;

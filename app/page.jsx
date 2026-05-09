@@ -24,7 +24,7 @@ const iconMap = {
 
 export default function Home() {
     return (
-        <main className="min-h-screen space-y-6 p-0 bg-black text-white selection:bg-accent">
+        <main className="min-h-screen p-0 bg-black text-white selection:bg-accent">
             <HeroSection />
             <About />
             <Artist />

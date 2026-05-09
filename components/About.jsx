@@ -20,7 +20,7 @@ const About = () => {
         },
         {
             "eventImage": {
-                "src": "/Event1.jpeg",
+                "src": "/Event2.jpeg",
                 "width": 450,
                 "height": 300,
                 "alt": "hero",
@@ -33,7 +33,7 @@ const About = () => {
         },
         {
             "eventImage": {
-                "src": "/Event1.jpeg",
+                "src": "/Event3.jpeg",
                 "width": 450,
                 "height": 300,
                 "alt": "hero",
@@ -45,7 +45,7 @@ const About = () => {
         },
         {
             "eventImage": {
-                "src": "/Event1.jpeg",
+                "src": "/Event4.jpeg",
                 "width": 450,
                 "height": 300,
                 "alt": "hero",

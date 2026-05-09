@@ -20,7 +20,7 @@ const About = () => {
         },
         {
             "eventImage": {
-                "src": "/Event1.jpeg",
+                "src": "/Event2.jpeg",
                 "width": 450,
                 "height": 300,
                 "alt": "hero",
@@ -33,7 +33,7 @@ const About = () => {
         },
         {
             "eventImage": {
-                "src": "/Event1.jpeg",
+                "src": "/Event3.jpeg",
                 "width": 450,
                 "height": 300,
                 "alt": "hero",
@@ -45,7 +45,7 @@ const About = () => {
         },
         {
             "eventImage": {
-                "src": "/Event1.jpeg",
+                "src": "/Event4.jpeg",
                 "width": 450,
                 "height": 300,
                 "alt": "hero",
@@ -94,7 +94,7 @@ const About = () => {
     }, []);
     return (
         <section id="about" className="relative   min-h-screen space-y-32">
-            <h1 className="text-center text-9xl  text-white font-bold">
+            <h1 className="text-center text-9xl relative z-10 text-white font-bold">
                 Our Journey
             </h1>
             <div className="">

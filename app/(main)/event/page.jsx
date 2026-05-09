@@ -43,7 +43,7 @@ export default function EventPage() {
                     
                     <h1 className="text-6xl md:text-[8vw] font-bold text-white leading-[0.9] tracking-tighter">
                         EVENTS & <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-br from-red-400 via-red-600 to-red-900">
+                        <span className="text-transparent bg-clip-text bg-linear-to-br from-red-400 via-red-600 to-red-900">
                             SHOWCASES
                         </span>
                     </h1>

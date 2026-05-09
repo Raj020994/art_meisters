@@ -3,14 +3,8 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { SplitText } from "gsap/all";
-import { useRef } from "react";
-import { useMediaQuery } from "react-responsive";
-
-//ffmpeg -i input.mp4 -vf scale=960:-1 -movflags faststart -vcodec libx264 -crf 20 -g 1 -pix_fmt yuv420p output.mp4(for key frame)
+import Image from "next/image";
 const Hero = () => {
- const videoRef = useRef();
- 
- const isMobile = useMediaQuery({ maxWidth: 767 });
  
  useGSAP(() => {
 	const heroSplit = new SplitText(".title", {
@@ -21,7 +15,6 @@ const Hero = () => {
 	 type: "lines",
 	});
 	
-	// Apply text-gradient class once before animating
 	heroSplit.chars.forEach((char) => char.classList.add("text-gradient"));
 	
 	gsap.from(heroSplit.chars, {
@@ -40,45 +33,8 @@ const Hero = () => {
 	 delay: 1,
 	});
 	
-	gsap
-	.timeline({
-	 scrollTrigger: {
-		trigger: "#hero",
-		start: "top top",
-		end: "bottom top",
-		scrub: true,
-	 },
-	})
 	
-	const startValue = isMobile ? "top 50%" : "center 60%";
-	const endValue = isMobile ? "120% top" : "bottom top";
-	
-	let tl = gsap.timeline({
-	 scrollTrigger: {
-		trigger: "video",
-		start: startValue,
-		end: endValue,
-		scrub: true,
-		pin: true,
-	 },
-	});
-	
-	const setupVideoTimeline = () => {
-	 if (videoRef.current && videoRef.current.duration) {
-		tl.to(videoRef.current, {
-		 currentTime: videoRef.current.duration,
-		});
-	 }
-	};
-
-	if (videoRef.current) {
-	 if (videoRef.current.readyState >= 1) {
-		setupVideoTimeline();
-	 } else {
-		videoRef.current.onloadedmetadata = setupVideoTimeline;
-	 }
-	}
- }, []);
+  }, []);
  
  return (
 	<>
@@ -95,7 +51,7 @@ const Hero = () => {
 			 </p>
 			</div>
 			
-			<div className="hero-info">
+		 <div className="hero-info">
 			 <p className="subtitle">
 				Art Meister is a premier community for artists and enthusiasts. 
 				We provide a space where imagination knows no bounds and 
@@ -105,18 +61,19 @@ const Hero = () => {
 			</div>
 		 </div>
 		</div>
+
+		<div className="absolute -bottom-15 right-[32%] pointer-events-none -z-10">
+			<Image
+				src={"/brush.png"}
+				width={500}
+				height={500}
+				alt="brush"
+				className="w-[400px] h-[400px] md:w-[600px] md:h-[600px] "
+			/>
+		</div>
 	 </section>
-	 <div className="video absolute inset-0">
-		<video
-		 ref={videoRef}
-		 muted
-		 playsInline
-		 preload="auto"
-		 src="/output.mp4"
-		/>
-	 </div>
 	</>
- );
+);
 };
 
 export default Hero;

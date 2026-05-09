@@ -12,7 +12,7 @@ gsap.registerPlugin(ScrollTrigger, SplitText);
 
 export default function Home() {
     return (
-        <main className="min-h-screen p-0 bg-black text-white selection:bg-accent">
+        <main className="min-h-screen space-y-48 p-0 bg-black text-white selection:bg-accent">
             <HeroSection />
             <About />
             <Artist />

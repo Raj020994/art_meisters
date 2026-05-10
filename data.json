@@ -7,12 +7,10 @@
   "heroImage": "https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=2670&auto=format&fit=crop",
 
   "navLinks": [
-    { "label": "HOME", "href": "/", "active": true },
-    { "label": "ABOUT", "href": "#", "active": false },
-    { "label": "ARTISTS", "href": "#", "active": false },
-    { "label": "SOCIALS", "href": "#", "active": false },
-    { "label": "MERCHANDISE", "href": "#", "active": false },
-    { "label": "BLOG", "href": "#", "active": false }
+    { "label": "HOME", "href": "#hero", "active": true },
+    { "label": "ABOUT", "href": "#about", "active": false },
+    { "label": "ARTISTS", "href": "#artists", "active": false },
+    { "label": "EVENTS", "href": "#events", "active": false }
   ],
 
   "categories": [

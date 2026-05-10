@@ -12,6 +12,7 @@ export default function RootLayout({ children }) {
     <html
     className="dark"
       lang="en"
+
       data-scroll-behavior="smooth"
       >
       <body className="min-h-full bg-black flex flex-col font-sans selection:bg-accent ">

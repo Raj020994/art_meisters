@@ -4,7 +4,7 @@ import { MoveRight } from 'lucide-react'
 import data from "@/data.json";
 export const Artist = () => {
   return (
-      <section className="max-w-7xl mx-auto px-6 md:px-12 mb-32">
+      <section id='artists' className="max-w-7xl mx-auto px-6 md:px-12 ">
         <div className="flex justify-between items-end mb-12">
           <div>
             <div className="flex items-center gap-4 mb-3">

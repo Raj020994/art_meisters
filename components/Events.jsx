@@ -6,7 +6,7 @@ import { FeaturedEvent } from './FeaturedEvent';
 export const Events = () => {
     const events=data.events.slice(0,3)
   return (
-    <section className="max-w-7xl mx-auto px-6  md:px-12 mb-32">
+    <section id="events" className="max-w-7xl mx-auto px-6  md:px-12 mb-32">
     <div className="flex justify-between items-end mb-12">
         <div>
             <div className="flex items-center gap-4 mb-3">

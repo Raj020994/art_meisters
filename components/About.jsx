@@ -55,6 +55,18 @@ const About = () => {
                 "A creative meet-up focused on sharing ideas, building friendships, and supporting artistic growth."
             ]
         },
+        {
+            "eventImage": {
+                "src": "/Drawing1.png",
+                "width": 450,
+                "height": 300,
+                "alt": "hero",
+                "pos": "items-center"
+            },
+            "points": [
+                "A creative meet-up focused on sharing ideas, building friendships, and supporting artistic growth."
+            ]
+        },
 
     ]
     const svgRef = useRef(null);
@@ -83,15 +95,16 @@ const About = () => {
             ease: "none",
             scrollTrigger: {
                 trigger: "#about",
-                start: "top 90%",
-                end: "bottom 90%",
+                start: "top 50%",
+                end: "bottom 120%",
                 scrub: 1,
             },
         });
+
     }, []);
     return (
-        <section id="about" className="relative min-h-screen pt-52 overflow-hidden">
-            <h1 className="text-center text-9xl text-white font-bold relative z-10">
+        <section id="about" className="relative   min-h-screen space-y-32">
+            <h2 className="text-center text-9xl relative z-10 text-white font-bold">
                 Our Journey
             </h1>
 
@@ -166,7 +179,7 @@ const About = () => {
                 </svg>
             </div>
 
-            <div className="flex flex-col relative z-10 gap-48">
+            <div className="flex flex-col relative container mx-auto z-10 gap-48">
                 {aboutData.map((event, index) => (
                     <div
                         key={index}

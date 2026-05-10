@@ -55,6 +55,18 @@ const About = () => {
                 "A creative meet-up focused on sharing ideas, building friendships, and supporting artistic growth."
             ]
         },
+        {
+            "eventImage": {
+                "src": "/Drawing1.png",
+                "width": 450,
+                "height": 300,
+                "alt": "hero",
+                "pos": "items-center"
+            },
+            "points": [
+                "A creative meet-up focused on sharing ideas, building friendships, and supporting artistic growth."
+            ]
+        },
 
     ]
     const svgRef = useRef(null);
@@ -94,12 +106,10 @@ const About = () => {
     }, []);
     return (
         <section id="about" className="relative   min-h-screen space-y-32">
-            <h1 className="text-center text-9xl relative z-10 text-white font-bold">
+            <h2 className="text-center text-9xl relative z-10 text-white font-bold">
                 Our Journey
-            </h1>
+            </h2>
             <div className="">
-
-
                 <div className="absolute inset-0 z-0 pointer-events-none">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -163,7 +173,7 @@ const About = () => {
                 </div>
             </div>
 
-            <div className="flex flex-col relative z-10 gap-48">
+            <div className="flex flex-col relative container mx-auto z-10 gap-48">
                 {aboutData.map((event, index) => (
                     <div key={index} className={`flex flex-col event-img ${event.eventImage.pos} px-10`}>
                         <Image
@@ -181,16 +191,7 @@ const About = () => {
                         </ul>
                     </div>
                 ))}
-                <div className="flex items-end z-10  justify-center">
-
-                    <Image
-                        src={"/brush.png"}
-                        alt='paint-brush'
-                        width={500}
-                        height={500}
-                        className="w-[400px] h-[400px]   -rotate-45"
-                    />
-                </div>
+               
             </div>
         </section>
     )

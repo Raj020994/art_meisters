@@ -68,7 +68,11 @@ const Hero = () => {
 				width={500}
 				height={500}
 				alt="brush"
-				className="w-[400px] h-[400px] md:w-[600px] md:h-[600px] "
+				style={{
+					width: '100%',
+					maxWidth: '600px',
+					height: 'auto',
+				}}
 			/>
 		</div>
 	 </section>

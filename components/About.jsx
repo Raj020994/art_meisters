@@ -181,7 +181,11 @@ const About = () => {
                                     width={event.eventImage.width}
                                     height={event.eventImage.height}
                                     alt={event.eventImage.alt}
-                                    className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500"
+                                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                    style={{
+                                        width: '100%',
+                                        height: 'auto',
+                                    }}
                                 />
                             </div>
 
@@ -206,7 +210,11 @@ const About = () => {
                         alt='paint-brush'
                         width={500}
                         height={500}
-                        className="w-[400px] h-[400px] mt-10 -rotate-45"
+                        className="mt-10 -rotate-45"
+                        style={{
+                            width: '400px',
+                            height: '400px',
+                        }}
                     />
                 </div>
             </div>

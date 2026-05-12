@@ -43,7 +43,7 @@ export const Navbar = () => {
     }, []);
 
     return (
-        <nav className={`fixed  w-full z-50 transition-all duration-300 ${scrolled ? "nav py-2 bg-black/20 backdrop-blur-xl text-white h-28 rounded-2xl" : ""}`}>
+        <nav className={`fixed  left-1/2 -translate-x-1/2 mx-atuo  container z-50 transition-all duration-300 ${scrolled ? "nav py-2 bg-black/20 backdrop-blur-xl text-white h-28 rounded-2xl" : ""}`}>
             <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
                 <Link href={"/"}>
                     <div className="flex items-center justify-center gap-3">
@@ -65,14 +65,6 @@ export const Navbar = () => {
                             {link.label}
                         </a>
                     ))}
-                </div>
-
-                <div className="flex items-center gap-5">
-                    <button className="hover:text-accent transition-colors"><Search size={20} /></button>
-                    <button className="w-8 h-8 rounded-full bg-accent flex items-center justify-center hover:bg-red-700 transition-colors shadow-[0_0_15px_rgba(229,9,20,0.5)]">
-                        <Plus size={18} />
-                    </button>
-                    <button className="hover:text-accent transition-colors"><User size={20} /></button>
                 </div>
             </div>
         </nav>

@@ -1,6 +1,5 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import { Search, Plus, User } from "lucide-react";
 import data from "@/data.json";
 import Image from 'next/image';
 import Link from 'next/link';
@@ -14,10 +13,10 @@ export const Navbar = () => {
         window.addEventListener("scroll", handleScroll);
 
         const sections = data.navLinks.map(link => link.href.replace("#", ""));
-        
+
         const observerOptions = {
             root: null,
-            rootMargin: "-20% 0px -70% 0px", 
+            rootMargin: "-20% 0px -70% 0px",
             threshold: 0
         };
 
@@ -43,8 +42,9 @@ export const Navbar = () => {
     }, []);
 
     return (
-        <nav className={`fixed  left-1/2 -translate-x-1/2 mx-atuo  container z-50 transition-all duration-300 ${scrolled ? "nav py-2 bg-black/20 backdrop-blur-xl text-white h-28 rounded-2xl" : ""}`}>
-            <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
+        <nav className={`fixed left-1/2 flex items-center justify-center  -translate-x-1/2 z-50 transition-all duration-300 ${scrolled ? "nav py-2 bg-black/20 backdrop-blur-xl text-white h-28 rounded-2xl" : ""}`}>
+            <div className="flex items-center justify-between">
+        <div className="">
                 <Link href={"/"}>
                     <div className="flex items-center justify-center gap-3">
                         <div className="flex rounded-full h-16 w-16 justify-center bg-white items-center">
@@ -54,16 +54,16 @@ export const Navbar = () => {
                         <span className="font-heading font-bold text-xl tracking-wider">{data.siteName}</span>
                     </div>
                 </Link>
-
+        </div>
                 <div className="hidden md:flex items-center gap-8 text-sm font-medium tracking-wide">
                     {data.navLinks.map((link) => (
-                        <a
+                        <Link
                             key={link.label}
                             href={link.href}
                             className={activeSection === link.href.replace("#", "") ? "text-red-500" : "transition-colors"}
                         >
                             {link.label}
-                        </a>
+                        </Link>
                     ))}
                 </div>
             </div>

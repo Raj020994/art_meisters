@@ -1,72 +1,153 @@
-"use client"
-import React, { useEffect, useState } from 'react'
-import { Search, Plus, User } from "lucide-react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import data from "@/data.json";
-import Image from 'next/image';
-import Link from 'next/link';
+import Image from "next/image";
+import Link from "next/link";
+import { Menu, X } from "lucide-react";
 
 export const Navbar = () => {
-    const [scrolled, setScrolled] = useState(false);
-    const [activeSection, setActiveSection] = useState("hero");
+  const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState("hero");
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-    useEffect(() => {
-        const handleScroll = () => setScrolled(window.scrollY > 50);
-        window.addEventListener("scroll", handleScroll);
+  const user = {
+    Success: true,
+    Data: {
+      Image: {
+        String: "/me.png",
+        Valid: true,
+      },
+    },
+  };
 
-        const sections = data.navLinks.map(link => link.href.replace("#", ""));
-        
-        const observerOptions = {
-            root: null,
-            rootMargin: "-20% 0px -70% 0px", 
-            threshold: 0
-        };
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
 
-        const observerCallback = (entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    setActiveSection(entry.target.id);
-                }
-            });
-        };
+    window.addEventListener("scroll", handleScroll);
 
-        const observer = new IntersectionObserver(observerCallback, observerOptions);
+    const sections = data.navLinks.map((link) =>
+      link.href.replace("#", ""),
+    );
 
-        sections.forEach((id) => {
-            const element = document.getElementById(id);
-            if (element) observer.observe(element);
-        });
+    const observerOptions = {
+      root: null,
+      rootMargin: "-20% 0px -70% 0px",
+      threshold: 0,
+    };
 
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-            observer.disconnect();
-        };
-    }, []);
+    const observerCallback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    };
 
-    return (
-        <nav className={`fixed  left-1/2 -translate-x-1/2 mx-atuo  container z-50 transition-all duration-300 ${scrolled ? "nav py-2 bg-black/20 backdrop-blur-xl text-white h-28 rounded-2xl" : ""}`}>
-            <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
-                <Link href={"/"}>
-                    <div className="flex items-center justify-center gap-3">
-                        <div className="flex rounded-full h-16 w-16 justify-center bg-white items-center">
-                            <Image src="/Logo.jpeg" alt="Logo" height={64} width={64} />
-                        </div>
+    const observer = new IntersectionObserver(
+      observerCallback,
+      observerOptions,
+    );
 
-                        <span className="font-heading font-bold text-xl tracking-wider">{data.siteName}</span>
-                    </div>
-                </Link>
+    sections.forEach((id) => {
+      const element = document.getElementById(id);
 
-                <div className="hidden md:flex items-center gap-8 text-sm font-medium tracking-wide">
-                    {data.navLinks.map((link) => (
-                        <a
-                            key={link.label}
-                            href={link.href}
-                            className={activeSection === link.href.replace("#", "") ? "text-red-500" : "transition-colors"}
-                        >
-                            {link.label}
-                        </a>
-                    ))}
-                </div>
+      if (element) {
+        observer.observe(element);
+      }
+    });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      observer.disconnect();
+    };
+  }, []);
+
+  return (
+    <nav
+      className={`fixed top-4 left-1/2 z-50 w-[95%] mx-auto -translate-x-1/2 transition-all duration-300 ${
+        scrolled
+          ? "rounded-2xl bg-black/20 backdrop-blur-xl text-white shadow-lg"
+          : "text-white"
+      }`}
+    >
+      <div className="flex items-center justify-between px-4 py-3">
+
+        <Link href="/">
+          <div className="flex items-center gap-3">
+            <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-white">
+              <Image
+                src="/Logo.jpeg"
+                alt="Logo"
+                width={56}
+                height={56}
+                className="object-cover"
+              />
             </div>
-        </nav>
-    )
-}
+
+            <span className="font-heading text-lg font-bold tracking-wider md:text-xl">
+              {data.siteName}
+            </span>
+          </div>
+        </Link>
+
+        {/* Desktop Nav */}
+        <div className="hidden items-center gap-8 text-sm font-medium tracking-wide md:flex">
+          {data.navLinks.map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              className={`transition-colors hover:text-red-400 ${
+                activeSection === link.href.replace("#", "")
+                  ? "text-red-500"
+                  : ""
+              }`}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+
+        {/* Right Side */}
+        <div className="flex items-center gap-4">
+          {/* Profile */}
+          <div className="relative h-12 w-12 overflow-hidden rounded-full border border-white/20">
+            <Image
+              src={user.Data.Image.String}
+              alt="profile"
+              fill
+              className="object-cover"
+            />
+          </div>
+
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="md:hidden"
+          >
+            {mobileOpen ? <X size={28} /> : <Menu size={28} />}
+          </button>
+        </div>
+      </div>
+
+
+      {mobileOpen && (
+        <div className="flex flex-col gap-4 px-4 pb-4 pt-2 md:hidden">
+          {data.navLinks.map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              onClick={() => setMobileOpen(false)}
+              className={`transition-colors hover:text-red-400 ${
+                activeSection === link.href.replace("#", "")
+                  ? "text-red-500"
+                  : ""
+              }`}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+      )}
+    </nav>
+  );
+};

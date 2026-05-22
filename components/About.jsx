@@ -80,16 +80,16 @@ const About = () => {
                 strokeDashoffset: length,
             });
         });
-        gsap.from(".event-img",{
-            opacity:0,
-            scale:0.7,
-            duration:1,
-            stagger:0.2,
-            scrollTrigger:{
-                trigger:"#about",
-                start:"top 250%",
-                end:"bottom 120%",
-                scrub:1,
+        gsap.from(".event-img", {
+            opacity: 0,
+            scale: 0.7,
+            duration: 1,
+            stagger: 0.2,
+            scrollTrigger: {
+                trigger: "#about",
+                start: "top 250%",
+                end: "bottom 120%",
+                scrub: 1,
             }
         })
         gsap.to(paths, {
@@ -114,7 +114,7 @@ const About = () => {
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 1944.2 6151.5"
-                        className="absolute inset-0 h-full w-full max-md:hidden"
+                        className="absolute inset-0 h-full w-full"
                         id="desktop-svg"
                         ref={svgRef}
                         preserveAspectRatio="none"
@@ -191,7 +191,7 @@ const About = () => {
                         </ul>
                     </div>
                 ))}
-               
+
             </div>
         </section>
     )

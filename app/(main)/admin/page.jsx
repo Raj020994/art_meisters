@@ -32,7 +32,7 @@ export default function Page() {
                             className="rounded-lg data-[state=active]:bg-red-600 w-full text-white text-sm md:text-base py-2.5"
                         >
                             Artworks
-                        </TabsTrigger>
+                      </TabsTrigger>
                     </TabsList>
 
                     <div className="md:col-span-3">

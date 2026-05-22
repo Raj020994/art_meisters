@@ -1,47 +1,34 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import data from "@/data.json";
 import Image from "next/image";
 import Link from "next/link";
-import { User } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 export const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   const user = {
     Success: true,
     Data: {
-      ID: "f1529ef0-abbe-43b1-9711-e44a1ccd5ca4",
-      Name: "Jane Doe",
-      Email: "janehh@example.com",
-      Batch: "2026",
-      Status: "pending",
-      Role: "user",
       Image: {
         String: "/me.png",
         Valid: true,
       },
-      BannerImage: {
-        String: "/me.png",
-        Valid: true,
-      },
-      Description: {
-        String: "Creative digital artist specializing in surrealism.",
-        Valid: true,
-      },
-      SocialLinks: {
-        twitter: "https://twitter.com/janedoe",
-        instagram: "https://instagram.com/janedoe",
-      },
-      CreatedAt: "2026-05-22T18:12:15.145381Z",
-      UpdatedAt: "2026-05-22T18:12:15.145381Z",
     },
   };
+
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
+
     window.addEventListener("scroll", handleScroll);
 
-    const sections = data.navLinks.map((link) => link.href.replace("#", ""));
+    const sections = data.navLinks.map((link) =>
+      link.href.replace("#", ""),
+    );
 
     const observerOptions = {
       root: null,
@@ -64,7 +51,10 @@ export const Navbar = () => {
 
     sections.forEach((id) => {
       const element = document.getElementById(id);
-      if (element) observer.observe(element);
+
+      if (element) {
+        observer.observe(element);
+      }
     });
 
     return () => {
@@ -75,50 +65,89 @@ export const Navbar = () => {
 
   return (
     <nav
-      className={`fixed left-1/2 flex items-center justify-center  -translate-x-1/2 z-50 transition-all duration-300 ${scrolled ? "nav py-2 bg-black/20 backdrop-blur-xl text-white h-28 rounded-2xl" : ""}`}
+      className={`fixed top-4 left-1/2 z-50 w-[95%] mx-auto -translate-x-1/2 transition-all duration-300 ${
+        scrolled
+          ? "rounded-2xl bg-black/20 backdrop-blur-xl text-white shadow-lg"
+          : "text-white"
+      }`}
     >
-      <div className="flex items-center justify-between">
-        <div className="">
-          <Link href={"/"}>
-            <div className="flex items-center justify-center gap-3">
-              <div className="flex rounded-full h-16 w-16 justify-center bg-white items-center">
-                <Image src="/Logo.jpeg" alt="Logo" height={64} width={64} />
-              </div>
+      <div className="flex items-center justify-between px-4 py-3">
 
-              <span className="font-heading font-bold text-xl tracking-wider">
-                {data.siteName}
-              </span>
+        <Link href="/">
+          <div className="flex items-center gap-3">
+            <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-white">
+              <Image
+                src="/Logo.jpeg"
+                alt="Logo"
+                width={56}
+                height={56}
+                className="object-cover"
+              />
             </div>
-          </Link>
-        </div>
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium tracking-wide">
+
+            <span className="font-heading text-lg font-bold tracking-wider md:text-xl">
+              {data.siteName}
+            </span>
+          </div>
+        </Link>
+
+        {/* Desktop Nav */}
+        <div className="hidden items-center gap-8 text-sm font-medium tracking-wide md:flex">
           {data.navLinks.map((link) => (
             <Link
               key={link.label}
               href={link.href}
-              className={
+              className={`transition-colors hover:text-red-400 ${
                 activeSection === link.href.replace("#", "")
                   ? "text-red-500"
-                  : "transition-colors"
-              }
+                  : ""
+              }`}
             >
               {link.label}
             </Link>
           ))}
         </div>
-        <div className="flex items-center justify-center">
-          <div className="flex items-center justify-center">
-            <div className="relative h-13 w-13 overflow-hidden rounded-full">
-              <Image
-                src={user.Data.Image.String}
-                alt="profile"
-                fill
-                className="object-cover"
-              />
-            </div>
+
+        {/* Right Side */}
+        <div className="flex items-center gap-4">
+          {/* Profile */}
+          <div className="relative h-12 w-12 overflow-hidden rounded-full border border-white/20">
+            <Image
+              src={user.Data.Image.String}
+              alt="profile"
+              fill
+              className="object-cover"
+            />
           </div>
+
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="md:hidden"
+          >
+            {mobileOpen ? <X size={28} /> : <Menu size={28} />}
+          </button>
         </div>
       </div>
+
+
+      {mobileOpen && (
+        <div className="flex flex-col gap-4 px-4 pb-4 pt-2 md:hidden">
+          {data.navLinks.map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              onClick={() => setMobileOpen(false)}
+              className={`transition-colors hover:text-red-400 ${
+                activeSection === link.href.replace("#", "")
+                  ? "text-red-500"
+                  : ""
+              }`}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+      )}
     </nav>
   );
 };

@@ -114,7 +114,7 @@ const About = () => {
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 1944.2 6151.5"
-                        className="absolute inset-0 h-full w-full max-md:hidden"
+                        className="absolute inset-0 h-full w-full"
                         id="desktop-svg"
                         ref={svgRef}
                         preserveAspectRatio="none"

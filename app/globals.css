@@ -54,28 +54,10 @@ body {
 
 @layer components {
   main {
-    @apply w-full overflow-x-hidden;
+    @apply w-full ;
   }
 
-  nav {
-    @apply fixed z-50 w-full;
-
-    div {
-      @apply flex md:flex-row flex-col md:justify-between items-center gap-5 py-3 lg:px-0 px-5 container mx-auto;
-    }
-
-    p {
-      @apply text-3xl -mb-2;
-    }
-
-    a {
-      @apply cursor-pointer text-nowrap md:text-base text-sm;
-    }
-
-    ul {
-      @apply flex-center lg:gap-12 gap-7;
-    }
-  }
+ 
 }
 
 #hero {

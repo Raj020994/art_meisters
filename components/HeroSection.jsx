@@ -61,7 +61,7 @@ const Hero = () => {
                     </div>
                 </div>
 
-                <div className="absolute brush -bottom-15 right-[32%] pointer-events-none -z-10">
+                <div className="absolute brush md:-bottom-15 md:right-[32%] bottom-7 right-20 pointer-events-none -z-10">
                     <Image
                         src={"/brush.png"}
                         width={500}

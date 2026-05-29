@@ -12,7 +12,7 @@ export const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const user = {
-    Success: true,
+    Success: false,
     Data: {
       Image: {
         String: "/me.png",
@@ -26,9 +26,7 @@ export const Navbar = () => {
 
     window.addEventListener("scroll", handleScroll);
 
-    const sections = data.navLinks.map((link) =>
-      link.href.replace("#", ""),
-    );
+    const sections = data.navLinks.map((link) => link.href.replace("#", ""));
 
     const observerOptions = {
       root: null,
@@ -72,7 +70,6 @@ export const Navbar = () => {
       }`}
     >
       <div className="flex items-center justify-between px-4 py-3">
-
         <Link href="/">
           <div className="flex items-center gap-3">
             <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-white">
@@ -111,14 +108,26 @@ export const Navbar = () => {
         {/* Right Side */}
         <div className="flex items-center gap-4">
           {/* Profile */}
-          <div className="relative h-12 w-12 overflow-hidden rounded-full border border-white/20">
-            <Image
-              src={user.Data.Image.String}
-              alt="profile"
-              fill
-              className="object-cover"
-            />
-          </div>
+          {user && user.Success ? (
+            <>
+              <div className="relative h-12 w-12 overflow-hidden rounded-full border border-white/20">
+                <Image
+                  src={user.Data.Image.String}
+                  alt="profile"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              <Link href={"/sign-in"}>
+                <button className="rounded-md bg-red-900 px-4 py-1 text-lg">
+                  Login
+                </button>
+              </Link>
+            </>
+          )}
 
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -128,7 +137,6 @@ export const Navbar = () => {
           </button>
         </div>
       </div>
-
 
       {mobileOpen && (
         <div className="flex flex-col gap-4 px-4 pb-4 pt-2 md:hidden">
@@ -151,3 +159,4 @@ export const Navbar = () => {
     </nav>
   );
 };
+

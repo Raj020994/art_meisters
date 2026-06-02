@@ -1,6 +1,6 @@
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
-
+import { Providers } from "@/components/Providers";
 
 export const metadata = {
   title: "Art Meisters | Art Society",
@@ -16,10 +16,12 @@ export default function RootLayout({ children }) {
       data-scroll-behavior="smooth"
       >
       <body className="min-h-full bg-black flex flex-col font-sans selection:bg-accent ">
-        <Navbar />
-        <main>
-        {children}
-        </main>
+        <Providers>
+          <Navbar />
+          <main>
+            {children}
+          </main>
+        </Providers>
       </body>
     </html>
   );

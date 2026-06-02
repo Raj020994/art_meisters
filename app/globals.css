@@ -15,6 +15,22 @@
   --font-serif: "DM Serif Text", serif;
 }
 
+
+::-webkit-scrollbar {
+  display: none;
+}
+* {
+  scrollbar-width: none;
+
+}
+
+html {
+
+  -ms-overflow-style: none;
+
+  scrollbar-width: none;
+
+}
 html,
 body {
   width: 100%;

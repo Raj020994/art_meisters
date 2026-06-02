@@ -55,10 +55,10 @@ export const authOptions = {
             }
 
             return {
-              id: resJson.Data.id || "1",
+              id: resJson.Data.id,
               name: resJson.Data.name,
               email: resJson.Data.email,
-              image: resJson.Data.avatar || "/me.png",
+              image: resJson.Data.image || null,
             };
           } else {
             // Throw custom error message from backend

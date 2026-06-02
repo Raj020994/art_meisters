@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import data from "@/data.json";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, X, LogOut, User as UserIcon } from "lucide-react";
+import { Menu, X, LogOut , User2, UserIcon } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 
 export const Navbar = () => {
@@ -15,7 +15,8 @@ export const Navbar = () => {
 
   const { data: session, status } = useSession();
   const user = session?.user;
-
+  console.log(user);
+  
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
 
@@ -109,12 +110,14 @@ export const Navbar = () => {
                 className="flex items-center gap-2 focus:outline-none cursor-pointer"
               >
                 <div className="relative h-11 w-11 overflow-hidden rounded-full border border-white/20 hover:border-red-500 transition-colors">
-                  <Image
-                    src={user.image || "/me.png"}
+                {user.image?<> <Image
+                    src={user.image }
                     alt="profile"
                     fill
                     className="object-cover"
-                  />
+                  /></>:<> 
+                  <User2/>
+                  </>}
                 </div>
               </button>
 
@@ -126,7 +129,6 @@ export const Navbar = () => {
                   />
                   <div className="absolute right-0 mt-3 w-56 origin-top-right rounded-2xl border border-white/10 bg-neutral-950/90 backdrop-blur-xl p-2.5 shadow-2xl z-40 animate-in fade-in slide-in-from-top-2 duration-200">
                     <div className="px-3.5 py-2.5">
-                      <p className="text-xs text-white/40">Signed in as</p>
                       <p className="truncate text-sm font-semibold text-white">{user.name}</p>
                       <p className="truncate text-xs text-white/50 font-mono mt-0.5">{user.email}</p>
                     </div>
@@ -198,13 +200,17 @@ export const Navbar = () => {
           {status === "authenticated" && user ? (
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-3 px-1">
-                <div className="relative h-10 w-10 overflow-hidden rounded-full border border-white/20">
+                <div className="relative h-10 w-10 overflow-hidden flex justify-center items-center rounded-full border border-white/20">
+               {user.image?<>
                   <Image
-                    src={user.image || "/me.png"}
+                    src={user.image}
                     alt="profile"
                     fill
                     className="object-cover"
                   />
+               </>:<>
+               <User2 className="p-2"/>
+               </>}
                 </div>
                 <div>
                   <p className="truncate text-sm font-semibold text-white">{user.name}</p>

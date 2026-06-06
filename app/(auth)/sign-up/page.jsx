@@ -1,9 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
-import Link from "next/link";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
+import { useState } from "react";
 import { 
   User, 
   Mail, 
@@ -16,7 +13,7 @@ import {
 const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+  
 
   return (
     <div  className="relative py-20 px-4 overflow-hidden">

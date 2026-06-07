@@ -5,12 +5,13 @@ export const loginUser = (formData) =>
         body: JSON.stringify(formData),
     });
 
-export const signUpUser = (formData) =>
-    api("/auth/register", {
+export const signUpUser = (formData) =>{
+    console.log("hello from service")
+    api("/auth/users", {
         method: "POST",
         body: JSON.stringify(formData),
     });
-
+}
 export const getCurrUser = () =>
     api("/auth/me");
 

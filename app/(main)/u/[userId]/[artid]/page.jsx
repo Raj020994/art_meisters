@@ -7,9 +7,7 @@ import { ArtCard } from './_components/ArtCard';
 export default async function ArtPage({ params }) {
     const resolvedParams = await params;
     const artId = resolvedParams.artid || resolvedParams.artId;
-    
     const art = data.artworks.find((a) => String(a.id) === String(artId));
-    
     if (!art){
         return (
             <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 pt-32">

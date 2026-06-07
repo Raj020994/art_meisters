@@ -45,7 +45,7 @@ const SignInPage = () => {
     if (data?.Success && !isSigning) {
       toast.success("Signed in Successfully");
       reset();
-      router.push(`/u/${data.Data.ID}`);
+      router.push(`/u/${data.Data.id}`);
     } else {
       return;
     }

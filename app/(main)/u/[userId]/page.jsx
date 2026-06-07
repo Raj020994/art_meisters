@@ -1,14 +1,14 @@
-import React from "react";
+
 import data from "@/data.json";
 import Link from "next/link";
 import { MoveLeft, Palette, ExternalLink } from "lucide-react";
 import Image from "next/image";
 
-export default async function ArtistProfile({ params }) {
+import { usrById } from "@/service/auth";
 
+export default async function ArtistProfile({ params }) {
     const { userId } = await params;
-    console.log(userId)
-    const artist = data.artists.find((a) => a.id === userId);
+    const artist=await usrById(userId)
     const artistArtworks = data.artworks.filter((art) => art.userId === userId);
 
     if (!artist) {

@@ -103,7 +103,7 @@ export const Navbar = () => {
         <div className="flex items-center gap-4">
           {user ? (
             <>
-              <div className="relative h-12 w-12 overflow-hidden rounded-full border border-white/20">
+              <div className="relative h-12 w-12 overflow-hidden flex items-center justify-center rounded-full border border-white/20">
               {user.Data.Image.String?
               <>
                <Image
@@ -113,7 +113,7 @@ export const Navbar = () => {
                   className="object-cover"
                 /></>
               :<>
-              <User className="w-full h-full text-white"/>
+              <User className=" text-white"/>
               </>}
                
               </div>

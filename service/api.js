@@ -10,8 +10,9 @@ export async function api(endpoint, options = {}) {
     ...options,
   });
   const data = await res.json();
+  console.log(data)
   if (!res.ok) {
-    throw new Error(data.message || "Something went wrong");
+    throw new Error(data.Data.Error || "Something went wrong");
   }
   return data;
 }

@@ -18,3 +18,6 @@ export const logOutUser = () => {
     method: "POST",
   });
 };
+export const usrById=(id)=>{
+  return api(`/auth/users/${id}`);
+}

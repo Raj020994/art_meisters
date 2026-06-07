@@ -1,3 +1,4 @@
+import { Toaster } from "sonner";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 
@@ -16,6 +17,7 @@ export default function RootLayout({ children }) {
       data-scroll-behavior="smooth"
       >
       <body className="min-h-full bg-black flex flex-col font-sans selection:bg-accent ">
+          <Toaster richColors/>
         <Navbar />
         <main>
         {children}

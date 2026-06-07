@@ -11,8 +11,9 @@ const useFetch = (cb) => {
     setErrors(null);
     try {
       const response = await cb(...args);
+      console.log("res", response);
       setData(response);
-      return response; // optional: in case you want to handle it outside too
+      return response;
     } catch (error) {
       setErrors(error);
       toast.error(error.message || "An error occurred");
@@ -25,3 +26,4 @@ const useFetch = (cb) => {
 };
 
 export default useFetch;
+

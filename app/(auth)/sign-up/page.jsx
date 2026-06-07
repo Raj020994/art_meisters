@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 
 const SignUpPage = () => {
   const router = useRouter();
+ 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const {
@@ -32,18 +33,16 @@ const SignUpPage = () => {
   const {
     fn: signingUpUser,
     loading: isSigning,
-    res: data,
+    data: data,
   } = useFetch(signUpUser);
   const onsubmit = async (data) => {
-    console.log("submitted", data);
-
     await signingUpUser(data);
   };
   useEffect(() => {
-    if (data?.Succes && !isSigning) {
-      toast.success(data.message);
+    if (data?.Success && !isSigning) {
+      toast.success("Account Created Successfully");
       reset();
-      router.push(`u/${data.message.id}`);
+      router.push(`/u/${data.Data.ID}`);
     } else {
       return;
     }
@@ -64,11 +63,7 @@ const SignUpPage = () => {
           </p>
         </div>
 
-        <form
-          onSubmit={handleSubmit(onsubmit, (err) =>
-            console.log("validation errors", err),
-          )}
-        >
+        <form onSubmit={handleSubmit(onsubmit)}>
           {/* Full Name */}
           <div className="animate-item space-y-1.5">
             <label className="text-xs font-medium text-white/80 ml-1">
@@ -83,7 +78,7 @@ const SignUpPage = () => {
                 className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 outline-none focus:border-red-800/50 focus:bg-white/10 transition-all text-sm text-white placeholder:text-white/20"
                 required
               />
-              
+              {errors?.name && <p className="text-red-500">{errors.name.message}</p>}
             </div>
           </div>
 
@@ -101,6 +96,7 @@ const SignUpPage = () => {
                 className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 outline-none focus:border-red-800/50 focus:bg-white/10 transition-all text-sm text-white placeholder:text-white/20"
                 required
               />
+              {errors?.email && <p className="text-red-500">{errors.email.message}</p>}
             </div>
           </div>
 
@@ -118,6 +114,7 @@ const SignUpPage = () => {
                 className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-11 outline-none focus:border-red-800/50 focus:bg-white/10 transition-all text-sm text-white placeholder:text-white/20"
                 required
               />
+              {errors?.password && <p className="text-red-500">{errors.password.message}</p>}
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
@@ -146,6 +143,7 @@ const SignUpPage = () => {
                 className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-11 outline-none focus:border-red-800/50 focus:bg-white/10 transition-all text-sm text-white placeholder:text-white/20"
                 required
               />
+              {errors?.confirmPassword && <p className="text-red-500">{errors.confirmPassword.message}</p>}
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}

@@ -4,31 +4,21 @@ import React, { useEffect, useState } from "react";
 import data from "@/data.json";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, User, X } from "lucide-react";
+import useFetch from "@/hooks/useFetch";
+import { getCurrUser } from "@/service/auth";
 
 export const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  const user = {
-    Success: true,
-    Data: {
-      Image: {
-        String: "/me.png",
-        Valid: true,
-      },
-    },
-  };
-
+  const { data: user, fn:refetchUser,loading: userLoading } = useFetch(getCurrUser);
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
 
     window.addEventListener("scroll", handleScroll);
 
-    const sections = data.navLinks.map((link) =>
-      link.href.replace("#", ""),
-    );
+    const sections = data.navLinks.map((link) => link.href.replace("#", ""));
 
     const observerOptions = {
       root: null,
@@ -62,7 +52,9 @@ export const Navbar = () => {
       observer.disconnect();
     };
   }, []);
-
+  useEffect(() => {
+    refetchUser();
+  }, []);
   return (
     <nav
       className={`fixed top-4 left-1/2 z-50 w-[95%] mx-auto -translate-x-1/2 transition-all duration-300 ${
@@ -72,7 +64,6 @@ export const Navbar = () => {
       }`}
     >
       <div className="flex items-center justify-between px-4 py-3">
-
         <Link href="/">
           <div className="flex items-center gap-3">
             <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-white">
@@ -110,25 +101,41 @@ export const Navbar = () => {
 
         {/* Right Side */}
         <div className="flex items-center gap-4">
-          {/* Profile */}
-          <div className="relative h-12 w-12 overflow-hidden rounded-full border border-white/20">
-            <Image
-              src={user.Data.Image.String}
-              alt="profile"
-              fill
-              className="object-cover"
-            />
-          </div>
+          {user ? (
+            <>
+              <div className="relative h-12 w-12 overflow-hidden rounded-full border border-white/20">
+              {user.Data.Image.String?
+              <>
+               <Image
+                  src={user.Data.Image.String}
+                  alt="profile"
+                  fill
+                  className="object-cover"
+                /></>
+              :<>
+              <User className="w-full h-full text-white"/>
+              </>}
+               
+              </div>
 
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden"
-          >
-            {mobileOpen ? <X size={28} /> : <Menu size={28} />}
-          </button>
+              <button
+                onClick={() => setMobileOpen(!mobileOpen)}
+                className="md:hidden"
+              >
+                {mobileOpen ? <X size={28} /> : <Menu size={28} />}
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href={"/sign-in"}>
+                <button className="border px-3 py-2 rounded-md bg-red-900">
+                  Login
+                </button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
-
 
       {mobileOpen && (
         <div className="flex flex-col gap-4 px-4 pb-4 pt-2 md:hidden">

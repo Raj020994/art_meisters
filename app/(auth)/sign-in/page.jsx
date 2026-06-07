@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { 
   Mail, 
@@ -9,10 +9,47 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
+import { loginSchema } from "@/schema/user";
+import { loginUser } from "@/service/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import useFetch from "@/hooks/useFetch";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const SignInPage = () => {
+  const router=useRouter()
   const [showPassword, setShowPassword] = useState(false);
+  const {
+    register,
+    reset,
+    formState: { errors },
 
+    handleSubmit,
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+  const {
+    fn: signingUpUser,
+    loading: isSigning,
+    data: data,
+  } = useFetch(loginUser);
+  const onsubmit = async (data) => {
+    await signingUpUser(data);
+  };
+  useEffect(() => {
+    if (data?.Success && !isSigning) {
+      toast.success("Signed in Successfully");
+      reset();
+      router.push(`/u/${data.Data.ID}`);
+    } else {
+      return;
+    }
+  }, [data, isSigning]);
   return (
     <div className="relative py-20 px-4 overflow-hidden">
       <div className="absolute top-1/4 -left-20 w-64 h-64 bg-red-800/10 rounded-full blur-3xl animate-pulse" />
@@ -28,7 +65,7 @@ const SignInPage = () => {
           </p>
         </div>
 
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit(onsubmit)}>
           {/* Email */}
           <div className="animate-item space-y-1.5">
             <label className="text-xs font-medium text-white/80 ml-1">Email Address</label>
@@ -37,9 +74,11 @@ const SignInPage = () => {
               <input
                 type="email"
                 placeholder="john@example.com"
+ {...register("email")}
                 className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 outline-none focus:border-red-800/50 focus:bg-white/10 transition-all text-sm text-white placeholder:text-white/20"
                 required
               />
+              {errors?.email && <p className="text-red-500">{errors.email.message}</p>}
             </div>
           </div>
 
@@ -58,7 +97,9 @@ const SignInPage = () => {
                 placeholder="••••••••"
                 className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-11 outline-none focus:border-red-800/50 focus:bg-white/10 transition-all text-sm text-white placeholder:text-white/20"
                 required
+                 {...register("password")}
               />
+              {errors?.password && <p className="text-red-500">{errors.password.message}</p>}
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}

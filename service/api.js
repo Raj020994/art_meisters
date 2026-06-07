@@ -2,6 +2,7 @@ const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export async function api(endpoint, options = {}) {
   const res = await fetch(`${backendUrl}${endpoint}`, {
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
       ...options.headers,

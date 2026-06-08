@@ -27,8 +27,6 @@ if (!data) return;
     setartist(data.Data.User);
     setartistArtworks(data.Data.Art);
     }
-    
-
 }, [data]);
 if (fetchingData) {
     return (

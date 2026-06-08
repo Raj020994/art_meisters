@@ -4,15 +4,17 @@ import React, { useEffect, useState } from "react";
 import data from "@/data.json";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, User, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import useFetch from "@/hooks/useFetch";
 import { getCurrUser } from "@/service/auth";
+import UserMenu from "./UserMenu";
 
 export const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
+  const [user,setUser]=useState(null);
   const [activeSection, setActiveSection] = useState("hero");
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { data: user, fn:refetchUser,loading: userLoading } = useFetch(getCurrUser);
+  const { data: res , fn:refetchUser,loading: userLoading } = useFetch(getCurrUser);
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
 
@@ -54,7 +56,12 @@ export const Navbar = () => {
   }, []);
   useEffect(() => {
     refetchUser();
-  }, [userLoading]);
+    if(res?.Success){
+        setUser(res?.Data);  
+    }else{
+      setUser(null)
+    }  
+  }, [res]);
   return (
     <nav
       className={`fixed top-4 left-1/2 z-50 w-[95%] mx-auto -translate-x-1/2 transition-all duration-300 ${
@@ -104,17 +111,7 @@ export const Navbar = () => {
           {user ? (
             <>
               <div className="relative h-12 w-12 overflow-hidden flex items-center justify-center rounded-full border border-white/20">
-              {user.Data.Image.String?
-              <>
-               <Image
-                  src={user.Data.Image.String}
-                  alt="profile"
-                  fill
-                  className="object-cover"
-                /></>
-              :<>
-              <User className=" text-white"/>
-              </>}
+              <UserMenu user={user}/>
                
               </div>
 

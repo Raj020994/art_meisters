@@ -31,23 +31,14 @@ const UserMenu = ({ user }) => {
 
     {user?.Data?.Image?.String ? (
       <Image
-
         src={user?.Data?.Image?.String}
-
         alt="profile"
-
         fill
-
         className="object-cover"
-
       />
-
     ) : (
-
       <User className="text-white" />
-
     )}
-
   </button>
 
 </DropdownMenuTrigger>
@@ -58,7 +49,7 @@ const UserMenu = ({ user }) => {
             My Profile
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleLogOut}>Log Out</DropdownMenuItem>
+          <DropdownMenuItem onClick={handleLogOut} className={"hover:text-red-950 text-red-800"}>Log Out</DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

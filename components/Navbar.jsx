@@ -8,10 +8,13 @@ import { Menu, X } from "lucide-react";
 import useFetch from "@/hooks/useFetch";
 import { getCurrUser } from "@/service/auth";
 import UserMenu from "./UserMenu";
+import { useAuthStore } from "@/store/user";
 
 export const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
-  const [user,setUser]=useState(null);
+  const user=useAuthStore((state)=>state.user);
+  const setUser=useAuthStore((state)=>state.setUser);
+  const clearUser=useAuthStore((state)=>state.clearUser);
   const [activeSection, setActiveSection] = useState("hero");
   const [mobileOpen, setMobileOpen] = useState(false);
   const { data: res , fn:refetchUser,loading: userLoading } = useFetch(getCurrUser);
@@ -59,9 +62,9 @@ export const Navbar = () => {
     if(res?.Success){
         setUser(res?.Data);  
     }else{
-      setUser(null)
+      clearUser()
     }  
-  }, [res]);
+  }, [res, setUser, clearUser]);
   return (
     <nav
       className={`fixed top-4 left-1/2 z-50 w-[95%] mx-auto -translate-x-1/2 transition-all duration-300 ${

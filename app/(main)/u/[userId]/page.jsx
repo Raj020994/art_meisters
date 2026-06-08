@@ -1,16 +1,42 @@
-
-import data from "@/data.json";
+"use client"
 import Link from "next/link";
 import { MoveLeft, Palette, ExternalLink } from "lucide-react";
 import Image from "next/image";
+import { useParams } from "next/navigation";
+import useFetch from "@/hooks/useFetch";
+import { useEffect, useState } from "react";
+import { getArtistProfile } from "@/service/art";
+import { toast } from "sonner";
+export default function ArtistProfile() {
+const params=useParams()
+const [artist, setartist] = useState(null)
+const [artistArtworks, setartistArtworks] = useState(null)
 
-import { usrById } from "@/service/auth";
+const usrId=params.userId;
+const {data,fn:getData,loading:fetchingData}=useFetch(getArtistProfile)
+useEffect(()=>{
+    getData(usrId)
+},[usrId])
+useEffect(() => {
+    if (!fetchingData){
+if (!data) return;
+    if (!data.Success) {
+        toast.error(data.message);
+        return;
+    }
+    setartist(data.Data.User);
+    setartistArtworks(data.Data.Art);
+    }
+    
 
-export default async function ArtistProfile({ params }) {
-    const { userId } = await params;
-    const artist=await usrById(userId)
-    const artistArtworks = data.artworks.filter((art) => art.userId === userId);
-
+}, [data]);
+if (fetchingData) {
+    return (
+        <div className="min-h-screen flex items-center justify-center">
+            Loading...
+        </div>
+    );
+}
     if (!artist) {
         return (
             <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6">
@@ -27,7 +53,6 @@ export default async function ArtistProfile({ params }) {
             </div>
         );
     }
-
     return (
         <main className="min-h-screen bg-black text-white selection:bg-accent pb-20">
             {/* Hero Header */}
@@ -150,7 +175,7 @@ export default async function ArtistProfile({ params }) {
                     </div>
 
                     {/* Artworks Gallery */}
-                    {artistArtworks.length > 0 && (
+                    {artistArtworks?.length > 0 && (
                         <div className="space-y-8">
                             <div className="flex justify-between items-center">
                                 <h2 className="text-3xl font-bold">Featured Works</h2>
@@ -170,7 +195,7 @@ export default async function ArtistProfile({ params }) {
                                         <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-6">
                                             <h4 className="text-xl font-bold text-white mb-1">{art.title}</h4>
                                             <p className="text-gray-300 text-sm line-clamp-2">{art.description}</p>
-                                            <a href={`/u/${userId}/${art.id}`}>
+                                            <a href={`/u/${usrId}/${art.id}`}>
                                             <button className="mt-4 text-accent text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:opacity-80 transition-opacity">
                                                 View Details <ExternalLink size={12} />
                                             </button>

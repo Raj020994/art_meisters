@@ -1,7 +1,7 @@
 import React from "react";
 
 const page = () => {
-  let isEdit = true;
+  let isEdit = false;
   if (isEdit) {
     return <div>Edit</div>;
   }

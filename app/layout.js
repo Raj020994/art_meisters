@@ -18,7 +18,6 @@ export default function RootLayout({ children }) {
       >
       <body className="min-h-full bg-black flex flex-col font-sans selection:bg-accent ">
           <Toaster richColors/>
-        <Navbar />
         <main>
         {children}
         </main>

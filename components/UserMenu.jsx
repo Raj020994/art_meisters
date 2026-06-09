@@ -10,14 +10,14 @@ import useFetch from "@/hooks/useFetch";
 import { logOutUser } from "@/service/auth";
 import Image from "next/image";
 import Link from "next/link";
-
+import { useRouter } from "next/navigation";
 const UserMenu = ({ user }) => {
+  const router=useRouter();
     const {res,fn:logginOut,loading}= useFetch(logOutUser);
     const handleLogOut=async()=>{
         await logginOut();
           if (res?.Success) {
-        router.push("/");
-        router.refresh();
+                router.push(`/u/${data.Data.id}`);
     }
     }
   return (

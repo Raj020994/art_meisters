@@ -65,6 +65,8 @@ export const Navbar = () => {
       clearUser()
     }  
   }, [res, setUser, clearUser]);
+
+  
   return (
     <nav
       className={`fixed top-4 left-1/2 z-50 w-[95%] mx-auto -translate-x-1/2 transition-all duration-300 ${

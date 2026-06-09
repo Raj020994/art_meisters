@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import useFetch from "@/hooks/useFetch";
 import { logOutUser } from "@/service/auth";
-import { User } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 const UserMenu = ({ user }) => {
@@ -16,36 +16,29 @@ const UserMenu = ({ user }) => {
     const handleLogOut=async()=>{
         await logginOut();
           if (res?.Success) {
-
         router.push("/");
-
         router.refresh();
-
     }
     }
   return (
     <DropdownMenu>
    <DropdownMenuTrigger asChild>
 
-  <button className="relative h-10 w-10 rounded-full overflow-hidden">
-
-    {user?.Data?.Image?.String ? (
+  <button className="flex items-center justify-center h-10 w-10 rounded-full overflow-hidden">
       <Image
-        src={user?.Data?.Image?.String}
+        src={user?.Data?.Image?.String||"/default.jpeg"}
         alt="profile"
         fill
         className="object-cover"
       />
-    ) : (
-      <User className="text-white" />
-    )}
+    
   </button>
 
 </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href={`/u/${user?.Data?.ID}`}>
+            <Link href={`/u/${user?.ID}`}>
             My Profile
             </Link>
           </DropdownMenuItem>

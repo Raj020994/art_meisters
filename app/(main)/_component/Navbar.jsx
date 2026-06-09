@@ -60,13 +60,13 @@ export const Navbar = () => {
         </Link>
 
         {/* Right Side */}
-  <div className="flex items-center gap-4">
+<div className="flex items-center gap-4">
   {user ? (
     <>
       <Link href={"/art/create"}>
         <button className="border px-3 py-2 bg-black/20 rounded-full text-white flex items-center gap-2 hover:bg-black/10">
-          <Plus size={20}/>
-          <span className="text-md font-semibold">create</span>
+          <Plus size={20} />
+          <span className="text-sm font-semibold">create</span>
         </button>
       </Link>
 
@@ -81,13 +81,6 @@ export const Navbar = () => {
       <div className="relative h-12 w-12 overflow-hidden flex items-center justify-center rounded-full border border-white/20">
         <UserMenu user={user} />
       </div>
-
-      <button
-        onClick={() => setMobileOpen(!mobileOpen)}
-        className="md:hidden"
-      >
-        {mobileOpen ? <X size={28} /> : <Menu size={28} />}
-      </button>
     </>
   ) : (
     <>
@@ -96,13 +89,6 @@ export const Navbar = () => {
           Login
         </button>
       </Link>
-
-      <button
-        onClick={() => setMobileOpen(!mobileOpen)}
-        className="md:hidden"
-      >
-        {mobileOpen ? <X size={28} /> : <Menu size={28} />}
-      </button>
     </>
   )}
 </div>

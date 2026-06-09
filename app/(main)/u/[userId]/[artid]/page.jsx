@@ -66,7 +66,7 @@ export default async function ArtPage({ params }) {
                         </p>
                     </div>
 
-                    {/* Artist Info Bento */}
+
                     <div className='glass rounded-3xl p-8 border border-white/5 flex flex-col justify-between h-full group'>
                         <div>
                             <div className="flex items-center gap-4 mb-6">

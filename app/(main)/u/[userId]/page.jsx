@@ -8,18 +8,15 @@ import { useEffect, useState } from "react";
 import { getAllArtistArt, getArtistProfile } from "@/service/art";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/user";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 export default function ArtistProfile() {
   const params = useParams();
   const [artist, setartist] = useState(null);
   const [artistArtworks, setartistArtworks] = useState(null);
   const user = useAuthStore((state) => state.user);
   let isUserProfile = false;
-
   if (user && user.ID == params.userId) {
     isUserProfile = true;
   }
-
   const usrId = params.userId;
   const {
     data,

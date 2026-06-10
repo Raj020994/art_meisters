@@ -1,7 +1,8 @@
 import { api } from "./api";
 
-export const createArt=()=>{
-
+export const createArt=async(data)=>{
+  console.log("data",data)
+  return 
 }
 export const getAllArtistArt=(id)=>{
   return api(`/art/u/${id}`);

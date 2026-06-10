@@ -4,14 +4,19 @@ export const loginUser = (formData) =>
     method: "POST",
     body: JSON.stringify(formData),
   });
+  
+  export const signUpUser = (formData) => {
+    return api("/auth/users", {
+      method: "POST",
+      body: JSON.stringify(formData),
+    });
+  };
 
-export const signUpUser = (formData) => {
-  return api("/auth/users", {
-    method: "POST",
-    body: JSON.stringify(formData),
-  });
-};
-export const getCurrUser = () => api("/auth/me");
+  export const getCurrUser = () =>{
+    console.log("Hello");
+    return api("/auth/me");
+    
+  } 
 
 export const logOutUser = () => {
   api("/auth/logout", {
@@ -19,5 +24,6 @@ export const logOutUser = () => {
   });
 };
 export const usrById=(id)=>{
+  
   return api(`/auth/users/${id}`);
 }

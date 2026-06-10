@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import data from "@/data.json";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,53 +18,24 @@ export const Navbar = () => {
   const [activeSection, setActiveSection] = useState("hero");
   const [mobileOpen, setMobileOpen] = useState(false);
   const { data: res , fn:refetchUser,loading: userLoading } = useFetch(getCurrUser);
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
+const fetched = useRef(false);
 
-    window.addEventListener("scroll", handleScroll);
+useEffect(() => {
+  if (fetched.current) return;
+  fetched.current = true;
+  console.log("hello")
+  refetchUser();
+}, []); // fetch once on mount
 
-    const sections = data.navLinks.map((link) => link.href.replace("#", ""));
-
-    const observerOptions = {
-      root: null,
-      rootMargin: "-20% 0px -70% 0px",
-      threshold: 0,
-    };
-
-    const observerCallback = (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id);
-        }
-      });
-    };
-
-    const observer = new IntersectionObserver(
-      observerCallback,
-      observerOptions,
-    );
-
-    sections.forEach((id) => {
-      const element = document.getElementById(id);
-
-      if (element) {
-        observer.observe(element);
-      }
-    });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      observer.disconnect();
-    };
-  }, []);
-  useEffect(() => {
-    refetchUser();
-    if(res?.Success){
-        setUser(res?.Data);  
-    }else{
-      clearUser()
-    }  
-  }, [res, setUser, clearUser]);
+useEffect(() => {
+  if (!res) return;
+  console.log("hello")
+  if (res.Success) {
+    setUser(res.Data);
+  } else {
+    clearUser();
+  }
+}, [res]);
 
   
   return (

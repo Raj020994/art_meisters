@@ -21,16 +21,27 @@ export const Navbar = () => {
     loading: userLoading,
   } = useFetch(getCurrUser);
 
-  useEffect(() => {
+useEffect(() => {
 
-      refetchUser();
-      if (res?.Success) {
-        setUser(res?.Data);
-      } else {
-        clearUser();
-      }
+  const fetchUser = async () => {
 
-  }, [res, setUser, clearUser]);
+    const result = await refetchUser();
+
+    if (result?.Success) {
+
+      setUser(result.Data);
+
+    } else {
+
+      clearUser();
+
+    }
+
+  };
+
+  fetchUser();
+
+}, []);
 
   return (
     <nav

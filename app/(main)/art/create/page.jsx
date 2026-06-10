@@ -18,8 +18,12 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import useFetch from "@/hooks/useFetch";
+import { createArt } from "@/service/art";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { artworkSchema } from "@/schema/art";
 
 const page = () => {
   const categories = [
@@ -29,23 +33,27 @@ const page = () => {
     { value: "painting", label: "Painting" },
     { value: "3d", label: "3D Art" },
   ];
-  const {
-    register,
-    reset,
-    formState: { errors },
-    handleSubmit,
-  } = useForm({
-    resolver: zodResolver(artworkSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      categories: [],
-      imageUrl: "",
-    },
-  });
+const {
+
+  register,
+
+  reset,
+
+  formState: { errors },
+
+  handleSubmit,
+
+} = useForm({
+
+  resolver: zodResolver(artworkSchema),
+
+});
+
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [preview, setPreview] = useState(null);
   const [file, setFile] = useState(null);
+
+  const {fn:createArtFunc,data:createdArt,loading:uploadingArt}=useFetch(createArt)
   const inputRef = useRef(null);
   const toggleCategory = (value) => {
     setSelectedCategories((prev) =>
@@ -54,7 +62,6 @@ const page = () => {
         : [...prev, value],
     );
   };
-  const {} = useForm();
   const handleChange = (e) => {
     const f = e.target.files?.[0];
     if (!f) return;
@@ -68,7 +75,30 @@ const page = () => {
     setFile(null);
     if (inputRef.current) inputRef.current.value = "";
   };
+  const handleOnSubmit = async (data) => {
+    console.log("Heloo")
+    try{
+ 
 
+        const url=`${process.env.NEXT_PUBLIC_BASE_URL}/default.jpeg`;
+        const formdata=new FormData();
+        formdata.append("title",data.title);
+        formdata.append("description",data.description);
+        formdata.append("tags",selectedCategories.join(","));
+        formdata.append("imageFile",url);
+        await createArtFunc(formdata);
+
+    }catch(err){
+      console.log(err)
+    }
+  };
+  useEffect(() => {
+    if (createdArt) {
+      toast.success(createdArt.message);
+      reset();
+    }
+  }, [createdArt])
+  
   let isEdit = false;
   if (isEdit) return <div>Edit</div>;
 
@@ -88,7 +118,21 @@ const page = () => {
             </p>
           </div>
 
-          <form className="space-y-5">
+        <form
+
+  onSubmit={handleSubmit(
+
+    handleOnSubmit,
+
+    (errors) => {
+
+      console.log("Validation errors:", errors);
+
+    }
+
+  )}
+
+>
             {/* Title */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-white/80">
@@ -97,8 +141,14 @@ const page = () => {
               <input
                 type="text"
                 placeholder="Sunset Dreams"
+                {...register("title")}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-red-800/50 focus:bg-white/10 transition-all text-white placeholder:text-white/20"
               />
+              {errors.title?.message && (
+                <p className="text-red-800/50 text-sm">
+                  {errors.title?.message}
+                </p>
+              )}
             </div>
 
             {/* Description */}
@@ -109,8 +159,14 @@ const page = () => {
               <textarea
                 rows={5}
                 placeholder="Tell viewers about your artwork..."
+                {...register("description")}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-red-800/50 focus:bg-white/10 transition-all text-white placeholder:text-white/20 resize-none"
               />
+              {errors.description?.message && (
+                <p className="text-red-800/50 text-sm">
+                  {errors.description?.message}
+                </p>
+              )}
             </div>
 
             {/* Category */}

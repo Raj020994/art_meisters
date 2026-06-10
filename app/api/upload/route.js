@@ -38,7 +38,7 @@ export async function POST(req) {
     console.error(error);
 
     return Response.json(
-      { error: "Upload failed" },
+      { success: false, data: null, error: "Upload failed" },
       { status: 500 }
     );
   }

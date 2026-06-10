@@ -13,10 +13,6 @@ export default function ArtistProfile() {
   const [artist, setartist] = useState(null);
   const [artistArtworks, setartistArtworks] = useState(null);
   const user = useAuthStore((state) => state.user);
-  let isUserProfile = false;
-  if (user && user.ID == params.userId) {
-    isUserProfile = true;
-  }
   const usrId = params.userId;
   const {
     data,
@@ -24,18 +20,22 @@ export default function ArtistProfile() {
     loading: fetchingData,
   } = useFetch(getArtistProfile);
   const {
-    arts,
+    data:arts,
     fn: getArt,
     loading: fetchingArtworks,
   } = useFetch(getAllArtistArt);
-  useEffect(() => {
-    if (!isUserProfile) {
-      getData(usrId);
-    } else {
-      setartist(user);
-      getArt(usrId);
-    }
-  }, [usrId]);
+const isUserProfile = user?.ID === usrId;
+
+useEffect(() => {
+  if (!usrId) return;
+
+  if (isUserProfile) {
+    setartist(user);
+    getArt(usrId);
+  } else {
+    getData(usrId);
+  }
+}, [usrId, isUserProfile, user]);
   useEffect(() => {
     if (!isUserProfile) {
       if (!fetchingData) {
@@ -50,14 +50,19 @@ export default function ArtistProfile() {
     } else {
       if (!fetchingArtworks) {
         if (!arts) return;
+        console.log("Art", arts);
         if (!arts.Success) {
           toast.error(arts.message);
           return;
         }
+
         setartistArtworks(arts.Data);
       }
     }
   }, [data, arts]);
+useEffect(() => {
+  console.log("artistArtworks updated:", artistArtworks);
+}, [artistArtworks]);
   if (fetchingData || fetchingArtworks) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -220,25 +225,25 @@ export default function ArtistProfile() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {artistArtworks?.map((art) => (
                 <div
-                  key={art.id}
+                  key={art.ID}
                   className="group relative aspect-square rounded-2xl overflow-hidden glass border border-white/5"
                 >
                   <img
-                    src={art.url}
-                    alt={art.title}
+                    src={art.Image}
+                    alt={art.Name}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
 
                   <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-6">
                     <h4 className="text-xl font-bold text-white mb-1">
-                      {art.title}
+                      {art.Name}
                     </h4>
 
                     <p className="text-gray-300 text-sm line-clamp-2">
-                      {art.description}
+                      {art.Description?.String}
                     </p>
 
-                    <Link href={`/u/${usrId}/${art.id}`}>
+                    <Link href={`/u/${usrId}/${art.ID}`}>
                       <button className="mt-4 text-accent text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:opacity-80 transition-opacity">
                         View Details <ExternalLink size={12} />
                       </button>
@@ -246,19 +251,20 @@ export default function ArtistProfile() {
                   </div>
                 </div>
               ))}
-               {isUserProfile && (
-              <>
-                <div className="flex items-center justify-center">
-                  <Link href={"/art/create"} className="flex items-center gap-2 justify-center rounded-full h-12 w-30 border bg-white font-semibold text-black text-center">
-                    <Upload size={24} />
-                    Upload
-                  </Link>
-                </div>
-              </>
-            )}
+              {isUserProfile && (
+                <>
+                  <div className="flex items-center justify-center">
+                    <Link
+                      href={"/art/create"}
+                      className="flex items-center gap-2 justify-center rounded-full h-12 w-30 border bg-white font-semibold text-black text-center"
+                    >
+                      <Upload size={24} />
+                      Upload
+                    </Link>
+                  </div>
+                </>
+              )}
             </div>
-
-           
           </div>
         </div>
       </section>

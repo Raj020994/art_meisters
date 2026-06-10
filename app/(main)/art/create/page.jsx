@@ -24,6 +24,7 @@ import useFetch from "@/hooks/useFetch";
 import { createArt } from "@/service/art";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { artworkSchema } from "@/schema/art";
+import { toast } from "sonner";
 
 const page = () => {
   const categories = [
@@ -33,27 +34,27 @@ const page = () => {
     { value: "painting", label: "Painting" },
     { value: "3d", label: "3D Art" },
   ];
-const {
+  const {
+    register,
 
-  register,
+    reset,
 
-  reset,
+    formState: { errors },
 
-  formState: { errors },
-
-  handleSubmit,
-
-} = useForm({
-
-  resolver: zodResolver(artworkSchema),
-
-});
+    handleSubmit,
+  } = useForm({
+    resolver: zodResolver(artworkSchema),
+  });
 
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [preview, setPreview] = useState(null);
   const [file, setFile] = useState(null);
 
-  const {fn:createArtFunc,data:createdArt,loading:uploadingArt}=useFetch(createArt)
+  const {
+    fn: createArtFunc,
+    data: createdArt,
+    loading: uploadingArt,
+  } = useFetch(createArt);
   const inputRef = useRef(null);
   const toggleCategory = (value) => {
     setSelectedCategories((prev) =>
@@ -76,20 +77,23 @@ const {
     if (inputRef.current) inputRef.current.value = "";
   };
   const handleOnSubmit = async (data) => {
-    console.log("Heloo")
-    try{
- 
+    try {
+      const url = `${process.env.NEXT_PUBLIC_BASE_URL}/default.jpeg`;
+      const createData = new FormData();
 
-        const url=`${process.env.NEXT_PUBLIC_BASE_URL}/default.jpeg`;
-        const formdata=new FormData();
-        formdata.append("title",data.title);
-        formdata.append("description",data.description);
-        formdata.append("tags",selectedCategories.join(","));
-        formdata.append("imageFile",url);
-        await createArtFunc(formdata);
+      createData.append("name", data.title);
 
-    }catch(err){
-      console.log(err)
+      createData.append("description", data.description);
+
+      createData.append("url", url);
+
+      selectedCategories.forEach((tag) => {
+        createData.append("tags", tag);
+      });
+
+      createArtFunc(createData);
+    } catch (err) {
+      console.log(err);
     }
   };
   useEffect(() => {
@@ -97,8 +101,8 @@ const {
       toast.success(createdArt.message);
       reset();
     }
-  }, [createdArt])
-  
+  }, [createdArt]);
+
   let isEdit = false;
   if (isEdit) return <div>Edit</div>;
 
@@ -118,21 +122,15 @@ const {
             </p>
           </div>
 
-        <form
+          <form
+            onSubmit={handleSubmit(
+              handleOnSubmit,
 
-  onSubmit={handleSubmit(
-
-    handleOnSubmit,
-
-    (errors) => {
-
-      console.log("Validation errors:", errors);
-
-    }
-
-  )}
-
->
+              (errors) => {
+                console.log("Validation errors:", errors);
+              },
+            )}
+          >
             {/* Title */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-white/80">

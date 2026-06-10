@@ -1,9 +1,13 @@
 import { api } from "./api";
 
-export const createArt=async(data)=>{
-  console.log("data",data)
-  return 
-}
+export const createArt = async (formData) => {
+  console.log(formData)
+  return api("/art/", {
+    method: "POST",
+    body: formData,
+  });
+
+};
 export const getAllArtistArt=(id)=>{
   return api(`/art/u/${id}`);
 }

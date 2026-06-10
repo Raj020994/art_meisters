@@ -1,5 +1,5 @@
 "use client";
-import { ArrowRight, Check, Upload } from "lucide-react";
+import { ArrowRight, Check, Upload, X } from "lucide-react";
 
 import {
   Popover,
@@ -18,43 +18,60 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useForm } from "react-hook-form";
 
 const page = () => {
-const categories = [
-  {
-    value: "digital-art",
-    label: "Digital Art",
-  },
-  {
-    value: "photography",
-    label: "Photography",
-  },
-  {
-    value: "illustration",
-    label: "Illustration",
-  },
-  {
-    value: "painting",
-    label: "Painting",
-  },
-  {
-    value: "3d",
-    label: "3D Art",
-  },
-];
-const [selectedCategories, setSelectedCategories] = useState([]);
-const toggleCategory = (value) => {
-  setSelectedCategories((prev) =>
-    prev.includes(value)
-      ? prev.filter((item) => item !== value)
-      : [...prev, value]
-  );
-};
+  const categories = [
+    { value: "digital-art", label: "Digital Art" },
+    { value: "photography", label: "Photography" },
+    { value: "illustration", label: "Illustration" },
+    { value: "painting", label: "Painting" },
+    { value: "3d", label: "3D Art" },
+  ];
+  const {
+    register,
+    reset,
+    formState: { errors },
+    handleSubmit,
+  } = useForm({
+    resolver: zodResolver(artworkSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      categories: [],
+      imageUrl: "",
+    },
+  });
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [preview, setPreview] = useState(null);
+  const [file, setFile] = useState(null);
+  const inputRef = useRef(null);
+  const toggleCategory = (value) => {
+    setSelectedCategories((prev) =>
+      prev.includes(value)
+        ? prev.filter((item) => item !== value)
+        : [...prev, value],
+    );
+  };
+  const {} = useForm();
+  const handleChange = (e) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setFile(f);
+    setPreview(URL.createObjectURL(f));
+  };
+
+  const handleRemove = () => {
+    if (preview) URL.revokeObjectURL(preview);
+    setPreview(null);
+    setFile(null);
+    if (inputRef.current) inputRef.current.value = "";
+  };
+
   let isEdit = false;
-  if (isEdit) {
-    return <div>Edit</div>;
-  }
+  if (isEdit) return <div>Edit</div>;
+
   return (
     <div>
       <div className="relative py-20 px-4 overflow-hidden">
@@ -77,7 +94,6 @@ const toggleCategory = (value) => {
               <label className="text-sm font-medium text-white/80">
                 Artwork Title
               </label>
-
               <input
                 type="text"
                 placeholder="Sunset Dreams"
@@ -90,7 +106,6 @@ const toggleCategory = (value) => {
               <label className="text-sm font-medium text-white/80">
                 Description
               </label>
-
               <textarea
                 rows={5}
                 placeholder="Tell viewers about your artwork..."
@@ -103,69 +118,61 @@ const toggleCategory = (value) => {
               <label className="text-sm font-medium text-white/80">
                 Category
               </label>
-
-         <Popover>
-  <PopoverTrigger asChild>
-    <Button
-      variant="outline"
-      className="w-full min-h-12 h-auto justify-start flex-wrap"
-    >
-      {selectedCategories.length ? (
-        <div className="flex flex-wrap gap-2">
-          {selectedCategories.map((value) => {
-            const category = categories.find(
-              (c) => c.value === value
-            );
-
-            return (
-              <Badge
-                key={value}
-                className="flex items-center gap-1"
-              >
-                {category?.label}
-              </Badge>
-            );
-          })}
-        </div>
-      ) : (
-        <span className="text-muted-foreground">
-          Select Categories
-        </span>
-      )}
-    </Button>
-  </PopoverTrigger>
-
-  <PopoverContent className="w-[300px] p-0">
-    <Command>
-      <CommandInput placeholder="Search categories..." />
-
-      <CommandList>
-        <CommandEmpty>No category found.</CommandEmpty>
-
-        <CommandGroup>
-          {categories.map((category) => (
-            <CommandItem
-              key={category.value}
-              onSelect={() =>
-                toggleCategory(category.value)
-              }
-            >
-              <Check
-                className={`mr-2 h-4 w-4 ${
-                  selectedCategories.includes(category.value)
-                    ? "opacity-100"
-                    : "opacity-0"
-                }`}
-              />
-
-              {category.label}
-            </CommandItem>
-          ))}
-        </CommandGroup>
-      </CommandList>
-    </Command>
-  </PopoverContent>
-</Popover>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full min-h-12 h-auto justify-start flex-wrap"
+                  >
+                    {selectedCategories.length ? (
+                      <div className="flex flex-wrap gap-2">
+                        {selectedCategories.map((value) => {
+                          const category = categories.find(
+                            (c) => c.value === value,
+                          );
+                          return (
+                            <Badge
+                              key={value}
+                              className="flex items-center gap-1"
+                            >
+                              {category?.label}
+                            </Badge>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground">
+                        Select Categories
+                      </span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[300px] p-0">
+                  <Command>
+                    <CommandInput placeholder="Search categories..." />
+                    <CommandList>
+                      <CommandEmpty>No category found.</CommandEmpty>
+                      <CommandGroup>
+                        {categories.map((category) => (
+                          <CommandItem
+                            key={category.value}
+                            onSelect={() => toggleCategory(category.value)}
+                          >
+                            <Check
+                              className={`mr-2 h-4 w-4 ${
+                                selectedCategories.includes(category.value)
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              }`}
+                            />
+                            {category.label}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
 
             {/* Upload Image */}
@@ -174,19 +181,39 @@ const toggleCategory = (value) => {
                 Artwork Image
               </label>
 
-              <label className="flex flex-col items-center justify-center border-2 border-dashed border-white/10 rounded-2xl p-10 cursor-pointer hover:border-red-800/40 transition-all">
-                <Upload size={40} className="text-white/40 mb-3" />
-
-                <span className="text-white/70 font-medium">
-                  Click to upload artwork
-                </span>
-
-                <span className="text-white/30 text-sm mt-1">
-                  PNG, JPG, WEBP
-                </span>
-
-                <input type="file" accept="image/*" className="hidden" />
-              </label>
+              {preview ? (
+                <div className="relative rounded-2xl overflow-hidden border-2 border-white/10">
+                  <img
+                    src={preview}
+                    alt="Artwork preview"
+                    className="w-full h-64 object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleRemove}
+                    className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white rounded-full p-1.5 transition-all"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center border-2 border-dashed border-white/10 rounded-2xl p-10 cursor-pointer hover:border-red-800/40 transition-all">
+                  <Upload size={40} className="text-white/40 mb-3" />
+                  <span className="text-white/70 font-medium">
+                    Click to upload artwork
+                  </span>
+                  <span className="text-white/30 text-sm mt-1">
+                    PNG, JPG, WEBP
+                  </span>
+                  <input
+                    ref={inputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleChange}
+                  />
+                </label>
+              )}
             </div>
 
             {/* Submit */}

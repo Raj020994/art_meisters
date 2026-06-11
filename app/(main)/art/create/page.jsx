@@ -25,6 +25,7 @@ import { createArt } from "@/service/art";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { artworkSchema } from "@/schema/art";
 import { toast } from "sonner";
+import {  uploadDummy } from "@/service/upload";
 
 const page = () => {
   const categories = [
@@ -50,6 +51,11 @@ const page = () => {
   const [preview, setPreview] = useState(null);
   const [file, setFile] = useState(null);
 
+  const {
+    fn: getImgUrl,
+    data: urlData,
+    loading: gettingUrl,
+  } = useFetch(uploadDummy);
   const {
     fn: createArtFunc,
     data: createdArt,
@@ -78,7 +84,12 @@ const page = () => {
   };
   const handleOnSubmit = async (data) => {
     try {
-      const url = `${process.env.NEXT_PUBLIC_BASE_URL}/default.jpeg`;
+      const res=await uploadDummy(file);
+      if (!res?.success){
+        throw new Error("Img upload Error")
+        return
+      }
+      const url = res?.Url||""
       const createData = new FormData();
 
       createData.append("name", data.title);
@@ -90,8 +101,9 @@ const page = () => {
       selectedCategories.forEach((tag) => {
         createData.append("tags", tag);
       });
-
-      createArtFunc(createData);
+      if (url.length>0){
+        createArtFunc(createData);
+      }
     } catch (err) {
       console.log(err);
     }

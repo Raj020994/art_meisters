@@ -15,3 +15,7 @@ export const upload = async (img) => {
     console.log(err);
   }
 };
+export const uploadDummy = async (img) => {
+  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/default.jpeg`;
+  return { success: true, Url: url };
+};

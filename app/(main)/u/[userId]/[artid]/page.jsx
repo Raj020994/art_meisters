@@ -1,13 +1,17 @@
+"use client"
 import React from 'react'
 import data from "@/data.json";
 import Link from 'next/link';
 import { MoveLeft, ArrowRight } from "lucide-react";
 import { ArtCard } from './_components/ArtCard';
+import { useParams } from 'next/navigation';
+import useFetch from '@/hooks/useFetch';
+import { getArtById } from '@/service/art';
 
-export default async function ArtPage({ params }) {
-    const resolvedParams = await params;
-    const artId = resolvedParams.artid || resolvedParams.artId;
-    const art = data.artworks.find((a) => String(a.id) === String(artId));
+export default function ArtPage() {
+    const params = useParams();
+    const artId = params.artid ;
+    const {data:res,fn:fetchArtFunc,loading:fetchingArt}=useFetch(getArtById)
     if (!art){
         return (
             <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 pt-32">

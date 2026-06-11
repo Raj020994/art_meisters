@@ -60,9 +60,7 @@ useEffect(() => {
       }
     }
   }, [data, arts]);
-useEffect(() => {
-  console.log("artistArtworks updated:", artistArtworks);
-}, [artistArtworks]);
+
   if (fetchingData || fetchingArtworks) {
     return (
       <div className="min-h-screen flex items-center justify-center">

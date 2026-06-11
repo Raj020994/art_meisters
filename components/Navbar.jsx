@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import data from "@/data.json";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, Plus, X } from "lucide-react";
 import useFetch from "@/hooks/useFetch";
 import { getCurrUser } from "@/service/auth";
 import UserMenu from "./UserMenu";
@@ -83,31 +83,38 @@ useEffect(() => {
         </div>
 
         {/* Right Side */}
-        <div className="flex items-center gap-4">
-          {user ? (
-            <>
-              <div className="relative h-12 w-12 overflow-hidden flex items-center justify-center rounded-full border border-white/20">
-              <UserMenu user={user}/>
-               
-              </div>
+      <div className="flex items-center gap-4">
+  {user ? (
+    <>
+      <Link href={"/art/create"}>
+        <button className="border px-3 py-2 bg-black/20 rounded-full text-white flex items-center gap-2 hover:bg-black/10">
+          <Plus size={20} />
+          <span className="text-sm font-semibold">create</span>
+        </button>
+      </Link>
 
-              <button
-                onClick={() => setMobileOpen(!mobileOpen)}
-                className="md:hidden"
-              >
-                {mobileOpen ? <X size={28} /> : <Menu size={28} />}
-              </button>
-            </>
-          ) : (
-            <>
-              <Link href={"/sign-in"}>
-                <button className="border px-3 py-2 rounded-md bg-red-900">
-                  Login
-                </button>
-              </Link>
-            </>
-          )}
-        </div>
+      {user.Role == "admin" && (
+        <Link href={""}>
+          <button className="border px-3 py-2 rounded-md bg-red-900">
+            admin Dashboard
+          </button>
+        </Link>
+      )}
+
+      <div className="relative h-12 w-12 overflow-hidden flex items-center justify-center rounded-full border border-white/20">
+        <UserMenu user={user} />
+      </div>
+    </>
+  ) : (
+    <>
+      <Link href={"/sign-in"}>
+        <button className="border px-3 py-2 rounded-md bg-red-900">
+          Login
+        </button>
+      </Link>
+    </>
+  )}
+</div>
       </div>
 
       {mobileOpen && (

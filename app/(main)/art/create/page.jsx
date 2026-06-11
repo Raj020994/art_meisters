@@ -37,11 +37,8 @@ const page = () => {
   ];
   const {
     register,
-
     reset,
-
     formState: { errors },
-
     handleSubmit,
   } = useForm({
     resolver: zodResolver(artworkSchema),

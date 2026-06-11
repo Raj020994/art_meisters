@@ -7,13 +7,14 @@ export const createArt = async (formData) => {
   });
 
 };
-export const getAllArtistArt=(id)=>{
+export const getAllArtistArt = (id) => {
   return api(`/art/u/${id}`);
 }
-export const getArtistProfile=(id)=>{
+export const getArtistProfile = (id) => {
   return api(`/art/u/profile/${id}`);
 }
-export const getArtById=()=>{
+export const getArtById = (id) => {
+  return api(`/art/${id}`);
 
 }
 export const editArt=()=>{

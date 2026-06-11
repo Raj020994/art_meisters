@@ -1,12 +1,16 @@
+"use client";
 import data from "@/data.json";
 import Link from "next/link";
 import { MoveLeft, Calendar, MapPin, Clock } from "lucide-react";
+import { useParams } from "next/navigation";
+import useFetch from "@/hooks/useFetch";
 
-export default async function EventDetail({ params }) {
-  const { eventId } = await params;
-  const event = data.events.find((e) => e.id === eventId);
+export default function EventDetail() {
+  const params = useParams();
+  const eventId = params.eventId;
+  const{}=useFetch()
   const featured = data.featuredEvent;
-
+  
   if (!event) {
     return (
       <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6">
@@ -180,13 +184,17 @@ export default async function EventDetail({ params }) {
           {isFeatured && (
             <p className="text-gray-300 leading-relaxed mt-4 text-lg">
               {featured.subtitle} — Join us on{" "}
-              <span className="text-red-400 font-semibold">{featured.date}</span>{" "}
+              <span className="text-red-400 font-semibold">
+                {featured.date}
+              </span>{" "}
               at{" "}
               <span className="text-red-400 font-semibold">
                 {featured.location}
               </span>
               . Doors open at{" "}
-              <span className="text-red-400 font-semibold">{featured.time}</span>
+              <span className="text-red-400 font-semibold">
+                {featured.time}
+              </span>
               .
             </p>
           )}

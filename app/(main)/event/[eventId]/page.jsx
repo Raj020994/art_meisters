@@ -4,23 +4,88 @@ import Link from "next/link";
 import { MoveLeft, Calendar, MapPin, Clock } from "lucide-react";
 import { useParams } from "next/navigation";
 import useFetch from "@/hooks/useFetch";
+import { getEventById } from "@/service/event";
+import { useEffect, useState } from "react";
+import { useAuthStore } from "@/store/user";
+
+// Helper to parse backend EventDate and extract day, month, and full readable date format
+const parseEventDate = (dateStr) => {
+  if (!dateStr) return { day: "", month: "", fullDate: "" };
+  try {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return { day: "", month: "", fullDate: "" };
+    
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = date.toLocaleString("default", { month: "short" }).toUpperCase();
+    const fullDate = date.toLocaleDateString("default", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+    return { day, month, fullDate };
+  } catch (e) {
+    console.error("Error parsing date:", e);
+    return { day: "", month: "", fullDate: "" };
+  }
+};
 
 export default function EventDetail() {
   const params = useParams();
+  const user = useAuthStore((state) => state.user);
+  const [event, setEvent] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (user?.Role === "admin") {
+      setIsAdmin(true);
+    } else {
+      setIsAdmin(false);
+    }
+  }, [user]);
+
   const eventId = params.eventId;
-  const{}=useFetch()
+  const {
+    data: eventDetails,
+    fn: getEventFn,
+    loading: getEventLoading,
+    errors: getEventError,
+  } = useFetch(getEventById);
+
   const featured = data.featuredEvent;
-  
-  if (!event) {
+
+  useEffect(() => {
+    console.log("Got runned");
+    getEventFn(eventId);
+  }, [eventId]);
+
+  useEffect(() => {
+    if (!getEventLoading && eventDetails?.Success) {
+      setEvent(eventDetails?.Data);
+    }
+  }, [eventDetails, getEventLoading]);
+
+  if (getEventLoading) {
     return (
-      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6">
-        <h1 className="text-4xl font-bold mb-4">Event Not Found</h1>
-        <p className="text-gray-400 mb-8">
-          The event you're looking for doesn't exist or has been removed.
+      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 selection:bg-red-500">
+        <div className="w-16 h-16 border-4 border-t-red-500 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin mb-6"></div>
+        <p className="text-gray-400 font-light text-lg tracking-wider animate-pulse">
+          Loading Event Details...
+        </p>
+      </div>
+    );
+  }
+
+  // Error state if event not found or fetch failed
+  if (getEventError || (eventDetails && !eventDetails.Success) || (!getEventLoading && !event)) {
+    return (
+      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 text-center selection:bg-red-500">
+        <h1 className="text-4xl font-bold mb-4 text-red-500">Event Not Found</h1>
+        <p className="text-gray-400 mb-8 max-w-md">
+          {getEventError?.message || eventDetails?.message || "The event you're looking for doesn't exist or has been removed."}
         </p>
         <Link
           href="/"
-          className="text-red-400 hover:underline flex items-center gap-2"
+          className="text-red-400 hover:text-red-300 hover:underline flex items-center gap-2 transition"
         >
           <MoveLeft size={20} /> Back to Home
         </Link>
@@ -28,20 +93,27 @@ export default function EventDetail() {
     );
   }
 
-  const isFeatured = featured && featured.title === event.title;
+  const isFeatured = featured && featured.title === event.Name;
 
   const registerLink =
-    event.registerLink ||
+    event.Venue?.String ||
     (isFeatured ? featured.registerLink : null) ||
     "https://forms.gle/YOUR_GOOGLE_FORM_LINK";
+
+  const { day, month, fullDate } = parseEventDate(event.EventDate);
+  const isActive = event.Status === "online";
+
+  // Fallbacks: Image.String fallback is /logo.png, and BannerImage.String fallback is /default.jpeg
+  const logoSrc = event.Image?.String || "/logo.png";
+  const bannerSrc = (isFeatured ? featured.image : null) || event.BannerImage?.String || "/default.jpeg";
 
   return (
     <main className="min-h-screen bg-black text-white selection:bg-red-500 pb-20">
       <section className="w-full ">
         <div className="relative w-full h-[300px] md:h-[480px] overflow-hidden border-y border-white/10">
           <img
-            src={isFeatured ? featured.image : event.image}
-            alt={event.title}
+            src={bannerSrc}
+            alt={event.Name || "Event Banner"}
             className="w-full h-full blur-sm object-cover scale-105"
           />
 
@@ -52,7 +124,7 @@ export default function EventDetail() {
               <div className="flex items-center gap-5">
                 <div className="w-20 h-20 md:w-28 md:h-28 rounded-2xl overflow-hidden bg-black/60 backdrop-blur-md border border-white/10 shadow-xl flex items-center justify-center">
                   <img
-                    src={event.logo || "/logo.png"}
+                    src={logoSrc}
                     alt="Event Logo"
                     className="w-full h-full object-cover"
                   />
@@ -62,12 +134,12 @@ export default function EventDetail() {
                   <div className="flex items-center gap-2 mb-2">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-md ${
-                        event.active
+                        isActive
                           ? "bg-green-500/20 text-green-400 border border-green-500/30"
                           : "bg-white/10 text-gray-300 border border-white/10"
                       }`}
                     >
-                      {event.active ? "● Upcoming" : "● Completed"}
+                      {isActive ? "● Upcoming" : "● Completed"}
                     </span>
 
                     {isFeatured && (
@@ -78,10 +150,10 @@ export default function EventDetail() {
                   </div>
 
                   <h1 className="font-heading font-bold text-3xl md:text-6xl leading-tight">
-                    {event.title}
+                    {event.Name}
                   </h1>
                   <p className="text-gray-300 mt-2 text-base md:text-lg max-w-xl">
-                    {event.desc}
+                    {event.Description?.String}
                   </p>
                 </div>
               </div>
@@ -89,14 +161,14 @@ export default function EventDetail() {
               <div className="flex items-center gap-4">
                 <div className="flex flex-col items-center justify-center w-20 h-20 md:w-24 md:h-24 rounded-xl bg-black/70 backdrop-blur-md border border-white/10">
                   <span className="text-white font-bold text-2xl md:text-3xl leading-none">
-                    {event.date}
+                    {day}
                   </span>
                   <span className="text-white/60 font-semibold tracking-widest text-xs uppercase mt-1">
-                    {event.month}
+                    {month}
                   </span>
                 </div>
 
-                {event.active && (
+                {isActive && (
                   <a
                     href={registerLink}
                     target="_blank"
@@ -126,7 +198,7 @@ export default function EventDetail() {
               </p>
               <p className="text-white font-medium flex items-center gap-2">
                 <Calendar size={14} className="text-red-400" />
-                {event.date} {event.month}{" "}
+                {fullDate || `${day} ${month}`}{" "}
                 {isFeatured ? ` · ${featured.date}` : ""}
               </p>
             </div>
@@ -163,7 +235,7 @@ export default function EventDetail() {
             </div>
           </div>
 
-          {event.active && (
+          {isActive && (
             <div className="mt-8">
               <a
                 href={registerLink}
@@ -179,7 +251,7 @@ export default function EventDetail() {
 
         <div className="rounded-2xl p-8 md:p-10 border border-white/10 bg-white/5 backdrop-blur-md">
           <h2 className="text-2xl font-bold mb-4">About This Event</h2>
-          <p className="text-gray-300 leading-relaxed text-lg">{event.desc}</p>
+          <p className="text-gray-300 leading-relaxed text-lg">{event.Description?.String}</p>
 
           {isFeatured && (
             <p className="text-gray-300 leading-relaxed mt-4 text-lg">

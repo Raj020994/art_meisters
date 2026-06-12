@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { redirect, useParams, useRouter } from "next/navigation";
+import {useParams, useRouter } from "next/navigation";
 import useFetch from "@/hooks/useFetch";
 import { createEvent } from "@/service/event";
 import { useForm } from "react-hook-form";
@@ -98,20 +98,22 @@ const CreateEventPage = () => {
   const handleOnSubmit = async (data) => {
     const bannerUrl = await uploadDummy(bannerRef.current?.files[0]);
     const logoUrl = await uploadDummy(logoRef.current?.files[0]);
+    console.log("Logo",logoUrl?.Url)
+    console.log("Banner",bannerUrl?.Url)
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("description", data.description);
     formData.append("venue", data.venue);
     formData.append("status", data.status);
     formData.append("date", data.date);
-    formData.append("image", logoUrl?.Url);
-    formData.append("bannerImage", bannerUrl?.Url);
+    formData.append("LogoUrl", logoUrl?.Url);
+    formData.append("bannerUrl", bannerUrl?.Url);
     createEventFn(formData);
   };
   useEffect(() => {
     if (event) {
       toast.success(event.message);
-      router.push(`/event/${event.Data.Id}`);
+      router.push(`/event/${event.Data.ID}`);
     }
   }, [event]);
 

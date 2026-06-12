@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { redirect, useParams, useRouter } from "next/navigation";
 import useFetch from "@/hooks/useFetch";
 import { createEvent } from "@/service/event";
 import { useForm } from "react-hook-form";
@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { eventSchema } from "@/schema/event";
 import { uploadDummy } from "@/service/upload";
 import { toast } from "sonner";
+import { useAuthStore } from "@/store/user";
 
 const ImageInput = ({ label, inputRef }) => {
   const [preview, setPreview] = useState(null);
@@ -64,6 +65,14 @@ const ImageInput = ({ label, inputRef }) => {
 };
 
 const CreateEventPage = () => {
+  const user = useAuthStore((state) => state.user);
+  useEffect(() => {
+    if (!user) return;
+
+    if (user.Role !== "admin") {
+      router.push("/");
+    }
+  }, [user]);
   const router = useRouter();
   const params = useParams();
   const logoRef = useRef(null);
@@ -75,13 +84,6 @@ const CreateEventPage = () => {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(eventSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      venue: "",
-      status: "online",
-      eventDate: "",
-    },
   });
 
   const eventId = params.eventId;
@@ -97,12 +99,11 @@ const CreateEventPage = () => {
     const bannerUrl = await uploadDummy(bannerRef.current?.files[0]);
     const logoUrl = await uploadDummy(logoRef.current?.files[0]);
     const formData = new FormData();
-
     formData.append("name", data.name);
     formData.append("description", data.description);
     formData.append("venue", data.venue);
     formData.append("status", data.status);
-    formData.append("eventDate", data.eventDate);
+    formData.append("date", data.date);
     formData.append("image", logoUrl?.Url);
     formData.append("bannerImage", bannerUrl?.Url);
     createEventFn(formData);
@@ -194,12 +195,12 @@ const CreateEventPage = () => {
             Event Date
           </label>
           <input
-            type="datetime-local"
-            {...register("eventDate")}
+            type="date"
+            {...register("date")}
             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3"
           />
-          {errors.eventDate?.message && (
-            <p className="text-red-800/50 text-sm">{errors.eventDate?.message}</p>
+          {errors.date?.message && (
+            <p className="text-red-800/50 text-sm">{errors.date?.message}</p>
           )}
         </div>
 
@@ -207,7 +208,7 @@ const CreateEventPage = () => {
         <ImageInput label="Event Logo" inputRef={logoRef} />
         <ImageInput label="Event Banner" inputRef={bannerRef} />
 
-         <button
+        <button
           type="submit"
           disabled={creatingEvent}
           className="w-full bg-red-800 hover:bg-red-700 disabled:bg-red-800/50 text-white font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2"

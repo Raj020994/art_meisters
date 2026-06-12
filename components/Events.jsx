@@ -3,6 +3,7 @@ import { EventListItem } from './EventListItem'
 import data from "@/data.json";
 import { MoveRight } from 'lucide-react';
 import { FeaturedEvent } from './FeaturedEvent';
+import Link from 'next/link';
 export const Events = () => {
     const events = data.events.slice(0, 3)
     return (
@@ -15,10 +16,10 @@ export const Events = () => {
                     </div>
                     <h2 className="font-heading font-bold text-4xl text-red-500">What's Happening</h2>
                 </div>
-                <a href="#" className="text-accent hover:text-red-400 items-center gap-2 font-medium group transition-colors hidden sm:flex">
+                <Link href="/event" className="text-accent hover:text-red-400 items-center gap-2 font-medium group transition-colors hidden sm:flex">
                     VIEW ALL EVENTS
                     <MoveRight className="group-hover:translate-x-1 transition-transform" size={16} />
-                </a>
+                </Link>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

@@ -22,7 +22,7 @@ export const eventSchema = z.object({
     }
   ),
 
-  eventDate: z
+  date: z
     .string()
     .min(1, "Event date is required"),
 });

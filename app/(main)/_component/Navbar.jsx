@@ -84,7 +84,7 @@ useEffect(() => {
       {user.Role == "admin" && (
         <Link href={""}>
           <button className="border px-3 py-2 rounded-md bg-red-900">
-            admin Dashboard
+            Admin Dashboard
           </button>
         </Link>
       )}

@@ -18,24 +18,22 @@ export const Navbar = () => {
   const [activeSection, setActiveSection] = useState("hero");
   const [mobileOpen, setMobileOpen] = useState(false);
   const { data: res , fn:refetchUser,loading: userLoading } = useFetch(getCurrUser);
-const fetched = useRef(false);
+
 
 useEffect(() => {
-  if (fetched.current) return;
-  fetched.current = true;
-  console.log("hello")
+  if (user) return;
   refetchUser();
-}, []); // fetch once on mount
+}, []);
 
 useEffect(() => {
   if (!res) return;
-  console.log("hello")
-  if (res.Success) {
+
+  if (res.Success && res.Data) {
     setUser(res.Data);
   } else {
     clearUser();
   }
-}, [res]);
+}, [res?.Success]);
 
   
   return (

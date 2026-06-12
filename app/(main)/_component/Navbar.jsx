@@ -22,26 +22,19 @@ export const Navbar = () => {
   } = useFetch(getCurrUser);
 
 useEffect(() => {
+  if (user) return;
+  refetchUser();
+}, []); // fetch once on mount
 
-  const fetchUser = async () => {
+useEffect(() => {
+  if (!res) return;
 
-    const result = await refetchUser();
-
-    if (result?.Success) {
-
-      setUser(result.Data);
-
-    } else {
-
-      clearUser();
-
-    }
-
-  };
-
-  fetchUser();
-
-}, []);
+  if (res.Success && res.Data) {
+    setUser(res.Data);
+  } else {
+    clearUser();
+  }
+}, [res?.Success]);
 
   return (
     <nav

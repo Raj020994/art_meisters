@@ -54,7 +54,6 @@ export default function EventDetail() {
   const featured = data.featuredEvent;
 
   useEffect(() => {
-    console.log("Got runned");
     getEventFn(eventId);
   }, [eventId]);
 

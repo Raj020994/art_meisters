@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { MoveLeft, Palette, ExternalLink, Plus, Upload } from "lucide-react";
+import { MoveLeft, Palette, ExternalLink, Upload } from "lucide-react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import useFetch from "@/hooks/useFetch";

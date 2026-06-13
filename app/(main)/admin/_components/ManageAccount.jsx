@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -16,64 +16,106 @@ import {
   Shield,
   ShieldAlert,
   Ban,
-  CheckCircle2,
-  XCircle,
   Search,
   Users,
   ShieldCheck,
   AlertCircle,
   UserCheck,
   UserX,
-  RotateCcw
+  RotateCcw,
 } from "lucide-react";
+import useFetch from "@/hooks/useFetch";
+import { changeUserRoleStatus } from "@/service/admin";
 
 const ManageAccount = ({ users }) => {
   const [userList, setUserList] = useState(users || []);
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+const {
+  data,
+  fn: changeFn,
+  loading: updating,
+} = useFetch(changeUserRoleStatus);
 
-  const updateUser = (id, updates) => {
-    setUserList((prev) =>
-      prev.map((user) =>
-        user.ID === id ? { ...user, ...updates } : user
-      )
+const [pendingUpdate, setPendingUpdate] = useState(null);
+
+const updateUser = (id, updates) => {
+  setUserList((prev) =>
+    prev.map((user) =>
+      user.ID === id ? { ...user, ...updates } : user
+    )
+  );
+};
+
+const handleApprove = (id) => {
+  setPendingUpdate({
+    id,
+    updates: { Status: "approved" },
+  });
+
+  changeFn(id, { status: "approved" });
+};
+
+const handleReject = (id) => {
+  setPendingUpdate({
+    id,
+    updates: { Status: "rejected" },
+  });
+
+  changeFn(id, { status: "rejected" });
+};
+
+const handleRoleToggle = (id, currentRole) => {
+  const newRole =
+    currentRole === "admin" ? "user" : "admin";
+
+  setPendingUpdate({
+    id,
+    updates: { Role: newRole },
+  });
+
+  changeFn(id, { role: newRole });
+};
+
+const handleBanToggle = (id, currentStatus) => {
+  const newStatus =
+    currentStatus === "banned" ? "approved" : "banned";
+
+  setPendingUpdate({
+    id,
+    updates: { Status: newStatus },
+  });
+
+  changeFn(id, { status: newStatus });
+};
+
+useEffect(() => {
+  if (!updating && data?.Success && pendingUpdate) {
+    updateUser(
+      pendingUpdate.id,
+      pendingUpdate.updates
     );
-  };
 
-  const handleApprove = (id) => {
-    updateUser(id, { Status: "approved" });
-  };
+    setPendingUpdate(null);
+  }
+}, [data, updating, pendingUpdate]);
+  let totalUsers = userList.length;
+  let pendingUsers = userList.filter((u) => u.Status === "pending").length;
+  let adminUsers = userList.filter((u) => u.Role === "admin").length;
+  let bannedUsers = userList.filter((u) => u.Status === "banned").length;
+  useEffect(() => {
+    totalUsers = userList.length;
+    pendingUsers = userList.filter((u) => u.Status === "pending").length;
+    adminUsers = userList.filter((u) => u.Role === "admin").length;
+    bannedUsers = userList.filter((u) => u.Status === "banned").length;
+  }, [users]);
 
-  const handleReject = (id) => {
-    updateUser(id, { Status: "rejected" });
-  };
-
-  const handleRoleToggle = (id, currentRole) => {
-    updateUser(id, {
-      Role: currentRole === "admin" ? "user" : "admin",
-    });
-  };
-
-  const handleBanToggle = (id, currentStatus) => {
-    updateUser(id, {
-      Status: currentStatus === "banned" ? "approved" : "banned",
-    });
-  };
-
-  // Stats calculation
-  const totalUsers = userList.length;
-  const pendingUsers = userList.filter((u) => u.Status === "pending").length;
-  const adminUsers = userList.filter((u) => u.Role === "admin").length;
-  const bannedUsers = userList.filter((u) => u.Status === "banned").length;
-
-  // Filter list
   const filteredUsers = userList.filter((user) => {
     const matchesSearch =
       (user.Name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
       (user.Email || "").toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesRole =
-      roleFilter === "all" ? true : user.Role === roleFilter;
+    const matchesRole = roleFilter === "all" ? true : user.Role === roleFilter;
     const matchesStatus =
       statusFilter === "all" ? true : user.Status === statusFilter;
     return matchesSearch && matchesRole && matchesStatus;
@@ -86,31 +128,44 @@ const ManageAccount = ({ users }) => {
           Manage Users
         </h2>
         <p className="text-gray-400 text-sm">
-          Approve, reject, promote, demote, or ban user accounts from a centralized control panel.
+          Approve, reject, promote, demote, or ban user accounts from a
+          centralized control panel.
         </p>
       </div>
 
       {/* Metrics Section */}
       <div className="flex flex-wrap gap-2.5 pt-1">
-        <Badge variant="outline" className="px-3 py-1 bg-white/5 border-white/10 text-gray-300 text-xs font-normal gap-1.5 rounded-xl">
+        <Badge
+          variant="outline"
+          className="px-3 py-1 bg-white/5 border-white/10 text-gray-300 text-xs font-normal gap-1.5 rounded-xl"
+        >
           <Users className="w-3.5 h-3.5 text-red-500" />
           <span>Total Users:</span>
           <span className="font-semibold text-white">{totalUsers}</span>
         </Badge>
 
-        <Badge variant="outline" className="px-3 py-1 bg-white/5 border-white/10 text-gray-300 text-xs font-normal gap-1.5 rounded-xl">
+        <Badge
+          variant="outline"
+          className="px-3 py-1 bg-white/5 border-white/10 text-gray-300 text-xs font-normal gap-1.5 rounded-xl"
+        >
           <AlertCircle className="w-3.5 h-3.5 text-red-500" />
           <span>Pending:</span>
           <span className="font-semibold text-white">{pendingUsers}</span>
         </Badge>
 
-        <Badge variant="outline" className="px-3 py-1 bg-white/5 border-white/10 text-gray-300 text-xs font-normal gap-1.5 rounded-xl">
+        <Badge
+          variant="outline"
+          className="px-3 py-1 bg-white/5 border-white/10 text-gray-300 text-xs font-normal gap-1.5 rounded-xl"
+        >
           <ShieldCheck className="w-3.5 h-3.5 text-red-500" />
           <span>Admins:</span>
           <span className="font-semibold text-white">{adminUsers}</span>
         </Badge>
 
-        <Badge variant="outline" className="px-3 py-1 bg-white/5 border-white/10 text-gray-300 text-xs font-normal gap-1.5 rounded-xl">
+        <Badge
+          variant="outline"
+          className="px-3 py-1 bg-white/5 border-white/10 text-gray-300 text-xs font-normal gap-1.5 rounded-xl"
+        >
           <Ban className="w-3.5 h-3.5 text-red-500" />
           <span>Banned:</span>
           <span className="font-semibold text-white">{bannedUsers}</span>
@@ -132,7 +187,9 @@ const ManageAccount = ({ users }) => {
 
         <div className="flex flex-wrap gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-400 hidden sm:inline">Role:</span>
+            <span className="text-xs text-gray-400 hidden sm:inline">
+              Role:
+            </span>
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
@@ -145,7 +202,9 @@ const ManageAccount = ({ users }) => {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-400 hidden sm:inline">Status:</span>
+            <span className="text-xs text-gray-400 hidden sm:inline">
+              Status:
+            </span>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
@@ -166,23 +225,51 @@ const ManageAccount = ({ users }) => {
           const getStatusBadge = (status) => {
             switch (status) {
               case "approved":
-                return <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 capitalize font-medium">{status}</Badge>;
+                return (
+                  <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 capitalize font-medium">
+                    {status}
+                  </Badge>
+                );
               case "pending":
-                return <Badge className="bg-amber-500/10 text-amber-400 border-amber-500/20 capitalize font-medium">{status}</Badge>;
+                return (
+                  <Badge className="bg-amber-500/10 text-amber-400 border-amber-500/20 capitalize font-medium">
+                    {status}
+                  </Badge>
+                );
               case "rejected":
-                return <Badge className="bg-red-500/10 text-red-400 border-red-500/20 capitalize font-medium">{status}</Badge>;
+                return (
+                  <Badge className="bg-red-500/10 text-red-400 border-red-500/20 capitalize font-medium">
+                    {status}
+                  </Badge>
+                );
               case "banned":
-                return <Badge className="bg-rose-900/25 text-rose-400 border-rose-900/50 capitalize font-medium">{status}</Badge>;
+                return (
+                  <Badge className="bg-rose-900/25 text-rose-400 border-rose-900/50 capitalize font-medium">
+                    {status}
+                  </Badge>
+                );
               default:
-                return <Badge className="bg-gray-500/10 text-gray-400 border-gray-500/20 capitalize font-medium">{status}</Badge>;
+                return (
+                  <Badge className="bg-gray-500/10 text-gray-400 border-gray-500/20 capitalize font-medium">
+                    {status}
+                  </Badge>
+                );
             }
           };
 
           const getRoleBadge = (role) => {
             if (role === "admin") {
-              return <Badge className="bg-indigo-500/10 text-indigo-400 border-indigo-500/20 font-medium flex items-center gap-1"><Shield className="w-3 h-3" /> Admin</Badge>;
+              return (
+                <Badge className="bg-indigo-500/10 text-indigo-400 border-indigo-500/20 font-medium flex items-center gap-1">
+                  <Shield className="w-3 h-3" /> Admin
+                </Badge>
+              );
             }
-            return <Badge className="bg-slate-500/10 text-slate-400 border-slate-500/20 font-medium">User</Badge>;
+            return (
+              <Badge className="bg-slate-500/10 text-slate-400 border-slate-500/20 font-medium">
+                User
+              </Badge>
+            );
           };
 
           return (
@@ -194,9 +281,7 @@ const ManageAccount = ({ users }) => {
                 <div className="relative">
                   <img
                     src={
-                      user.Image?.Valid
-                        ? user.Image.String
-                        : "/default.jpeg"
+                      user.Image?.Valid ? user.Image.String : "/default.jpeg"
                     }
                     alt={user.Name}
                     className="w-14 h-14 rounded-full object-cover border border-white/10 shadow-inner"
@@ -217,9 +302,7 @@ const ManageAccount = ({ users }) => {
                     {user.Name}
                   </h3>
 
-                  <p className="text-sm text-gray-400">
-                    {user.Email}
-                  </p>
+                  <p className="text-sm text-gray-400">{user.Email}</p>
 
                   <div className="flex gap-2 flex-wrap items-center">
                     {getRoleBadge(user.Role)}
@@ -231,12 +314,21 @@ const ManageAccount = ({ users }) => {
               <div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/10 rounded-full h-9 w-9">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-gray-400 hover:text-white hover:bg-white/10 rounded-full h-9 w-9"
+                    >
                       <MoreVertical className="w-5 h-5" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="bg-[#181818] border border-white/10 text-white rounded-xl shadow-2xl p-1.5 min-w-44">
-                    <DropdownMenuLabel className="text-gray-400 text-xs px-2.5 py-1.5">Actions</DropdownMenuLabel>
+                  <DropdownMenuContent
+                    align="end"
+                    className="bg-[#181818] border border-white/10 text-white rounded-xl shadow-2xl p-1.5 min-w-44"
+                  >
+                    <DropdownMenuLabel className="text-gray-400 text-xs px-2.5 py-1.5">
+                      Actions
+                    </DropdownMenuLabel>
                     <DropdownMenuSeparator className="bg-white/10" />
 
                     {user.Status === "pending" && (

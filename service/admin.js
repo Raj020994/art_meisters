@@ -10,3 +10,18 @@ export const changeArtStatus = async (id, status) => {
     method: "PATCH",
   });
 };
+export const changeUserRoleStatus = async (id, payload) => {
+  const { status, role } = payload;
+
+  if ((status && role) || (!status && !role)) {
+    throw new Error("Provide either status or role");
+  }
+
+  const query = status
+    ? `status=${encodeURIComponent(status)}`
+    : `role=${encodeURIComponent(role)}`;
+
+  return api(`/admin/users/${id}/status?${query}`, {
+    method: "PATCH",
+  });
+};

@@ -26,80 +26,82 @@ import {
 } from "lucide-react";
 import useFetch from "@/hooks/useFetch";
 import { changeUserRoleStatus } from "@/service/admin";
+import { useAuthStore } from "@/store/user";
+import { toast } from "sonner";
 
 const ManageAccount = ({ users }) => {
-  const [userList, setUserList] = useState(users || []);
+  const currUser = useAuthStore((state) => state.user);
+  const [userList, setUserList] = useState(() =>
+    (users || []).filter((u) => u.ID !== currUser?.ID),
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
-const {
-  data,
-  fn: changeFn,
-  loading: updating,
-} = useFetch(changeUserRoleStatus);
+  const {
+    data,
+    fn: changeFn,
+    loading: updating,
+  } = useFetch(changeUserRoleStatus);
 
-const [pendingUpdate, setPendingUpdate] = useState(null);
+  const [pendingUpdate, setPendingUpdate] = useState(null);
 
-const updateUser = (id, updates) => {
-  setUserList((prev) =>
-    prev.map((user) =>
-      user.ID === id ? { ...user, ...updates } : user
-    )
-  );
-};
-
-const handleApprove = (id) => {
-  setPendingUpdate({
-    id,
-    updates: { Status: "approved" },
-  });
-
-  changeFn(id, { status: "approved" });
-};
-
-const handleReject = (id) => {
-  setPendingUpdate({
-    id,
-    updates: { Status: "rejected" },
-  });
-
-  changeFn(id, { status: "rejected" });
-};
-
-const handleRoleToggle = (id, currentRole) => {
-  const newRole =
-    currentRole === "admin" ? "user" : "admin";
-
-  setPendingUpdate({
-    id,
-    updates: { Role: newRole },
-  });
-
-  changeFn(id, { role: newRole });
-};
-
-const handleBanToggle = (id, currentStatus) => {
-  const newStatus =
-    currentStatus === "banned" ? "approved" : "banned";
-
-  setPendingUpdate({
-    id,
-    updates: { Status: newStatus },
-  });
-
-  changeFn(id, { status: newStatus });
-};
-
-useEffect(() => {
-  if (!updating && data?.Success && pendingUpdate) {
-    updateUser(
-      pendingUpdate.id,
-      pendingUpdate.updates
+  const updateUser = (id, updates) => {
+    setUserList((prev) =>
+      prev.map((user) => (user.ID === id ? { ...user, ...updates } : user)),
     );
+  };
 
-    setPendingUpdate(null);
-  }
-}, [data, updating, pendingUpdate]);
+  const handleApprove = (id) => {
+    setPendingUpdate({
+      id,
+      updates: { Status: "approved" },
+    });
+
+    changeFn(id, { status: "approved" });
+  };
+
+  const handleReject = (id) => {
+    setPendingUpdate({
+      id,
+      updates: { Status: "rejected" },
+    });
+
+    changeFn(id, { status: "rejected" });
+  };
+
+  const handleRoleToggle = (id, currentRole) => {
+    const user = userList.find((u) => u.ID === id);
+    if (user?.Status !== "approved"){
+      toast.error("User must be approved before changing role");
+      return;
+    }
+    const newRole = currentRole === "admin" ? "user" : "admin";
+    setPendingUpdate({
+      id,
+      updates: { Role: newRole },
+    });
+
+    changeFn(id, { role: newRole });
+  };
+
+  const handleBanToggle = (id, currentStatus) => {
+    const newStatus = currentStatus === "banned" ? "approved" : "banned";
+
+    setPendingUpdate({
+      id,
+      updates: { Status: newStatus },
+    });
+
+    changeFn(id, { status: newStatus });
+  };
+
+  useEffect(() => {
+    if (!updating && data?.Success && pendingUpdate) {
+      updateUser(pendingUpdate.id, pendingUpdate.updates);
+
+      setPendingUpdate(null);
+    }
+  }, [data, updating, pendingUpdate]);
   let totalUsers = userList.length;
   let pendingUsers = userList.filter((u) => u.Status === "pending").length;
   let adminUsers = userList.filter((u) => u.Role === "admin").length;

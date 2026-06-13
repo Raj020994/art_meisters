@@ -6,23 +6,30 @@ import ApproveAccount from './_components/ApproveAccount'
 import ApproveArt from './_components/ApproveArt'
 import useFetch from '@/hooks/useFetch'
 import { getPendingArt } from '@/service/admin'
+import { getAllUser } from '@/service/auth'
 
 
 export default function Page() {
     const [artWorks, setartWorks] = useState(null)
+    const [users,setUsers]=useState(null)
      const {data:arts,loading:artLoading,fn:getPenArtFn}=useFetch(getPendingArt)
-    //  const {data:res2,loading:accountLoading,fn:getPenAccountFn}=useFetch(getAllUser)
+     const {data:res2,loading:accountLoading,fn:getAllAccountFn}=useFetch(getAllUser)
     useEffect(() => {
         getPenArtFn()
-        // getPenAccountFn()
+        getAllAccountFn()
     }, [])
     useEffect(() => {
         if (!artLoading&&arts?.Success){
             setartWorks(arts.Data)
         }
     }, [arts])
+    useEffect(() => {
+        if (!accountLoading&&res2?.Success){
+            setUsers(res2.Data)
+        }
+    }, [res2])
     
-     if(artLoading ){
+     if(artLoading || accountLoading){
         return <div>Loading...</div>
      }
      
@@ -34,11 +41,11 @@ export default function Page() {
                     <p className="text-gray-400 text-lg max-w-2xl mx-auto">Manage events, user accounts, and artwork approvals from your centralized control panel.</p>
                 </div>
 
-                <Tabs defaultValue="approve-account" className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <Tabs defaultValue="manage-account" className="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <TabsList className="md:col-span-1 bg-white/10  h-14 md:h-48 flex sm:flex-row md:flex-col md:justify-center md:items-center rounded-2xl mt-24 w-full p-2 md:p-3 md:space-y-2 sm:space-x-2 md:space-x-0">
                        
                         <TabsTrigger 
-                            value="approve-account"
+                            value="manage-account"
                             className="rounded-lg data-[state=active]:bg-red-600 w-full text-white  text-sm md:text-base py-2.5"
                         >
                             Accounts
@@ -53,8 +60,8 @@ export default function Page() {
 
                     <div className="md:col-span-3">
                  
-                        <TabsContent value="approve-account" className="mt-0 outline-none">
-                            <ApproveAccount />
+                        <TabsContent value="manage-account" className="mt-0 outline-none">
+                            <ApproveAccount users={users}/>
                         </TabsContent>
                         <TabsContent value="approve-art" className="mt-0 outline-none">
                             <ApproveArt art={artWorks}/>

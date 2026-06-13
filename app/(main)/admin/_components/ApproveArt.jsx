@@ -15,6 +15,7 @@ const ApproveArt = ({ art }) => {
     fn: changeArtStatusFn,
   } = useFetch(changeArtStatus);
   const handleArtChange = (id, status) => {
+    console.log(id,status)
     changeArtStatusFn(id, status);
   };
   useEffect(() => {

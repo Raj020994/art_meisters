@@ -27,3 +27,6 @@ export const usrById=(id)=>{
   
   return api(`/auth/users/${id}`);
 }
+export const getAllUser=()=>{
+  return api(`/auth/users`);
+}

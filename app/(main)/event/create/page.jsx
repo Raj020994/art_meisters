@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import {useParams, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import useFetch from "@/hooks/useFetch";
 import { createEvent } from "@/service/event";
 import { useForm } from "react-hook-form";
@@ -10,54 +10,71 @@ import { uploadDummy } from "@/service/upload";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/user";
 
-const ImageInput = ({ label, inputRef }) => {
+const ImageInput = ({ label, inputRef, existingImage, onFileChange }) => {
   const [preview, setPreview] = useState(null);
 
-  const handleChange = (e) => {
-    const f = e.target.files?.[0];
-    if (!f) return;
-    if (preview) URL.revokeObjectURL(preview);
-    setPreview(URL.createObjectURL(f));
-  };
+  useEffect(() => {
+    if (existingImage) {
+      setPreview(existingImage);
+    }
+  }, [existingImage]);
 
+  const handleChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (preview && preview.startsWith("blob:")) {
+      URL.revokeObjectURL(preview);
+    }
+
+    const url = URL.createObjectURL(file);
+    setPreview(url);
+
+    onFileChange?.(file);
+  };
   const handleRemove = () => {
-    if (preview) URL.revokeObjectURL(preview);
+    if (preview && preview.startsWith("blob:")) {
+      URL.revokeObjectURL(preview);
+    }
     setPreview(null);
-    if (inputRef.current) inputRef.current.value = "";
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
+    onFileChange?.(null);
   };
 
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium text-white/80">{label}</label>
 
+      <input
+        type="file"
+        ref={inputRef}
+        accept="image/*"
+        onChange={handleChange}
+        className="hidden"
+      />
+
       {preview ? (
         <div className="relative w-full rounded-xl overflow-hidden border border-white/10">
-          <img
-            src={preview}
-            alt={`${label} preview`}
-            className="w-full max-h-48 object-cover"
-          />
-          <button
-            type="button"
-            onClick={handleRemove}
-            className="absolute top-2 right-2 bg-black/60 hover:bg-red-700 text-white text-xs px-2 py-1 rounded-lg transition-all"
-          >
-            Remove
-          </button>
+          <img src={preview} className="w-full max-h-48 object-cover" />
+
+          <div className="absolute top-2 right-2 flex gap-2">
+            <button type="button" onClick={() => inputRef.current?.click()}>
+              Change
+            </button>
+
+            <button type="button" onClick={handleRemove}>
+              Remove
+            </button>
+          </div>
         </div>
       ) : (
         <div
-          className="w-full bg-white/5 border border-white/10 border-dashed rounded-xl px-4 py-6 text-center cursor-pointer hover:bg-white/10 transition-all"
           onClick={() => inputRef.current?.click()}
+          className="w-full bg-white/5 border border-white/10 border-dashed rounded-xl px-4 py-6 text-center cursor-pointer"
         >
           <p className="text-white/40 text-sm">Click to upload image</p>
-          <input
-            type="file"
-            ref={inputRef}
-            accept="image/*"
-            onChange={handleChange}
-            className="hidden"
-          />
         </div>
       )}
     </div>
@@ -66,15 +83,17 @@ const ImageInput = ({ label, inputRef }) => {
 
 const CreateEventPage = () => {
   const user = useAuthStore((state) => state.user);
-  const[isBanned,setIsBanned]=useState(false)
+  const [isBanned, setIsBanned] = useState(false);
+  const [logoFile, setLogoFile] = useState(null);
+  const [bannerFile, setBannerFile] = useState(null);
   useEffect(() => {
     if (!user) return;
 
     if (user.Role !== "admin") {
       router.push("/");
     }
-    if(user.Status==="banned"){
-      setIsBanned(true)
+    if (user.Status === "banned") {
+      setIsBanned(true);
     }
   }, [user]);
 
@@ -103,8 +122,6 @@ const CreateEventPage = () => {
   const handleOnSubmit = async (data) => {
     const bannerUrl = await uploadDummy(bannerRef.current?.files[0]);
     const logoUrl = await uploadDummy(logoRef.current?.files[0]);
-    console.log("Logo",logoUrl?.Url)
-    console.log("Banner",bannerUrl?.Url)
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("description", data.description);
@@ -212,8 +229,8 @@ const CreateEventPage = () => {
         </div>
 
         {/* Logo & Banner */}
-        <ImageInput label="Event Logo" inputRef={logoRef} />
-        <ImageInput label="Event Banner" inputRef={bannerRef} />
+        <ImageInput label="Event Logo" onFileChange={setLogoFile} inputRef={logoRef} />
+        <ImageInput label="Event Banner" onFileChange={setBannerFile} inputRef={bannerRef} />
 
         <button
           type="submit"

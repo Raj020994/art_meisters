@@ -13,8 +13,8 @@ export const getAllArtistArt = (id) => {
 export const getArtistProfile = (id) => {
   return api(`/art/u/profile/${id}`);
 }
-export const getArtById = (id) => {
-  return api(`/art/${id}`);
+export const getArtById = (data) => {
+  return api(`/art/${data.usrId}/${data.id}/`);
 
 }
 export const editArt=()=>{

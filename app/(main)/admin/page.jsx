@@ -7,8 +7,9 @@ import { Users, Palette } from "lucide-react"
 import ApproveArt from './_components/ApproveArt'
 import useFetch from '@/hooks/useFetch'
 import { getPendingArt } from '@/service/admin'
-import { getAllUser } from '@/service/auth'
+
 import ManageAccount from './_components/ManageAccount'
+import { getAllUser } from '@/service/user'
 
 export default function Page() {
     const [artWorks, setartWorks] = useState(null)

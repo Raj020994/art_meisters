@@ -8,11 +8,15 @@ import { useParams } from "next/navigation";
 import useFetch from "@/hooks/useFetch";
 import { getArtById } from "@/service/art";
 import { useArtStore } from "@/store/art";
-import Image from "next/image";
-
+import { useAuthStore } from "@/store/user";
+import { usrById } from "@/service/user";
 export default function ArtPage() {
   const params = useParams();
+  const [artist, setartist] = useState(null);
   const artId = params.artid;
+  const userId = params.userId;
+  const user = useAuthStore((state) => state.user);
+  const role = user?.ID === userId ? "artist" : user?.Role;
   const [art, setArt] = useState(null);
   const artWork = useArtStore((state) => state.arts[artId]);
   const addArt = useArtStore((state) => state.addArt);
@@ -21,18 +25,20 @@ export default function ArtPage() {
     fn: fetchArtFunc,
     loading: fetchingArt,
   } = useFetch(getArtById);
-
   useEffect(() => {
     if (artWork) {
       setArt(artWork);
-
       return;
     }
-    if (artId) {
-      fetchArtFunc(artId);
+    if (artId&&userId) {
+      let payload={
+        id:artId,
+        usrId:userId
+      }
+      fetchArtFunc(payload);
     }
-  }, [artId, artWork]);
-
+    
+  }, [artId, artWork, userId]);
   useEffect(() => {
     if (res?.Success) {
       addArt(res.Data);
@@ -48,13 +54,6 @@ export default function ArtPage() {
   if (!fetchingArt && !art) {
     return <div>Art Not Found</div>;
   }
-
-  const artist = data.artists.find((a) => String(a.id) === String(art.userId));
-  const otherArtworks = data.artworks.filter(
-    (a) =>
-      String(a.userId) === String(art.userId) && String(a.id) !== String(artId),
-  );
-
   return (
     <main className="min-h-screen bg-black text-white selection:bg-accent pb-20 pt-8  px-6 md:px-12">
       <div className="max-w-7xl mx-auto">
@@ -137,7 +136,7 @@ export default function ArtPage() {
         </div>
 
         {/* Explore More from Artist */}
-        {otherArtworks.length > 0 && (
+        {/* {otherArtworks.length > 0 && (
           <div className="mt-24">
             <div className="flex justify-between items-end mb-8">
               <div>
@@ -154,8 +153,7 @@ export default function ArtPage() {
               {otherArtworks.map((work, index) => {
                 // Dynamic bento sizing pattern based on index
                 let spanClass = "md:col-span-1 md:row-span-1";
-                if (index === 0)
-                  spanClass = "md:col-span-2 md:row-span-2";
+                if (index === 0) spanClass = "md:col-span-2 md:row-span-2";
                 else if (index === 3 || index === 4)
                   spanClass = "md:col-span-2 md:row-span-1";
 
@@ -165,7 +163,7 @@ export default function ArtPage() {
               })}
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </main>
   );

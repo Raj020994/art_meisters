@@ -9,62 +9,93 @@ import { getAllArtistArt, getArtistProfile } from "@/service/art";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/user";
 export default function ArtistProfile() {
-  const params = useParams();
-  const router = useRouter();
-  const [artist, setartist] = useState(null);
-  const [artistArtworks, setartistArtworks] = useState(null);
-  const user = useAuthStore((state) => state.user);
-  const usrId = params.userId;
-  const {
-    data,
-    fn: getData,
-    loading: fetchingData,
-  } = useFetch(getArtistProfile);
-  const {
-    data: arts,
-    fn: getArt,
-    loading: fetchingArtworks,
-  } = useFetch(getAllArtistArt);
-  const isUserProfile = user?.ID === usrId;
+const params = useParams();
+const router = useRouter();
 
-  useEffect(() => {
-    if (!usrId) return;
-    if (isUserProfile) {
-      setartist(user);
-      getArt(usrId);
-    } else {
-      getData(usrId);
-    }
-  }, [usrId, isUserProfile, user]);
-  useEffect(() => {
-    if (!isUserProfile) {
-      if (!fetchingData) {
-        if (!data) return;
-        if (!data.Success) {
-          toast.error(data.message);
-          if(data.message.includes("user not found")){
-            router.push("/onboarding");
-            return;
-          }
-          return;
-        }
-        console.log(data.Data?.user?.Username?.Valid)
-        setartist(data.Data.user);
-        setartistArtworks(data.Data.art);
-      }
-    } else {
-      if (!fetchingArtworks) {
-        if (!arts) return;
-        console.log("Art", arts);
-        if (!arts.Success) {
-          toast.error(arts.message);
-          return;
-        }
+const [artist, setArtist] = useState(null);
+const [artistArtworks, setArtistArtworks] = useState(null);
 
-        setartistArtworks(arts.Data);
-      }
+const user = useAuthStore((state) => state.user);
+const usrId = params.userId;
+
+const {
+  data,
+  fn: getData,
+  loading: fetchingData,
+} = useFetch(getArtistProfile);
+
+const {
+  data: arts,
+  fn: getArt,
+  loading: fetchingArtworks,
+} = useFetch(getAllArtistArt);
+
+const isUserProfile = user?.ID === usrId;
+
+// Initial fetch
+useEffect(() => {
+  if (!usrId) return;
+
+  if (isUserProfile) {
+    setArtist(user);
+    getArt(usrId);
+  } else {
+    getData(usrId);
+  }
+}, [usrId, isUserProfile, user]);
+
+// Handle fetched data
+useEffect(() => {
+  // Visiting another artist profile
+  if (!isUserProfile) {
+    if (fetchingData || !data) return;
+
+    if (!data.Success) {
+      toast.error(data.message);
+      return;
     }
-  }, [data, arts]);
+
+    // Redirect if onboarding not completed
+    if (
+      !data.Data?.user?.Username?.Valid ||
+      !data.Data?.user?.Username?.String?.trim()
+    ) {
+      router.push("/onboarding");
+      return;
+    }
+
+    setArtist(data.Data.user);
+    setArtistArtworks(data.Data.art);
+  }
+
+  // Visiting own profile
+  if (isUserProfile) {
+    if (fetchingArtworks || !arts) return;
+
+    // Redirect if onboarding not completed
+    if (
+      !user?.Username?.Valid ||
+      !user?.Username?.String?.trim()
+    ) {
+      router.push("/onboarding");
+      return;
+    }
+
+    if (!arts.Success) {
+      toast.error(arts.message);
+      return;
+    }
+
+    setArtistArtworks(arts.Data);
+  }
+}, [
+  data,
+  arts,
+  user,
+  isUserProfile,
+  fetchingData,
+  fetchingArtworks,
+]);
 
   if (fetchingData || fetchingArtworks) {
     return (

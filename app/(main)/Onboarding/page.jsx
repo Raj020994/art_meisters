@@ -31,22 +31,17 @@ const ImageInput = ({ label, inputRef, existingImage, onFileChange }) => {
     const url = URL.createObjectURL(file);
     setPreview(url);
 
-    // 🔥 notify parent
+
     onFileChange?.(file);
   };
-
   const handleRemove = () => {
     if (preview && preview.startsWith("blob:")) {
       URL.revokeObjectURL(preview);
     }
-
     setPreview(null);
-
     if (inputRef.current) {
       inputRef.current.value = "";
     }
-
-    // 🔥 clear parent state
     onFileChange?.(null);
   };
 

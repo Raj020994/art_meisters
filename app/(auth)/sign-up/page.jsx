@@ -36,7 +36,7 @@ const SignUpPage = () => {
     data: data,
   } = useFetch(signUpUser);
   const onsubmit = async (data) => {
-    await signingUpUser(data);
+     signingUpUser(data);
   };
   useEffect(() => {
     if (data?.Success && !isSigning) {

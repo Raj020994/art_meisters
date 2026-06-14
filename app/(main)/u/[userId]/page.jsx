@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { MoveLeft, Palette, ExternalLink, Upload } from "lucide-react";
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import useFetch from "@/hooks/useFetch";
 import { useEffect, useState } from "react";
 import { getAllArtistArt, getArtistProfile } from "@/service/art";
@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useAuthStore } from "@/store/user";
 export default function ArtistProfile() {
   const params = useParams();
+  const router = useRouter();
   const [artist, setartist] = useState(null);
   const [artistArtworks, setartistArtworks] = useState(null);
   const user = useAuthStore((state) => state.user);
@@ -20,23 +21,27 @@ export default function ArtistProfile() {
     loading: fetchingData,
   } = useFetch(getArtistProfile);
   const {
-    data:arts,
+    data: arts,
     fn: getArt,
     loading: fetchingArtworks,
   } = useFetch(getAllArtistArt);
-const isUserProfile = user?.ID === usrId;
+  const isUserProfile = user?.ID === usrId;
 
-useEffect(() => {
-  if (!usrId) return;
-
-  if (isUserProfile) {
-    setartist(user);
-    getArt(usrId);
-  } else {
-    getData(usrId);
-  }
-}, [usrId, isUserProfile, user]);
   useEffect(() => {
+    if (!usrId) return;
+
+    if (isUserProfile) {
+      setartist(user);
+      getArt(usrId);
+    } else {
+      getData(usrId);
+    }
+  }, [usrId, isUserProfile, user]);
+  useEffect(() => {
+    if (!data?.Data?.user?.Username?.Valid) {
+      router.push("/onboarding");
+      return;
+    }
     if (!isUserProfile) {
       if (!fetchingData) {
         if (!data) return;
@@ -44,8 +49,9 @@ useEffect(() => {
           toast.error(data.message);
           return;
         }
-        setartist(data.Data.User);
-        setartistArtworks(data.Data.Art);
+        console.log(data.Data?.user?.Username?.Valid)
+        setartist(data.Data.user);
+        setartistArtworks(data.Data.art);
       }
     } else {
       if (!fetchingArtworks) {
@@ -89,7 +95,13 @@ useEffect(() => {
       {/* Hero Header */}
       <section className="relative h-[40vh] w-full overflow-hidden">
         <img
-          src={artist?.Image?.String || "/default.jpeg"}
+          src={
+            artist?.BannerImage?.Valid && artist?.BannerImage?.String
+              ? artist.BannerImage.String
+              : artist?.Image?.Valid && artist?.Image?.String
+                ? artist.Image.String
+                : "/default.jpeg"
+          }
           alt={artist?.Name}
           className="w-full h-full object-cover blur-sm opacity-40 scale-110"
         />
@@ -100,7 +112,11 @@ useEffect(() => {
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-end gap-8">
             <div className="relative md:-mb-10 w-32 h-32 md:w-60 md:h-60 rounded-full overflow-hidden shadow-2xl z-20 group border-4 border-black">
               <img
-                src={artist?.Image?.String || "/default.jpeg"}
+                src={
+                  artist?.Image?.Valid && artist?.Image?.String
+                    ? artist.Image.String
+                    : "/default.jpeg"
+                }
                 alt={artist?.Name}
                 className="w-full h-full object-cover"
               />
@@ -117,6 +133,11 @@ useEffect(() => {
               <h1 className="font-heading font-bold text-white text-5xl md:text-7xl leading-none">
                 {artist?.Name}
               </h1>
+              <p className="mt-2 text-gray-400 text-lg font-medium">
+                {artist?.Username?.Valid
+                  ? `@${artist.Username.String}`
+                  : "Username not set"}
+              </p>
             </div>
           </div>
         </div>
@@ -147,7 +168,9 @@ useEffect(() => {
                   Batch
                 </p>
                 <p className="text-white font-medium">
-                  {artist?.Batch || "Not specified"}
+                  {artist?.Batch?.Valid && artist?.Batch?.String
+                    ? artist.Batch.String
+                    : "Not specified"}
                 </p>
               </div>
 

@@ -66,13 +66,18 @@ const ImageInput = ({ label, inputRef }) => {
 
 const CreateEventPage = () => {
   const user = useAuthStore((state) => state.user);
+  const[isBanned,setIsBanned]=useState(false)
   useEffect(() => {
     if (!user) return;
 
     if (user.Role !== "admin") {
       router.push("/");
     }
+    if(user.Status==="banned"){
+      setIsBanned(true)
+    }
   }, [user]);
+
   const router = useRouter();
   const params = useParams();
   const logoRef = useRef(null);
@@ -212,7 +217,7 @@ const CreateEventPage = () => {
 
         <button
           type="submit"
-          disabled={creatingEvent}
+          disabled={creatingEvent || isBanned}
           className="w-full bg-red-800 hover:bg-red-700 disabled:bg-red-800/50 text-white font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2"
         >
           {creatingEvent ? "Creating Event..." : "Create Event"}

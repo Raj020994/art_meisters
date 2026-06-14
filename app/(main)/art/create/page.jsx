@@ -25,7 +25,8 @@ import { createArt } from "@/service/art";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { artworkSchema } from "@/schema/art";
 import { toast } from "sonner";
-import {  uploadDummy } from "@/service/upload";
+import { uploadDummy } from "@/service/upload";
+import { useAuthStore } from "@/store/user";
 
 const page = () => {
   const categories = [
@@ -43,11 +44,16 @@ const page = () => {
   } = useForm({
     resolver: zodResolver(artworkSchema),
   });
-
+  const [isBanned, setIsBanned] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [preview, setPreview] = useState(null);
   const [file, setFile] = useState(null);
-
+  const user = useAuthStore((state) => state.user);
+  useEffect(() => {
+    if (user?.Status === "banned") {
+      setIsBanned(true);
+    }
+  }, [user]);
   const {
     fn: getImgUrl,
     data: urlData,
@@ -81,12 +87,16 @@ const page = () => {
   };
   const handleOnSubmit = async (data) => {
     try {
-      const res=await uploadDummy(file);
-      if (!res?.success){
-        throw new Error("Img upload Error")
-        return
+      if (isBanned) {
+        toast.error("You are banned, can't upload");
+        return;
       }
-      const url = res?.Url||""
+      const res = await uploadDummy(file);
+      if (!res?.success) {
+        throw new Error("Img upload Error");
+        return;
+      }
+      const url = res?.Url || "";
       const createData = new FormData();
 
       createData.append("name", data.title);
@@ -98,7 +108,7 @@ const page = () => {
       selectedCategories.forEach((tag) => {
         createData.append("tags", tag);
       });
-      if (url.length>0){
+      if (url.length > 0) {
         createArtFunc(createData);
       }
     } catch (err) {
@@ -282,9 +292,10 @@ const page = () => {
             {/* Submit */}
             <button
               type="submit"
+              disabled={isBanned}
               className="w-full bg-red-800 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-red-900/20 flex items-center justify-center gap-2 group"
             >
-              Upload Artwork
+              {isBanned?<>Your Account Is Haulted</>:<>Upload Artwork</>}
               <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
             </button>
           </form>

@@ -29,7 +29,6 @@ export default function ArtistProfile() {
 
   useEffect(() => {
     if (!usrId) return;
-
     if (isUserProfile) {
       setartist(user);
       getArt(usrId);
@@ -38,15 +37,15 @@ export default function ArtistProfile() {
     }
   }, [usrId, isUserProfile, user]);
   useEffect(() => {
-    if (!data?.Data?.user?.Username?.Valid) {
-      router.push("/onboarding");
-      return;
-    }
     if (!isUserProfile) {
       if (!fetchingData) {
         if (!data) return;
         if (!data.Success) {
           toast.error(data.message);
+          if(data.message.includes("user not found")){
+            router.push("/onboarding");
+            return;
+          }
           return;
         }
         console.log(data.Data?.user?.Username?.Valid)

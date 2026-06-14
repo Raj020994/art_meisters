@@ -4,12 +4,37 @@ export const signUpSchema = z.object({
   name: z.string().min(1, "Full name is required"),
   email: z.email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
-  confirmPassword: z.string().min(8, "Confirm password must be at least 8 characters"),
+  confirmPassword: z
+    .string()
+    .min(8, "Confirm password must be at least 8 characters"),
 });
 
 export const loginSchema = z.object({
   email: z.email("Invalid email address"),
-  password: z
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
+export const onBoardingSchema = z.object({
+  username: z
     .string()
-    .min(8, "Password must be at least 8 characters"),
+    .min(3, "Username must be at least 3 characters")
+    .max(20, "Username cannot exceed 20 characters")
+    .regex(
+      /^[a-zA-Z0-9_]+$/,
+      "Username can only contain letters, numbers, and underscores",
+    ),
+  description: z
+    .string()
+    .max(300, "Bio cannot exceed 300 characters")
+    .optional(),
+  batch: z.string().max(20, "Batch cannot exceed 20 characters").optional(),
+  instagram: z
+    .string()
+    .url("Enter a valid Instagram URL")
+    .optional()
+    .or(z.literal("")),
+  youtube: z
+    .string()
+    .url("Enter a valid YouTube URL")
+    .optional()
+    .or(z.literal("")),
 });

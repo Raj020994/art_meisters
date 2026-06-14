@@ -13,7 +13,6 @@ export const loginUser = (formData) =>
   };
 
   export const getCurrUser = () =>{
-    console.log("Hello");
     return api("/auth/me");
     
   } 
@@ -23,10 +22,4 @@ export const logOutUser = () => {
     method: "POST",
   });
 };
-export const usrById=(id)=>{
-  
-  return api(`/auth/users/${id}`);
-}
-export const getAllUser=()=>{
-  return api(`/auth/users`);
-}
+

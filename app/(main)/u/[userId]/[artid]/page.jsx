@@ -1,15 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import data from "@/data.json";
 import Link from "next/link";
 import { MoveLeft, ArrowRight } from "lucide-react";
-import { ArtCard } from "./_components/ArtCard";
 import { useParams } from "next/navigation";
 import useFetch from "@/hooks/useFetch";
-import { getArtById } from "@/service/art";
+import { getArtProfileById } from "@/service/art";
 import { useArtStore } from "@/store/art";
 import { useAuthStore } from "@/store/user";
-import { usrById } from "@/service/user";
+
 export default function ArtPage() {
   const params = useParams();
   const [artist, setartist] = useState(null);
@@ -24,7 +22,7 @@ export default function ArtPage() {
     data: res,
     fn: fetchArtFunc,
     loading: fetchingArt,
-  } = useFetch(getArtById);
+  } = useFetch(getArtProfileById);
   useEffect(() => {
     if (artWork) {
       setArt(artWork);
@@ -44,6 +42,7 @@ export default function ArtPage() {
       addArt(res.Data);
 
       setArt(res.Data);
+
     }
   }, [res]);
 

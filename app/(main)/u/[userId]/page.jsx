@@ -9,93 +9,81 @@ import { getAllArtistArt, getArtistProfile } from "@/service/art";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/user";
 export default function ArtistProfile() {
-const params = useParams();
-const router = useRouter();
+  const params = useParams();
+  const router = useRouter();
+  const [artist, setArtist] = useState(null);
+  const [artistArtworks, setArtistArtworks] = useState(null);
+  const user = useAuthStore((state) => state.user);
+  const usrId = params.userId;
+  const role = user?.ID === usrId ? "artist" : user?.Role;
+  const {
+    data,
+    fn: getData,
+    loading: fetchingData,
+  } = useFetch(getArtistProfile);
 
-const [artist, setArtist] = useState(null);
-const [artistArtworks, setArtistArtworks] = useState(null);
+  const {
+    data: arts,
+    fn: getArt,
+    loading: fetchingArtworks,
+  } = useFetch(getAllArtistArt);
 
-const user = useAuthStore((state) => state.user);
-const usrId = params.userId;
+  const isUserProfile = user?.ID === usrId;
 
-const {
-  data,
-  fn: getData,
-  loading: fetchingData,
-} = useFetch(getArtistProfile);
+  // Initial fetch
+  useEffect(() => {
+    if (!usrId) return;
 
-const {
-  data: arts,
-  fn: getArt,
-  loading: fetchingArtworks,
-} = useFetch(getAllArtistArt);
+    if (isUserProfile) {
+      setArtist(user);
+      getArt(usrId);
+    } else {
+      getData(usrId);
+    }
+  }, [usrId, isUserProfile, user]);
 
-const isUserProfile = user?.ID === usrId;
+  // Handle fetched data
+  useEffect(() => {
+    // Visiting another artist profile
+    if (!isUserProfile) {
+      if (fetchingData || !data) return;
 
-// Initial fetch
-useEffect(() => {
-  if (!usrId) return;
+      if (!data.Success) {
+        toast.error(data.message);
+        return;
+      }
 
-  if (isUserProfile) {
-    setArtist(user);
-    getArt(usrId);
-  } else {
-    getData(usrId);
-  }
-}, [usrId, isUserProfile, user]);
+      // Redirect if onboarding not completed
+      if (
+        !data.Data?.user?.Username?.Valid ||
+        !data.Data?.user?.Username?.String?.trim()
+      ) {
+        router.push("/onboarding");
+        return;
+      }
 
-// Handle fetched data
-useEffect(() => {
-  // Visiting another artist profile
-  if (!isUserProfile) {
-    if (fetchingData || !data) return;
-
-    if (!data.Success) {
-      toast.error(data.message);
-      return;
+      setArtist(data.Data.user);
+      setArtistArtworks(data.Data.art);
     }
 
-    // Redirect if onboarding not completed
-    if (
-      !data.Data?.user?.Username?.Valid ||
-      !data.Data?.user?.Username?.String?.trim()
-    ) {
-      router.push("/onboarding");
-      return;
+    // Visiting own profile
+    if (isUserProfile) {
+      if (fetchingArtworks || !arts) return;
+
+      // Redirect if onboarding not completed
+      if (!user?.Username?.Valid || !user?.Username?.String?.trim()) {
+        router.push("/onboarding");
+        return;
+      }
+
+      if (!arts.Success) {
+        toast.error(arts.message);
+        return;
+      }
+
+      setArtistArtworks(arts.Data);
     }
-
-    setArtist(data.Data.user);
-    setArtistArtworks(data.Data.art);
-  }
-
-  // Visiting own profile
-  if (isUserProfile) {
-    if (fetchingArtworks || !arts) return;
-
-    // Redirect if onboarding not completed
-    if (
-      !user?.Username?.Valid ||
-      !user?.Username?.String?.trim()
-    ) {
-      router.push("/onboarding");
-      return;
-    }
-
-    if (!arts.Success) {
-      toast.error(arts.message);
-      return;
-    }
-
-    setArtistArtworks(arts.Data);
-  }
-}, [
-  data,
-  arts,
-  user,
-  isUserProfile,
-  fetchingData,
-  fetchingArtworks,
-]);
+  }, [data, arts, user, isUserProfile, fetchingData, fetchingArtworks]);
 
   if (fetchingData || fetchingArtworks) {
     return (
@@ -294,11 +282,48 @@ useEffect(() => {
                       {art.Description?.String}
                     </p>
 
-                    <Link href={`/u/${usrId}/${art.ID}`}>
-                      <button className="mt-4 text-accent text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:opacity-80 transition-opacity">
-                        View Details <ExternalLink size={12} />
-                      </button>
-                    </Link>
+                    <div className="mt-4 flex items-center gap-3 flex-wrap">
+                      {/* View details for everyone */}
+                      <Link href={`/u/${usrId}/${art.ID}`}>
+                        <button className="text-accent text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:opacity-80 transition-opacity">
+                          View Details <ExternalLink size={12} />
+                        </button>
+                      </Link>
+
+                      {/* Artist can edit */}
+                      {role === "artist" && (
+                        <Link href={`/art/create?id=${art.ID}`}>
+                          <button className="text-yellow-400 text-xs font-bold uppercase tracking-widest hover:opacity-80 transition-opacity">
+                            Edit
+                          </button>
+                        </Link>
+                      )}
+
+                      {/* Admin can approve / ban */}
+                      {role === "admin" && (
+                        <>
+                          {art.Status !== "approved" && (
+                            <button
+                              onClick={() =>
+                                handleArtAction(art.ID, "approved")
+                              }
+                              className="text-green-400 text-xs font-bold uppercase tracking-widest hover:opacity-80 transition-opacity"
+                            >
+                              Approve
+                            </button>
+                          )}
+
+                          {art.Status !== "banned" && (
+                            <button
+                              onClick={() => handleArtAction(art.ID, "banned")}
+                              className="text-red-400 text-xs font-bold uppercase tracking-widest hover:opacity-80 transition-opacity"
+                            >
+                              Ban
+                            </button>
+                          )}
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}

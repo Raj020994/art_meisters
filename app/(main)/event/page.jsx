@@ -12,15 +12,6 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 export default function EventPage() {
-  const [isAdmin, setIsAdmin] = useState(false);
-  const user = useAuthStore((state) => state.user);
-  useEffect(() => {
-    if (user?.Role === "admin") {
-      setIsAdmin(true);
-    } else {
-      setIsAdmin(false);
-    }
-  }, [user]);
   const [allEvents, setAllEvents] = useState(null);
   const { data, fn, loading } = useFetch(getAllEvents);
   const containerRef = useRef(null);
@@ -81,19 +72,19 @@ export default function EventPage() {
 
         {/* Events Grid */}
         <div
-  ref={containerRef}
-  className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10 md:gap-14"
->
-  {allEvents?.map((event) => (
-    <Link
-      key={event.ID}
-      href={`/event/${event.ID}`}
-      className="event-card-link block h-full"
-    >
-      <EventCard event={event} />
-    </Link>
-  ))}
-</div>
+          ref={containerRef}
+          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10 md:gap-14"
+        >
+          {allEvents?.map((event) => (
+            <Link
+              key={event.ID}
+              href={`/event/${event.ID}`}
+              className="event-card-link block h-full"
+            >
+              <EventCard event={event} />
+            </Link>
+          ))}
+        </div>
       </section>
 
       {/* Background Decorative Elements */}

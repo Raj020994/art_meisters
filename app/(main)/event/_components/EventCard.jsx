@@ -4,6 +4,7 @@ import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 
 export const EventCard = ({ event }) => {
+
     const cardRef = useRef(null);
     const imageRef = useRef(null);
     const arrowRef = useRef(null);

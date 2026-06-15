@@ -13,9 +13,12 @@ export const getAllArtistArt = (id) => {
 export const getArtistProfile = (id) => {
   return api(`/art/u/profile/${id}`);
 }
-export const getArtById = (data) => {
-  return api(`/art/${data.usrId}/${data.id}/`);
+export const getArtProfileById = (data) => {
+  return api(`/art/p/${data.usrId}/${data.id}/`);
 
+}
+export const getArtById = (id) => {
+  return api(`/art/${id}`);
 }
 export const editArt=()=>{
 
@@ -28,4 +31,10 @@ export const likeArt=()=>{
 }
 export const saveArt=()=>{
 
+}
+export const updateArt=(data)=>{
+  return api("/art/",{
+    method:"PATCH",
+    body:data,
+  })
 }

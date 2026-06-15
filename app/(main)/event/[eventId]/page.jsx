@@ -2,7 +2,7 @@
 import data from "@/data.json";
 import Link from "next/link";
 import { MoveLeft, Calendar, MapPin, Clock } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import useFetch from "@/hooks/useFetch";
 import { getEventById } from "@/service/event";
 import { useEffect, useState } from "react";
@@ -14,9 +14,11 @@ const parseEventDate = (dateStr) => {
   try {
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) return { day: "", month: "", fullDate: "" };
-    
+
     const day = date.getDate().toString().padStart(2, "0");
-    const month = date.toLocaleString("default", { month: "short" }).toUpperCase();
+    const month = date
+      .toLocaleString("default", { month: "short" })
+      .toUpperCase();
     const fullDate = date.toLocaleDateString("default", {
       day: "numeric",
       month: "long",
@@ -30,19 +32,12 @@ const parseEventDate = (dateStr) => {
 };
 
 export default function EventDetail() {
+  const router=useRouter()
   const params = useParams();
   const user = useAuthStore((state) => state.user);
   const [event, setEvent] = useState(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    if (user?.Role === "admin") {
-      setIsAdmin(true);
-    } else {
-      setIsAdmin(false);
-    }
-  }, [user]);
-
+  const role = user?.Role === "admin" ? "admin" : "user";
+  const isBanned = user?.Status === "banned";
   const eventId = params.eventId;
   const {
     data: eventDetails,
@@ -73,14 +68,33 @@ export default function EventDetail() {
       </div>
     );
   }
-
+  const handleEventClick=()=>{
+    if(user?.status=="banned"){
+      toast.error("You are banned from registering for events")
+      return
+    }
+    if (role === "admin") {
+      router.push(`/event/create?id=${eventId}`);
+    } else {
+      
+    }
+    
+  }
   // Error state if event not found or fetch failed
-  if (getEventError || (eventDetails && !eventDetails.Success) || (!getEventLoading && !event)) {
+  if (
+    getEventError ||
+    (eventDetails && !eventDetails.Success) ||
+    (!getEventLoading && !event)
+  ) {
     return (
       <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 text-center selection:bg-red-500">
-        <h1 className="text-4xl font-bold mb-4 text-red-500">Event Not Found</h1>
+        <h1 className="text-4xl font-bold mb-4 text-red-500">
+          Event Not Found
+        </h1>
         <p className="text-gray-400 mb-8 max-w-md">
-          {getEventError?.message || eventDetails?.message || "The event you're looking for doesn't exist or has been removed."}
+          {getEventError?.message ||
+            eventDetails?.message ||
+            "The event you're looking for doesn't exist or has been removed."}
         </p>
         <Link
           href="/"
@@ -94,17 +108,15 @@ export default function EventDetail() {
 
   const isFeatured = featured && featured.title === event.Name;
 
-  const registerLink =
-    event.Venue?.String ||
-    (isFeatured ? featured.registerLink : null) ||
-    "https://forms.gle/YOUR_GOOGLE_FORM_LINK";
-
   const { day, month, fullDate } = parseEventDate(event.EventDate);
   const isActive = event.Status === "online";
 
   // Fallbacks: Image.String fallback is /logo.png, and BannerImage.String fallback is /default.jpeg
   const logoSrc = event.Image?.String || "/logo.png";
-  const bannerSrc = (isFeatured ? featured.image : null) || event.BannerImage?.String || "/default.jpeg";
+  const bannerSrc =
+    (isFeatured ? featured.image : null) ||
+    event.BannerImage?.String ||
+    "/default.jpeg";
 
   return (
     <main className="min-h-screen bg-black text-white selection:bg-red-500 pb-20">
@@ -168,14 +180,14 @@ export default function EventDetail() {
                 </div>
 
                 {isActive && (
-                  <a
-                    href={registerLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={handleEventClick}
+                    disabled={isBanned}
+                    title={isBanned ? "You are banned from registering for events" : ""}
                     className="px-6 py-3 rounded-xl bg-red-500 text-white font-bold text-sm md:text-base hover:bg-red-600 transition shadow-lg"
                   >
-                    Register Now
-                  </a>
+                    {role === "admin" ? "Edit Event" : "Register Now"}
+                  </button>
                 )}
               </div>
             </div>
@@ -233,24 +245,13 @@ export default function EventDetail() {
               <p className="text-white font-medium">{data.siteName}</p>
             </div>
           </div>
-
-          {isActive && (
-            <div className="mt-8">
-              <a
-                href={registerLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 transition shadow-lg"
-              >
-                Register via Google Form
-              </a>
-            </div>
-          )}
         </div>
 
         <div className="rounded-2xl p-8 md:p-10 border border-white/10 bg-white/5 backdrop-blur-md">
           <h2 className="text-2xl font-bold mb-4">About This Event</h2>
-          <p className="text-gray-300 leading-relaxed text-lg">{event.Description?.String}</p>
+          <p className="text-gray-300 leading-relaxed text-lg">
+            {event.Description?.String}
+          </p>
 
           {isFeatured && (
             <p className="text-gray-300 leading-relaxed mt-4 text-lg">

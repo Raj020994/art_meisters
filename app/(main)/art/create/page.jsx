@@ -21,12 +21,14 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import useFetch from "@/hooks/useFetch";
-import { createArt } from "@/service/art";
+import { createArt, getArtById, getArtProfileById } from "@/service/art";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { artworkSchema } from "@/schema/art";
 import { toast } from "sonner";
 import { uploadDummy } from "@/service/upload";
 import { useAuthStore } from "@/store/user";
+
+import { useSearchParams } from "next/navigation";
 
 const page = () => {
   const categories = [
@@ -36,35 +38,85 @@ const page = () => {
     { value: "painting", label: "Painting" },
     { value: "3d", label: "3D Art" },
   ];
+  const searchParams = useSearchParams();
+  const [artData,setArtData] = useState(null)
+  const id = searchParams.get("id");
+
+  const isEdit = Boolean(id);
+
   const {
     register,
+
     reset,
-    formState: { errors },
+
     handleSubmit,
+
+    formState: { errors },
   } = useForm({
     resolver: zodResolver(artworkSchema),
   });
-  const [isBanned, setIsBanned] = useState(false);
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [preview, setPreview] = useState(null);
-  const [file, setFile] = useState(null);
+
   const user = useAuthStore((state) => state.user);
+
+  const [isBanned, setIsBanned] = useState(false);
+
+  const [selectedCategories, setSelectedCategories] = useState([]);
+
+  const [preview, setPreview] = useState(null);
+
+  const [file, setFile] = useState(null);
+
+  const inputRef = useRef(null);
+
+  const {
+    fn: getArtFn,
+
+    data: artDataRes,
+  } = useFetch(getArtById);
+
+  const {
+    fn: createArtFunc,
+
+    data: createdArt,
+  } = useFetch(createArt);
+
+  // BAN CHECK
+
   useEffect(() => {
     if (user?.Status === "banned") {
       setIsBanned(true);
     }
   }, [user]);
-  const {
-    fn: getImgUrl,
-    data: urlData,
-    loading: gettingUrl,
-  } = useFetch(uploadDummy);
-  const {
-    fn: createArtFunc,
-    data: createdArt,
-    loading: uploadingArt,
-  } = useFetch(createArt);
-  const inputRef = useRef(null);
+
+  // FETCH ART FOR EDIT MODE
+
+  useEffect(() => {
+    if (!id) return;
+
+    getArtFn(id);
+  }, [id]);
+
+  // PREFILL FORM WHEN DATA COMES
+
+  useEffect(() => {
+    if (!artDataRes) return;
+    const res = artDataRes?.Data.Art;
+    setArtData(res);
+    reset({
+      title: res?.Name || "",
+
+      description: res?.Description?.String || "",
+    });
+
+    setSelectedCategories(artData?.Tags || []);
+
+    setPreview(artData?.Image || null);
+
+    setFile(null);
+  }, [artDataRes, reset]);
+
+  // CATEGORY TOGGLE
+
   const toggleCategory = (value) => {
     setSelectedCategories((prev) =>
       prev.includes(value)
@@ -72,59 +124,92 @@ const page = () => {
         : [...prev, value],
     );
   };
+
+  // IMAGE CHANGE
+
   const handleChange = (e) => {
     const f = e.target.files?.[0];
+
     if (!f) return;
+
     setFile(f);
+
     setPreview(URL.createObjectURL(f));
   };
 
+
+
   const handleRemove = () => {
     if (preview) URL.revokeObjectURL(preview);
+
     setPreview(null);
+
     setFile(null);
+
     if (inputRef.current) inputRef.current.value = "";
   };
+
+
+
   const handleOnSubmit = async (data) => {
     try {
       if (isBanned) {
         toast.error("You are banned, can't upload");
+
         return;
       }
-      const res = await uploadDummy(file);
-      if (!res?.success) {
-        throw new Error("Img upload Error");
-        return;
+
+      let url = preview;
+
+      // upload ONLY if new file selected
+
+      if (file) {
+        const res = await uploadDummy(file);
+
+        if (!res?.success) {
+          throw new Error("Image upload error");
+        }
+
+        url = res?.Url || "";
       }
-      const url = res?.Url || "";
-      const createData = new FormData();
 
-      createData.append("name", data.title);
+      const formData = new FormData();
 
-      createData.append("description", data.description);
+      formData.append("name", data.title);
 
-      createData.append("url", url);
+      formData.append("description", data.description);
+
+      formData.append("url", url);
 
       selectedCategories.forEach((tag) => {
-        createData.append("tags", tag);
+        formData.append("tags", tag);
       });
-      if (url.length > 0) {
-        createArtFunc(createData);
-      }
+
+      // always CREATE (no update API yet)
+
+      createArtFunc(formData);
     } catch (err) {
       console.log(err);
+
+      toast.error("Something went wrong");
     }
   };
+
+  // SUCCESS TOAST
+
   useEffect(() => {
     if (createdArt) {
       toast.success(createdArt.message);
+
       reset();
+
+      setSelectedCategories([]);
+
+      setPreview(null);
+
+      setFile(null);
     }
-  }, [createdArt]);
-
-  let isEdit = false;
-  if (isEdit) return <div>Edit</div>;
-
+  }, [createdArt, reset]);
   return (
     <div>
       <div className="relative py-20 px-4 overflow-hidden">
@@ -134,7 +219,7 @@ const page = () => {
         <div className="auth-card w-full max-w-2xl bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 md:p-8 shadow-2xl relative z-10 mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-serif text-gradient mb-2">
-              Upload Artwork
+              {isEdit ? "Edit Art" : "Upload Art"}
             </h1>
             <p className="text-white/60">
               Share your creativity with the world.
@@ -197,7 +282,7 @@ const page = () => {
                     variant="outline"
                     className="w-full min-h-12 h-auto justify-start flex-wrap"
                   >
-                    {selectedCategories.length ? (
+                    {selectedCategories?.length ? (
                       <div className="flex flex-wrap gap-2">
                         {selectedCategories.map((value) => {
                           const category = categories.find(
@@ -233,7 +318,7 @@ const page = () => {
                           >
                             <Check
                               className={`mr-2 h-4 w-4 ${
-                                selectedCategories.includes(category.value)
+                                selectedCategories?.includes(category.value)
                                   ? "opacity-100"
                                   : "opacity-0"
                               }`}
@@ -295,7 +380,7 @@ const page = () => {
               disabled={isBanned}
               className="w-full bg-red-800 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-red-900/20 flex items-center justify-center gap-2 group"
             >
-              {isBanned?<>Your Account Is Haulted</>:<>Upload Artwork</>}
+              {isBanned ? <>Your Account Is Haulted</> : <>Upload Artwork</>}
               <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
             </button>
           </form>

@@ -9,6 +9,7 @@ import { getAllArtistArt, getArtistProfile } from "@/service/art";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/user";
 export default function ArtistProfile() {
+  const capitalizeFirst = (str) => str.charAt(0).toUpperCase() + str.slice(1);
   const params = useParams();
   const router = useRouter();
   const [artist, setArtist] = useState(null);
@@ -42,36 +43,36 @@ export default function ArtistProfile() {
     }
   }, [usrId, isUserProfile, user]);
 
-useEffect(() => {
-  if (!isUserProfile) {
-    if (fetchingData || !data) return;
+  useEffect(() => {
+    if (!isUserProfile) {
+      if (fetchingData || !data) return;
 
-    if (!data.Success) {
-      toast.error(data.message);
-      return;
+      if (!data.Success) {
+        toast.error(data.message);
+        return;
+      }
+
+      setArtist(data.Data.User);
+      setArtistArtworks(data.Data.Art);
     }
 
-    setArtist(data.Data.User);
-    setArtistArtworks(data.Data.Art);
-  }
+    if (isUserProfile) {
+      if (fetchingArtworks || !arts) return;
 
-  if (isUserProfile) {
-    if (fetchingArtworks || !arts) return;
+      if (!user?.Username?.Valid || !user?.Username?.String?.trim()) {
+        router.push("/onboarding");
+        return;
+      }
 
-    if (!user?.Username?.Valid || !user?.Username?.String?.trim()) {
-      router.push("/onboarding");
-      return;
+      if (!arts.Success) {
+        toast.error(arts.message);
+        return;
+      }
+
+      setArtistArtworks(arts.Data);
     }
-
-    if (!arts.Success) {
-      toast.error(arts.message);
-      return;
-    }
-
-    setArtistArtworks(arts.Data);
-  }
-}, [data, arts, user, isUserProfile, fetchingData, fetchingArtworks]);
-
+  }, [data, arts, user, isUserProfile, fetchingData, fetchingArtworks]);
+  const handleBan = () => {};
   if (fetchingData || fetchingArtworks) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -136,22 +137,40 @@ useEffect(() => {
                 </span>
                 <div className="h-px w-8 bg-accent/50"></div>
               </div>
-             <div className="flex items-center gap-3 group">
-  <h2 className="font-heading font-bold text-white text-5xl md:text-7xl leading-none tracking-tight">
-    {artist?.Username?.Valid
-      ? `@${artist.Username.String}`
-      : "Username not set"}
-  </h2>
-  {
-    role === "artist" && (
-      <Link
-    href="/onboarding"
-    className="opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 p-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 backdrop-blur-md"
-  >
-    <Pencil size={18} className="text-white/80" />
-  </Link>
-    )}
-</div>
+              <div className="flex items-center gap-3 group">
+                <h2 className="font-heading font-bold text-white text-5xl md:text-7xl leading-none tracking-tight">
+                  {artist?.Username?.Valid
+                    ? `@${artist.Username.String}`
+                    : "Username not set"}
+                </h2>
+                {role === "artist" && (
+                  <Link
+                    href="/onboarding"
+                    className="opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 p-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 backdrop-blur-md"
+                  >
+                    <Pencil size={18} className="text-white/80" />
+                  </Link>
+                )}
+                {role === "admin" && (
+                  <div className="opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                    {artist?.Status === "approved" ? (
+                      <button
+                        onClick={() => handleBan("banned")}
+                        className="px-4 py-2 rounded-full border border-red-400/20 bg-red-500/10 text-red-400 hover:bg-red-500/20 text-sm font-medium backdrop-blur-md"
+                      >
+                        Ban User
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleBan("approved")}
+                        className="px-4 py-2 rounded-full border border-green-400/20 bg-green-500/10 text-green-400 hover:bg-green-500/20 text-sm font-medium backdrop-blur-md"
+                      >
+                        Approve User
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
               <p className="mt-2 text-gray-400 text-lg font-medium">
                 {artist?.Name}
               </p>
@@ -176,7 +195,7 @@ useEffect(() => {
                   Role
                 </p>
                 <p className="text-white font-medium">
-                  {artist?.Role || "User"}
+                  {capitalizeFirst(artist?.Role || "User")}
                 </p>
               </div>
 
@@ -188,6 +207,19 @@ useEffect(() => {
                   {artist?.Batch?.Valid && artist?.Batch?.String
                     ? artist.Batch.String
                     : "Not specified"}
+                </p>
+              </div>
+              <div>
+                <p className="text-gray-500 text-xs uppercase tracking-widest mb-1">
+                  Status
+                </p>
+                <p
+                  className={`px-4 py-2 rounded-full border ${artist?.Status === "banned"
+                      ? "border-red-400/20 bg-red-500/10 text-red-400"
+                      : "border-green-400/20 bg-green-500/10 text-green-400"
+                    } text-sm font-medium backdrop-blur-md w-fit`}
+                >
+                  {capitalizeFirst(artist?.Status)}
                 </p>
               </div>
 

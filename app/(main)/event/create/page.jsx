@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import useFetch from "@/hooks/useFetch";
-import { createEvent } from "@/service/event";
+import { createEvent, updateEvent } from "@/service/event";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { eventSchema } from "@/schema/event";
@@ -82,13 +82,15 @@ const ImageInput = ({ label, inputRef, existingImage, onFileChange }) => {
 };
 
 const CreateEventPage = () => {
+  const searchParams = useSearchParams();
   const user = useAuthStore((state) => state.user);
   const [isBanned, setIsBanned] = useState(false);
   const [logoFile, setLogoFile] = useState(null);
   const [bannerFile, setBannerFile] = useState(null);
+
+  const router = useRouter();
   useEffect(() => {
     if (!user) return;
-
     if (user.Role !== "admin") {
       router.push("/");
     }
@@ -96,8 +98,6 @@ const CreateEventPage = () => {
       setIsBanned(true);
     }
   }, [user]);
-
-  const router = useRouter();
   const params = useParams();
   const logoRef = useRef(null);
   const bannerRef = useRef(null);
@@ -109,17 +109,35 @@ const CreateEventPage = () => {
   } = useForm({
     resolver: zodResolver(eventSchema),
   });
-
-  const eventId = params.eventId;
+  const eventId = searchParams.get("id");
   const {
     data: event,
     fn: createEventFn,
     loading: creatingEvent,
   } = useFetch(createEvent);
+  const {
+    data: updatedEvent,
+    fn: updateEventFn,
+    loading: updatingEvent,
+  } = useFetch(updateEvent);
 
   const isEdit = !!eventId;
 
   const handleOnSubmit = async (data) => {
+    if (isEdit) {
+      const bannerUrl = await uploadDummy(bannerRef.current?.files[0]);
+      const logoUrl = await uploadDummy(logoRef.current?.files[0]);
+      const updatedformData = new FormData();
+      updatedformData.append("name", data.name);
+      updatedformData.append("description", data.description);
+      updatedformData.append("venue", data.venue);
+      updatedformData.append("status", data.status);
+      updatedformData.append("date", data.date);
+      updatedformData.append("LogoUrl", logoUrl?.Url);
+      updatedformData.append("bannerUrl", bannerUrl?.Url);
+      updateEventFn(eventId, updatedformData);
+      return;
+    }
     const bannerUrl = await uploadDummy(bannerRef.current?.files[0]);
     const logoUrl = await uploadDummy(logoRef.current?.files[0]);
     const formData = new FormData();
@@ -138,8 +156,6 @@ const CreateEventPage = () => {
       router.push(`/event/${event.Data.ID}`);
     }
   }, [event]);
-
-  if (isEdit) return <div>EditEventPage</div>;
 
   return (
     <section>
@@ -229,8 +245,16 @@ const CreateEventPage = () => {
         </div>
 
         {/* Logo & Banner */}
-        <ImageInput label="Event Logo" onFileChange={setLogoFile} inputRef={logoRef} />
-        <ImageInput label="Event Banner" onFileChange={setBannerFile} inputRef={bannerRef} />
+        <ImageInput
+          label="Event Logo"
+          onFileChange={setLogoFile}
+          inputRef={logoRef}
+        />
+        <ImageInput
+          label="Event Banner"
+          onFileChange={setBannerFile}
+          inputRef={bannerRef}
+        />
 
         <button
           type="submit"

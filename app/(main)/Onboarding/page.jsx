@@ -132,12 +132,8 @@ const onboarding = () => {
     try {
       let image = "";
       let bannerImage = "";
-      console.log("logo", logoRef);
-      console.log("banner", bannerRef);
-
       if (logoRef?.current?.files?.[0]) {
         const logoImgRes = await uploadDummy(logoRef.current.files[0]);
-        console.log("logo", logoImgRes);
         image = logoImgRes?.Url;
       }
 

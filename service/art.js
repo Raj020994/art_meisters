@@ -32,9 +32,14 @@ export const likeArt=()=>{
 export const saveArt=()=>{
 
 }
-export const updateArt=(data)=>{
-  return api("/art/",{
-    method:"PATCH",
-    body:data,
-  })
-}
+export const updateArt = (id, data) => {
+
+  return api(`/art/${id}`, {
+
+    method: "PATCH",
+
+    body: JSON.stringify(data),
+
+  });
+
+};

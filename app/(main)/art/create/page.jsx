@@ -21,101 +21,96 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import useFetch from "@/hooks/useFetch";
-import { createArt, getArtById, getArtProfileById } from "@/service/art";
+import {
+  createArt,
+  getArtById,
+  getArtProfileById,
+  updateArt,
+} from "@/service/art";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { artworkSchema } from "@/schema/art";
 import { toast } from "sonner";
 import { uploadDummy } from "@/service/upload";
 import { useAuthStore } from "@/store/user";
 
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
+const categories = [
+  { value: "digital-art", label: "Digital Art" },
+  { value: "photography", label: "Photography" },
+  { value: "illustration", label: "Illustration" },
+  { value: "painting", label: "Painting" },
+  { value: "3d", label: "3D Art" },
+];
 const page = () => {
-  const categories = [
-    { value: "digital-art", label: "Digital Art" },
-    { value: "photography", label: "Photography" },
-    { value: "illustration", label: "Illustration" },
-    { value: "painting", label: "Painting" },
-    { value: "3d", label: "3D Art" },
-  ];
   const searchParams = useSearchParams();
-  const [artData,setArtData] = useState(null)
+  const [artData, setArtData] = useState(null);
   const id = searchParams.get("id");
-
   const isEdit = Boolean(id);
-
+  const router=useRouter()
   const {
     register,
-
     reset,
-
     handleSubmit,
-
     formState: { errors },
   } = useForm({
     resolver: zodResolver(artworkSchema),
   });
 
   const user = useAuthStore((state) => state.user);
-
   const [isBanned, setIsBanned] = useState(false);
-
   const [selectedCategories, setSelectedCategories] = useState([]);
-
   const [preview, setPreview] = useState(null);
-
   const [file, setFile] = useState(null);
-
   const inputRef = useRef(null);
 
   const {
     fn: getArtFn,
-
+    loading: getArtLoading,
     data: artDataRes,
   } = useFetch(getArtById);
-
-  const {
-    fn: createArtFunc,
-
-    data: createdArt,
-  } = useFetch(createArt);
-
-  // BAN CHECK
+  const { fn: createArtFunc, data: createdArt } = useFetch(createArt);
+  const { fn: updateArtFunc, data: updatedArt } = useFetch(updateArt);
 
   useEffect(() => {
-    if (user?.Status === "banned") {
-      setIsBanned(true);
-    }
+    setIsBanned(user?.Status === "banned");
   }, [user]);
-
-  // FETCH ART FOR EDIT MODE
 
   useEffect(() => {
     if (!id) return;
-
     getArtFn(id);
   }, [id]);
 
-  // PREFILL FORM WHEN DATA COMES
-
   useEffect(() => {
-    if (!artDataRes) return;
-    const res = artDataRes?.Data.Art;
-    setArtData(res);
+    if (!artDataRes?.Success) return;
+    const art = artDataRes.Data;
+    setArtData(art);
     reset({
-      title: res?.Name || "",
-
-      description: res?.Description?.String || "",
+      title: art.Name || "",
+      description: art.Description?.String || "",
     });
-
-    setSelectedCategories(artData?.Tags || []);
-
-    setPreview(artData?.Image || null);
-
+    setSelectedCategories(art.Tags || []);
+    setPreview(art.Image || null);
     setFile(null);
   }, [artDataRes, reset]);
 
-  // CATEGORY TOGGLE
+  useEffect(() => {
+    if (!createdArt ) return;
+    toast.success(
+      "Artwork created successfully",
+    );
+    reset();
+    router.push(`/u/${user?.ID}/art/${createdArt?.Data?.ID}`)
+  }, [createdArt, reset]);
+  useEffect(() => {
+    if (!updatedArt ) return;
+    toast.success(
+      "Artwork updated successfully",
+    );
+    reset();
+    router.push(`/u/${user?.ID}/${updatedArt?.Data?.ID}`)
+
+  }, [updatedArt, reset]);
 
   const toggleCategory = (value) => {
     setSelectedCategories((prev) =>
@@ -125,91 +120,66 @@ const page = () => {
     );
   };
 
-  // IMAGE CHANGE
-
   const handleChange = (e) => {
     const f = e.target.files?.[0];
-
     if (!f) return;
-
     setFile(f);
-
     setPreview(URL.createObjectURL(f));
   };
 
-
-
   const handleRemove = () => {
     if (preview) URL.revokeObjectURL(preview);
-
     setPreview(null);
-
     setFile(null);
-
     if (inputRef.current) inputRef.current.value = "";
   };
-
-
 
   const handleOnSubmit = async (data) => {
     try {
       if (isBanned) {
         toast.error("You are banned, can't upload");
-
         return;
       }
 
-      let url = preview;
-
-      // upload ONLY if new file selected
-
-      if (file) {
-        const res = await uploadDummy(file);
-
-        if (!res?.success) {
-          throw new Error("Image upload error");
+      if (!isEdit) {
+        let url = preview;
+        if (file) {
+          const res = await uploadDummy(file);
+          if (!res?.success) throw new Error("Image upload error");
+          url = res?.Url || "";
         }
-
-        url = res?.Url || "";
+        const formData = new FormData();
+        formData.append("name", data.title);
+        formData.append("description", data.description);
+        formData.append("url", url);
+        selectedCategories.forEach((tag) => formData.append("tags", tag));
+        createArtFunc(formData);
+      } else {
+        const payload = {};
+        payload.name =
+          data.title?.trim() !== (artData?.Name ?? "").trim()
+            ? data.title.trim()
+            : null;
+        payload.description =
+          data.description?.trim() !==
+          (artData?.Description?.String ?? "").trim()
+            ? data.description.trim()
+            : null;
+        const originalTags = artData?.Tags ?? [];
+        const newTags = selectedCategories ?? [];
+        const tagsChanged =
+          newTags.length !== originalTags.length ||
+          newTags.some((t) => !originalTags.includes(t));
+        payload.tags = tagsChanged ? newTags.filter(Boolean) : null;
+        if (Object.values(payload).some((v) => v !== null)) {
+          updateArtFunc(id, payload);
+        }
       }
-
-      const formData = new FormData();
-
-      formData.append("name", data.title);
-
-      formData.append("description", data.description);
-
-      formData.append("url", url);
-
-      selectedCategories.forEach((tag) => {
-        formData.append("tags", tag);
-      });
-
-      // always CREATE (no update API yet)
-
-      createArtFunc(formData);
     } catch (err) {
       console.log(err);
-
       toast.error("Something went wrong");
     }
   };
-
-  // SUCCESS TOAST
-
-  useEffect(() => {
-    if (createdArt) {
-      toast.success(createdArt.message);
-
-      reset();
-
-      setSelectedCategories([]);
-
-      setPreview(null);
-
-      setFile(null);
-    }
-  }, [createdArt, reset]);
   return (
     <div>
       <div className="relative py-20 px-4 overflow-hidden">
@@ -346,13 +316,15 @@ const page = () => {
                     alt="Artwork preview"
                     className="w-full h-64 object-cover"
                   />
-                  <button
-                    type="button"
-                    onClick={handleRemove}
-                    className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white rounded-full p-1.5 transition-all"
-                  >
-                    <X size={16} />
-                  </button>
+                  {!isEdit && (
+                    <button
+                      type="button"
+                      onClick={handleRemove}
+                      className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white rounded-full p-1.5 transition-all"
+                    >
+                      <X size={16} />
+                    </button>
+                  )}
                 </div>
               ) : (
                 <label className="flex flex-col items-center justify-center border-2 border-dashed border-white/10 rounded-2xl p-10 cursor-pointer hover:border-red-800/40 transition-all">
@@ -380,7 +352,13 @@ const page = () => {
               disabled={isBanned}
               className="w-full bg-red-800 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-red-900/20 flex items-center justify-center gap-2 group"
             >
-              {isBanned ? <>Your Account Is Haulted</> : <>Upload Artwork</>}
+              {isBanned ? (
+                <>Your Account Is Haulted</>
+              ) : isEdit ? (
+                <>Update Artwork</>
+              ) : (
+                <>Upload Artwork</>
+              )}
               <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
             </button>
           </form>

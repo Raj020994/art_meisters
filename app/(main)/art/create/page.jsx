@@ -21,12 +21,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import useFetch from "@/hooks/useFetch";
-import {
-  createArt,
-  getArtById,
-  getArtProfileById,
-  updateArt,
-} from "@/service/art";
+import { createArt, getArtById, updateArt } from "@/service/art";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { artworkSchema } from "@/schema/art";
 import { toast } from "sonner";
@@ -47,7 +42,7 @@ const page = () => {
   const [artData, setArtData] = useState(null);
   const id = searchParams.get("id");
   const isEdit = Boolean(id);
-  const router=useRouter()
+  const router = useRouter();
   const {
     register,
     reset,
@@ -86,7 +81,7 @@ const page = () => {
     const art = artDataRes.Data;
     setArtData(art);
     reset({
-      title: art.Name || "",
+      name: art.Name || "",
       description: art.Description?.String || "",
     });
     setSelectedCategories(art.Tags || []);
@@ -95,21 +90,16 @@ const page = () => {
   }, [artDataRes, reset]);
 
   useEffect(() => {
-    if (!createdArt ) return;
-    toast.success(
-      "Artwork created successfully",
-    );
+    if (!createdArt) return;
+    toast.success("Artwork created successfully");
     reset();
-    router.push(`/u/${user?.ID}/art/${createdArt?.Data?.ID}`)
+    router.push(`/u/${user?.ID}/art/${createdArt?.Data?.ID}`);
   }, [createdArt, reset]);
   useEffect(() => {
-    if (!updatedArt ) return;
-    toast.success(
-      "Artwork updated successfully",
-    );
+    if (!updatedArt) return;
+    toast.success("Artwork updated successfully");
     reset();
-    router.push(`/u/${user?.ID}/${updatedArt?.Data?.ID}`)
-
+    router.push(`/u/${user?.ID}/${updatedArt?.Data?.ID}`);
   }, [updatedArt, reset]);
 
   const toggleCategory = (value) => {
@@ -140,6 +130,7 @@ const page = () => {
         toast.error("You are banned, can't upload");
         return;
       }
+      console.log(data);
 
       if (!isEdit) {
         let url = preview;
@@ -148,16 +139,18 @@ const page = () => {
           if (!res?.success) throw new Error("Image upload error");
           url = res?.Url || "";
         }
-        const formData = new FormData();
-        formData.append("name", data.title);
-        formData.append("description", data.description);
-        formData.append("url", url);
-        selectedCategories.forEach((tag) => formData.append("tags", tag));
-        createArtFunc(formData);
+        const payload = {
+          name: data.name,
+          description: data.description,
+          url,
+          tags: selectedCategories,
+        };
+
+        createArtFunc(payload);
       } else {
         const payload = {};
         payload.name =
-          data.title?.trim() !== (artData?.Name ?? "").trim()
+          data.name?.trim() !== (artData?.Name ?? "").trim()
             ? data.title.trim()
             : null;
         payload.description =
@@ -213,12 +206,12 @@ const page = () => {
               <input
                 type="text"
                 placeholder="Sunset Dreams"
-                {...register("title")}
+                {...register("name")}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-red-800/50 focus:bg-white/10 transition-all text-white placeholder:text-white/20"
               />
-              {errors.title?.message && (
+              {errors.name?.message && (
                 <p className="text-red-800/50 text-sm">
-                  {errors.title?.message}
+                  {errors.name?.message}
                 </p>
               )}
             </div>

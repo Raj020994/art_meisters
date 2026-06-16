@@ -78,9 +78,7 @@ export default function EventDetail() {
     } else {
       
     }
-    
   }
-  // Error state if event not found or fetch failed
   if (
     getEventError ||
     (eventDetails && !eventDetails.Success) ||

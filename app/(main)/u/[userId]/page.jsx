@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { MoveLeft, Palette, ExternalLink, Upload } from "lucide-react";
+import { MoveLeft, Palette, ExternalLink, Upload, Pencil } from "lucide-react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import useFetch from "@/hooks/useFetch";
@@ -42,48 +42,35 @@ export default function ArtistProfile() {
     }
   }, [usrId, isUserProfile, user]);
 
-  // Handle fetched data
-  useEffect(() => {
-    // Visiting another artist profile
-    if (!isUserProfile) {
-      if (fetchingData || !data) return;
+useEffect(() => {
+  if (!isUserProfile) {
+    if (fetchingData || !data) return;
 
-      if (!data.Success) {
-        toast.error(data.message);
-        return;
-      }
-
-      // Redirect if onboarding not completed
-      if (
-        !data.Data?.user?.Username?.Valid ||
-        !data.Data?.user?.Username?.String?.trim()
-      ) {
-        router.push("/onboarding");
-        return;
-      }
-
-      setArtist(data.Data.user);
-      setArtistArtworks(data.Data.art);
+    if (!data.Success) {
+      toast.error(data.message);
+      return;
     }
 
-    // Visiting own profile
-    if (isUserProfile) {
-      if (fetchingArtworks || !arts) return;
+    setArtist(data.Data.User);
+    setArtistArtworks(data.Data.Art);
+  }
 
-      // Redirect if onboarding not completed
-      if (!user?.Username?.Valid || !user?.Username?.String?.trim()) {
-        router.push("/onboarding");
-        return;
-      }
+  if (isUserProfile) {
+    if (fetchingArtworks || !arts) return;
 
-      if (!arts.Success) {
-        toast.error(arts.message);
-        return;
-      }
-
-      setArtistArtworks(arts.Data);
+    if (!user?.Username?.Valid || !user?.Username?.String?.trim()) {
+      router.push("/onboarding");
+      return;
     }
-  }, [data, arts, user, isUserProfile, fetchingData, fetchingArtworks]);
+
+    if (!arts.Success) {
+      toast.error(arts.message);
+      return;
+    }
+
+    setArtistArtworks(arts.Data);
+  }
+}, [data, arts, user, isUserProfile, fetchingData, fetchingArtworks]);
 
   if (fetchingData || fetchingArtworks) {
     return (
@@ -138,6 +125,8 @@ export default function ArtistProfile() {
                 alt={artist?.Name}
                 className="w-full h-full object-cover"
               />
+
+              {/* Hover overlay */}
             </div>
 
             <div className="flex-1 pb-4">
@@ -147,14 +136,24 @@ export default function ArtistProfile() {
                 </span>
                 <div className="h-px w-8 bg-accent/50"></div>
               </div>
-
-              <h1 className="font-heading font-bold text-white text-5xl md:text-7xl leading-none">
-                {artist?.Name}
-              </h1>
+             <div className="flex items-center gap-3 group">
+  <h2 className="font-heading font-bold text-white text-5xl md:text-7xl leading-none tracking-tight">
+    {artist?.Username?.Valid
+      ? `@${artist.Username.String}`
+      : "Username not set"}
+  </h2>
+  {
+    role === "artist" && (
+      <Link
+    href="/onboarding"
+    className="opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 p-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 backdrop-blur-md"
+  >
+    <Pencil size={18} className="text-white/80" />
+  </Link>
+    )}
+</div>
               <p className="mt-2 text-gray-400 text-lg font-medium">
-                {artist?.Username?.Valid
-                  ? `@${artist.Username.String}`
-                  : "Username not set"}
+                {artist?.Name}
               </p>
             </div>
           </div>

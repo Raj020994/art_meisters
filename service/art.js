@@ -1,9 +1,12 @@
+
 import { api } from "./api";
 
 export const createArt = async (formData) => {
+  console.log(formData);
+  
   return api("/art/", {
     method: "POST",
-    body: formData,
+    body: JSON.stringify(formData),
   });
 
 };

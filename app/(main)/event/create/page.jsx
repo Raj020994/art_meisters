@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import useFetch from "@/hooks/useFetch";
-import { createEvent, updateEvent } from "@/service/event";
+import { createEvent, getEventById, updateEvent } from "@/service/event";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { eventSchema } from "@/schema/event";
@@ -98,23 +98,28 @@ const CreateEventPage = () => {
       setIsBanned(true);
     }
   }, [user]);
-  const params = useParams();
   const logoRef = useRef(null);
   const bannerRef = useRef(null);
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(eventSchema),
   });
   const eventId = searchParams.get("id");
   const {
-    data: event,
+    data: createdEvent,
     fn: createEventFn,
     loading: creatingEvent,
   } = useFetch(createEvent);
+  const {
+    data: Event,
+    fn: getEventFn,
+    loading: gettingEvent,
+  } = useFetch(getEventById);
   const {
     data: updatedEvent,
     fn: updateEventFn,
@@ -125,17 +130,45 @@ const CreateEventPage = () => {
 
   const handleOnSubmit = async (data) => {
     if (isEdit) {
-      const bannerUrl = await uploadDummy(bannerRef.current?.files[0]);
-      const logoUrl = await uploadDummy(logoRef.current?.files[0]);
-      const updatedformData = new FormData();
-      updatedformData.append("name", data.name);
-      updatedformData.append("description", data.description);
-      updatedformData.append("venue", data.venue);
-      updatedformData.append("status", data.status);
-      updatedformData.append("date", data.date);
-      updatedformData.append("LogoUrl", logoUrl?.Url);
-      updatedformData.append("bannerUrl", bannerUrl?.Url);
-      updateEventFn(eventId, updatedformData);
+      const payload = {};
+      let image = "";
+      let bannerImage = "";
+      if (logoRef?.current?.files?.[0]) {
+        const logoImgRes = await uploadDummy(logoRef.current.files[0]);
+        image = logoImgRes?.Url;
+      }
+
+      if (bannerRef?.current?.files?.[0]) {
+        const bannerImgRes = await uploadDummy(bannerRef.current.files[0]);
+        console.log("banner", bannerImgRes);
+        bannerImage = bannerImgRes?.Url;
+      }
+      payload.name =
+        data.name?.trim() !== (Event?.Data?.Name ?? "").trim()
+          ? data.name.trim()
+          : null;
+      payload.description =
+        data.description?.trim() !==
+        (Event?.Data?.Description?.String ?? "").trim()
+          ? data.description.trim()
+          : null;
+      payload.date =
+        data.date?.trim() !== (Event?.Data?.EventDate ?? "").trim()
+          ? data.date.trim()
+          : null;
+      payload.status =
+        data.status?.trim() !== (Event?.Data?.Status ?? "").trim()
+          ? data.status.trim()
+          : null;
+      payload.venue =
+        data.venue?.trim() !== (Event?.Data?.Venue?.String ?? "").trim()
+          ? data.venue.trim()
+          : null;
+      payload.image = image || null;
+      payload.bannerImage = bannerImage || null;
+      if (Object.values(payload).some((v) => v !== null)) {
+        updateEventFn(eventId, payload);
+      }
       return;
     }
     const bannerUrl = await uploadDummy(bannerRef.current?.files[0]);
@@ -151,17 +184,45 @@ const CreateEventPage = () => {
     createEventFn(formData);
   };
   useEffect(() => {
-    if (event) {
-      toast.success(event.message);
-      router.push(`/event/${event.Data.ID}`);
+    if (updatedEvent) {
+      toast.success("Event updated Successfully");
+      router.push(`/event/${updatedEvent.Data.ID}`);
     }
-  }, [event]);
+  }, [updatedEvent]);
+  useEffect(() => {
+    if (createdEvent) {
+      toast.success("Event created successfully");
+      router.push(`/event/${createdEvent.Data.ID}`);
+    }
+  }, [createdEvent]);
+  useEffect(() => {
+    console.log(Event);
+    if (Event?.Success) {
+      const eventDetails = Event?.Data;
+      console.log(eventDetails);
 
+      reset({
+        name: eventDetails?.Name ?? "",
+        description: eventDetails?.Description?.String ?? "",
+        venue: eventDetails?.Venue?.String ?? "",
+        status: eventDetails?.Status ?? "",
+        date: eventDetails?.EventDate
+          ? eventDetails.EventDate.split("T")[0]
+          : "",
+      });
+      setBannerFile(eventDetails?.BannerImage);
+      setLogoFile(eventDetails?.LogoImage);
+    }
+  }, [Event, reset]);
+  useEffect(() => {
+    if (!isEdit) return;
+    getEventFn(eventId);
+  }, [isEdit]);
   return (
     <section>
       <div className="text-center mb-8">
         <h1 className="text-3xl md:text-4xl font-serif text-gradient mb-2">
-          Create Event
+          {isEdit ? "Edit Event" : "Create Event"}
         </h1>
         <p className="text-white/60">
           Organize and share your event with the community.
@@ -244,16 +305,18 @@ const CreateEventPage = () => {
           )}
         </div>
 
-        {/* Logo & Banner */}
         <ImageInput
           label="Event Logo"
           onFileChange={setLogoFile}
           inputRef={logoRef}
+          existingImage={Event?.Data?.Image?.String}
         />
+
         <ImageInput
           label="Event Banner"
           onFileChange={setBannerFile}
           inputRef={bannerRef}
+          existingImage={Event?.Data?.BannerImage?.String}
         />
 
         <button

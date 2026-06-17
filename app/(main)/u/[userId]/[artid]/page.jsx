@@ -1,12 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { MoveLeft, ArrowRight } from "lucide-react";
+import { MoveLeft, ArrowRight, Check, Pencil, Ban } from "lucide-react";
 import { useParams } from "next/navigation";
 import useFetch from "@/hooks/useFetch";
 import { getArtProfileById } from "@/service/art";
 import { useArtStore } from "@/store/art";
 import { useAuthStore } from "@/store/user";
+import { changeArtStatus } from "@/service/admin";
+import { toast } from "sonner";
 export default function ArtPage() {
   const params = useParams();
   const artId = params.artid;
@@ -37,6 +39,10 @@ export default function ArtPage() {
   }, [artId, artWork, userId]);
   useEffect(() => {
     if (res?.Success) {
+      if (res.Data.Status === "rejected" && role == "user") {
+        toast.error("Artwork is rejected");
+        return;
+      }
       addArt(res.Data);
 
       setArt(res.Data);
@@ -48,6 +54,27 @@ export default function ArtPage() {
     }
   }, [res]);
 
+  const {
+    data: verdict,
+    loading,
+    error,
+    fn: changeArtStatusFn,
+  } = useFetch(changeArtStatus);
+  const handleArtChange = (id, status) => {
+    if (user?.Role !== "admin") {
+      toast.error("You are not authorized to perform this action");
+      return;
+    }
+    changeArtStatusFn(id, status);
+  };
+  useEffect(() => {
+    if (error) {
+      toast.error(error.message || "Failed to update artwork status");
+    }
+    if (verdict?.Success && !loading && !error) {
+      toast.success(`Artwork successfully ${verdict.Data.Status}`);
+    }
+  }, [error, verdict]);
   if (fetchingArt && !art) {
     return <div>Loading...</div>;
   }
@@ -55,7 +82,6 @@ export default function ArtPage() {
   if (!fetchingArt && !art) {
     return <div>Art Not Found</div>;
   }
-  console.log(artist);
 
   return (
     <main className="min-h-screen bg-black text-white selection:bg-accent pb-20 pt-8  px-6 md:px-12">
@@ -75,6 +101,52 @@ export default function ArtPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:auto-rows-[300px]">
           {/* Main Art Display - takes up 2 columns and 2 rows */}
           <div className="md:col-span-2 md:row-span-2 glass rounded-3xl overflow-hidden relative border border-white/5 group h-[400px] md:h-[624px]">
+            <div className="absolute top-6 right-6 z-20 flex gap-3">
+              {/* Artist edit */}
+              {role === "artist" && (
+                <Link
+                  href={`/art/create?id=${artId}`}
+                  className="w-12 h-12 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-all group"
+                >
+                  <Pencil
+                    size={18}
+                    className="text-white group-hover:scale-110 transition-transform"
+                  />
+                </Link>
+              )}
+
+              {role === "admin" && (
+                <>
+                  {/* Show Approve if status is pending or banned */}
+                  {(art?.data?.Status === "pending" ||
+                    art?.data?.Status === "banned") && (
+                    <button
+                      onClick={() => handleArtChange(art?.data?.ID, "approved")}
+                      className="w-12 h-12 flex items-center justify-center rounded-full bg-green-500/20 backdrop-blur-md border border-green-500/30 hover:bg-green-500/30 transition-all group"
+                    >
+                      <Check
+                        size={18}
+                        className="text-green-400 group-hover:scale-110 transition-transform"
+                      />
+                    </button>
+                  )}
+
+                  {/* Show Ban if status is pending or approved */}
+                  {(art?.data?.Status === "pending" ||
+                    art?.data?.Status === "approved") && (
+                    <button
+                      onClick={() => handleArtChange(art?.data?.ID, "rejected")}
+                      className="w-12 h-12 flex items-center justify-center rounded-full bg-red-500/20 backdrop-blur-md border border-red-500/30 hover:bg-red-500/30 transition-all group"
+                    >
+                      <Ban
+                        size={18}
+                        className="text-red-400 group-hover:scale-110 transition-transform"
+                      />
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
             <img
               src={art?.data?.Image}
               alt={art?.data?.Name}

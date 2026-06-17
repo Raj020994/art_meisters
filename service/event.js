@@ -16,8 +16,8 @@ export const joinEvent = async (id) => {
   });
 };
 
-export const deleteEventAttendee = async (id) => {
-  return api(`/event/${id}/attendee`, {
+export const deleteEventAttendee = async (payload) => {
+  return api(`/event/${payload?.id}/attendee/${payload?.userid}`, {
     method: "DELETE",
   });
 };

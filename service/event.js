@@ -1,7 +1,3 @@
-
-
-// Public
-
 import { api } from "./api";
 
 export const getAllEvents = async () => {
@@ -40,8 +36,6 @@ export const createEvent = async (eventData) => {
 };
 
 export const updateEvent = async (id, eventData) => {
-
-  
   return api(`/event/${id}`, {
     method: "PATCH",
     body: JSON.stringify(eventData),

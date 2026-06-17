@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { getAllArtistArt, getArtistProfile } from "@/service/art";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/user";
+import { changeUserRoleStatus } from "@/service/admin";
 export default function ArtistProfile() {
   const capitalizeFirst = (str) => str.charAt(0).toUpperCase() + str.slice(1);
   const params = useParams();
@@ -22,7 +23,11 @@ export default function ArtistProfile() {
     fn: getData,
     loading: fetchingData,
   } = useFetch(getArtistProfile);
-
+  const {
+    data: roledata,
+    fn: changeFn,
+    loading: updating,
+  } = useFetch(changeUserRoleStatus);
   const {
     data: arts,
     fn: getArt,
@@ -72,7 +77,18 @@ export default function ArtistProfile() {
       setArtistArtworks(arts.Data);
     }
   }, [data, arts, user, isUserProfile, fetchingData, fetchingArtworks]);
-  const handleBan = () => {};
+  const handleStatusOfUser = (status) => {
+    changeFn(artist?.ID, { status: status });
+  };
+  useEffect(() => {
+    if (updating || !roledata) return;
+    if (!roledata.Success) {
+      toast.error(roledata.message);
+      return;
+    }
+    setArtist({...artist, Status: roledata.Data.Status});
+  }, [roledata, updating]);
+
   if (fetchingData || fetchingArtworks) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -155,14 +171,14 @@ export default function ArtistProfile() {
                   <div className="opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
                     {artist?.Status === "approved" ? (
                       <button
-                        onClick={() => handleBan("banned")}
+                        onClick={() => handleStatusOfUser("banned")}
                         className="px-4 py-2 rounded-full border border-red-400/20 bg-red-500/10 text-red-400 hover:bg-red-500/20 text-sm font-medium backdrop-blur-md"
                       >
                         Ban User
                       </button>
                     ) : (
                       <button
-                        onClick={() => handleBan("approved")}
+                        onClick={() => handleStatusOfUser("approved")}
                         className="px-4 py-2 rounded-full border border-green-400/20 bg-green-500/10 text-green-400 hover:bg-green-500/20 text-sm font-medium backdrop-blur-md"
                       >
                         Approve User
@@ -214,10 +230,11 @@ export default function ArtistProfile() {
                   Status
                 </p>
                 <p
-                  className={`px-4 py-2 rounded-full border ${artist?.Status === "banned"
+                  className={`px-4 py-2 rounded-full border ${
+                    artist?.Status === "banned"
                       ? "border-red-400/20 bg-red-500/10 text-red-400"
                       : "border-green-400/20 bg-green-500/10 text-green-400"
-                    } text-sm font-medium backdrop-blur-md w-fit`}
+                  } text-sm font-medium backdrop-blur-md w-fit`}
                 >
                   {capitalizeFirst(artist?.Status)}
                 </p>
@@ -328,31 +345,6 @@ export default function ArtistProfile() {
                             Edit
                           </button>
                         </Link>
-                      )}
-
-                      {/* Admin can approve / ban */}
-                      {role === "admin" && (
-                        <>
-                          {art.Status !== "approved" && (
-                            <button
-                              onClick={() =>
-                                handleArtAction(art.ID, "approved")
-                              }
-                              className="text-green-400 text-xs font-bold uppercase tracking-widest hover:opacity-80 transition-opacity"
-                            >
-                              Approve
-                            </button>
-                          )}
-
-                          {art.Status !== "banned" && (
-                            <button
-                              onClick={() => handleArtAction(art.ID, "banned")}
-                              className="text-red-400 text-xs font-bold uppercase tracking-widest hover:opacity-80 transition-opacity"
-                            >
-                              Ban
-                            </button>
-                          )}
-                        </>
                       )}
                     </div>
                   </div>

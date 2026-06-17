@@ -4,9 +4,10 @@ import Link from "next/link";
 import { MoveLeft, Calendar, MapPin, Clock } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import useFetch from "@/hooks/useFetch";
-import { getEventById } from "@/service/event";
+import { getEventById, joinEvent } from "@/service/event";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/user";
+import { toast } from "sonner";
 
 // Helper to parse backend EventDate and extract day, month, and full readable date format
 const parseEventDate = (dateStr) => {
@@ -32,7 +33,7 @@ const parseEventDate = (dateStr) => {
 };
 
 export default function EventDetail() {
-  const router=useRouter()
+  const router = useRouter();
   const params = useParams();
   const user = useAuthStore((state) => state.user);
   const [event, setEvent] = useState(null);
@@ -45,7 +46,34 @@ export default function EventDetail() {
     loading: getEventLoading,
     errors: getEventError,
   } = useFetch(getEventById);
-
+  const {
+    data: registerEventDetails,
+    fn: registerEventFn,
+    loading: registerEventLoading,
+  } = useFetch(joinEvent);
+  const handleEventClick = () => {
+    if (user?.Status == "banned") {
+      toast.error("You are banned from registering for events");
+      return;
+    }
+    if (role === "admin") {
+      router.push(`/event/create?id=${eventId}`);
+    } else {
+      if (!user) {
+        toast.error("Please Login First");
+        return;
+      }
+      registerEventFn(eventId);
+    }
+  };
+  useEffect(() => {
+    if (!registerEventLoading && registerEventDetails?.Success) {
+      toast.success(registerEventDetails?.Message);
+    }
+    if (!registerEventLoading && !registerEventDetails?.Success) {
+      toast.error(registerEventDetails?.Message);
+    }
+  }, [registerEventDetails, registerEventLoading]);
   const featured = data.featuredEvent;
 
   useEffect(() => {
@@ -68,17 +96,7 @@ export default function EventDetail() {
       </div>
     );
   }
-  const handleEventClick=()=>{
-    if(user?.status=="banned"){
-      toast.error("You are banned from registering for events")
-      return
-    }
-    if (role === "admin") {
-      router.push(`/event/create?id=${eventId}`);
-    } else {
-      
-    }
-  }
+
   if (
     getEventError ||
     (eventDetails && !eventDetails.Success) ||
@@ -181,7 +199,11 @@ export default function EventDetail() {
                   <button
                     onClick={handleEventClick}
                     disabled={isBanned}
-                    title={isBanned ? "You are banned from registering for events" : ""}
+                    title={
+                      isBanned
+                        ? "You are banned from registering for events"
+                        : ""
+                    }
                     className="px-6 py-3 rounded-xl bg-red-500 text-white font-bold text-sm md:text-base hover:bg-red-600 transition shadow-lg"
                   >
                     {role === "admin" ? "Edit Event" : "Register Now"}

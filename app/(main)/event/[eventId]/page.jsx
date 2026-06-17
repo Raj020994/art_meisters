@@ -4,7 +4,7 @@ import Link from "next/link";
 import { MoveLeft, Calendar, MapPin, Clock } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import useFetch from "@/hooks/useFetch";
-import { getEventById, joinEvent } from "@/service/event";
+import { getEventById, getMyEvent, joinEvent } from "@/service/event";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/user";
 import { toast } from "sonner";
@@ -35,10 +35,12 @@ const parseEventDate = (dateStr) => {
 export default function EventDetail() {
   const router = useRouter();
   const params = useParams();
+  const [isRegistered, setisRegistered] = useState(false);
   const user = useAuthStore((state) => state.user);
   const [event, setEvent] = useState(null);
   const role = user?.Role === "admin" ? "admin" : "user";
   const isBanned = user?.Status === "banned";
+  console.log(isBanned);
   const eventId = params.eventId;
   const {
     data: eventDetails,
@@ -46,6 +48,11 @@ export default function EventDetail() {
     loading: getEventLoading,
     errors: getEventError,
   } = useFetch(getEventById);
+  const {
+    data: myEventDetails,
+    fn: myEventFn,
+    loading: myEventLoading,
+  } = useFetch(getMyEvent);
   const {
     data: registerEventDetails,
     fn: registerEventFn,
@@ -75,9 +82,12 @@ export default function EventDetail() {
     }
   }, [registerEventDetails, registerEventLoading]);
   const featured = data.featuredEvent;
-
+  const isDisabled = () => {
+    if (event) return isBanned || (isRegistered && role !== "admin");
+  };
   useEffect(() => {
     getEventFn(eventId);
+    myEventFn(eventId);
   }, [eventId]);
 
   useEffect(() => {
@@ -85,6 +95,11 @@ export default function EventDetail() {
       setEvent(eventDetails?.Data);
     }
   }, [eventDetails, getEventLoading]);
+  useEffect(() => {
+    if (!myEventLoading) {
+      setisRegistered(!!myEventDetails?.Success);
+    }
+  }, [myEventDetails, myEventLoading]);
 
   if (getEventLoading) {
     return (
@@ -125,7 +140,20 @@ export default function EventDetail() {
   const isFeatured = featured && featured.title === event.Name;
 
   const { day, month, fullDate } = parseEventDate(event.EventDate);
-  const isActive = event.Status === "online";
+  const getEventState = (eventDate) => {
+    const now = new Date();
+    const start = new Date(eventDate);
+
+    // assuming event lasts 1 day
+    const end = new Date(start);
+    end.setDate(end.getDate() + 1);
+
+    if (now < start) return "Upcoming";
+    if (now >= start && now <= end) return "Ongoing";
+    return "Completed";
+  };
+
+  const eventState = getEventState(event.EventDate);
 
   // Fallbacks: Image.String fallback is /logo.png, and BannerImage.String fallback is /default.jpeg
   const logoSrc = event.Image?.String || "/logo.png";
@@ -161,12 +189,18 @@ export default function EventDetail() {
                   <div className="flex items-center gap-2 mb-2">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-md ${
-                        isActive
-                          ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                          : "bg-white/10 text-gray-300 border border-white/10"
+                        eventState === "Upcoming"
+                          ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                          : eventState === "Ongoing"
+                            ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                            : "bg-white/10 text-gray-300 border border-white/10"
                       }`}
                     >
-                      {isActive ? "● Upcoming" : "● Completed"}
+                      {eventState === "Upcoming"
+                        ? "● Upcoming"
+                        : eventState === "Ongoing"
+                          ? "● Ongoing"
+                          : "● Completed"}
                     </span>
 
                     {isFeatured && (
@@ -195,18 +229,28 @@ export default function EventDetail() {
                   </span>
                 </div>
 
-                {isActive && (
+                {eventState !== "Completed" && (
                   <button
                     onClick={handleEventClick}
-                    disabled={isBanned}
+                    disabled={isDisabled()}
                     title={
                       isBanned
                         ? "You are banned from registering for events"
-                        : ""
+                        : isRegistered
+                          ? "You already registered for this event"
+                          : eventState === "Ongoing"
+                            ? "This event is currently live"
+                            : ""
                     }
-                    className="px-6 py-3 rounded-xl bg-red-500 text-white font-bold text-sm md:text-base hover:bg-red-600 transition shadow-lg"
+                    className="px-6 py-3 rounded-xl bg-red-500 text-white font-bold text-sm md:text-base hover:bg-red-600 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {role === "admin" ? "Edit Event" : "Register Now"}
+                    {role === "admin"
+                      ? "Edit Event"
+                      : isRegistered
+                        ? "Already Registered"
+                        : eventState === "Ongoing"
+                          ? "Join Live"
+                          : "Register Now"}
                   </button>
                 )}
               </div>

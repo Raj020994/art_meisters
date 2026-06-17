@@ -47,3 +47,8 @@ export const deleteEvent = async (id) => {
     method: "DELETE",
   });
 };
+export const getMyEvent = async (id) => {
+  return api(`/event/u/${id}`, {
+    method: "GET",
+  });
+};

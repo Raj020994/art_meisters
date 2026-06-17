@@ -40,7 +40,6 @@ export default function EventDetail() {
   const [event, setEvent] = useState(null);
   const role = user?.Role === "admin" ? "admin" : "user";
   const isBanned = user?.Status === "banned";
-  console.log(isBanned);
   const eventId = params.eventId;
   const {
     data: eventDetails,

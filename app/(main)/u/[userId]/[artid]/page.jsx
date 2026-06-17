@@ -7,13 +7,12 @@ import useFetch from "@/hooks/useFetch";
 import { getArtProfileById } from "@/service/art";
 import { useArtStore } from "@/store/art";
 import { useAuthStore } from "@/store/user";
-
 export default function ArtPage() {
   const params = useParams();
-  const [artist, setartist] = useState(null);
   const artId = params.artid;
   const userId = params.userId;
   const user = useAuthStore((state) => state.user);
+  const [artist, setartist] = useState(user);
   const role = user?.ID === userId ? "artist" : user?.Role;
   const [art, setArt] = useState(null);
   const artWork = useArtStore((state) => state.arts[artId]);
@@ -28,21 +27,24 @@ export default function ArtPage() {
       setArt(artWork);
       return;
     }
-    if (artId&&userId) {
-      let payload={
-        id:artId,
-        usrId:userId
-      }
+    if (artId && userId) {
+      let payload = {
+        id: artId,
+        usrId: userId,
+      };
       fetchArtFunc(payload);
     }
-    
   }, [artId, artWork, userId]);
   useEffect(() => {
     if (res?.Success) {
       addArt(res.Data);
 
       setArt(res.Data);
-
+      setartist({
+        id: res.Data.UserID,
+        username: res.Data.Username?.String,
+        image: res.Data.UserImage?.String,
+      });
     }
   }, [res]);
 
@@ -53,6 +55,8 @@ export default function ArtPage() {
   if (!fetchingArt && !art) {
     return <div>Art Not Found</div>;
   }
+  console.log(artist);
+
   return (
     <main className="min-h-screen bg-black text-white selection:bg-accent pb-20 pt-8  px-6 md:px-12">
       <div className="max-w-7xl mx-auto">
@@ -102,8 +106,8 @@ export default function ArtPage() {
               <div className="flex items-center gap-4 mb-6">
                 <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-white/10 shrink-0">
                   <img
-                    src={artist?.Image || "/placeholder.png"}
-                    alt={artist?.Name || "Artist"}
+                    src={artist?.image || "/placeholder.png"}
+                    alt={artist?.name || "Artist"}
                     className="w-full h-full object-cover"
                   />
                 </div>

@@ -24,6 +24,10 @@ export const getArtById = (id) => {
   console.log(`/art/${id}`);
   return api(`/art/${id}`);
 }
+export const getAllArt = () => {
+
+  return api(`/art`);
+}
 export const editArt=()=>{
 
 }

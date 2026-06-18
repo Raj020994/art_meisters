@@ -93,7 +93,7 @@ const page = () => {
     if (!createdArt) return;
     toast.success("Artwork created successfully");
     reset();
-    router.push(`/u/${user?.ID}/art/${createdArt?.Data?.ID}`);
+    router.push(`/u/${user?.ID}/${createdArt?.Data?.ID}`);
   }, [createdArt, reset]);
   useEffect(() => {
     if (!updatedArt) return;

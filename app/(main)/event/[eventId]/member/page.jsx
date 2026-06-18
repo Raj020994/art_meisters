@@ -1,7 +1,6 @@
 "use client";
 import useFetch from "@/hooks/useFetch";
 import { deleteEventAttendee, getEventAttendees } from "@/service/event";
-import { useAuthStore } from "@/store/user";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";

@@ -25,7 +25,7 @@ import { createArt, getArtById, updateArt } from "@/service/art";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { artworkSchema } from "@/schema/art";
 import { toast } from "sonner";
-import { uploadDummy } from "@/service/upload";
+import { upload, uploadDummy } from "@/service/upload";
 import { useAuthStore } from "@/store/user";
 
 import { useRouter, useSearchParams } from "next/navigation";
@@ -135,9 +135,13 @@ const page = () => {
       if (!isEdit) {
         let url = preview;
         if (file) {
-          const res = await uploadDummy(file);
-          if (!res?.success) throw new Error("Image upload error");
-          url = res?.Url || "";
+          const res = await upload(file);
+
+          if (!res?.success) {
+            throw new Error("Image upload error");
+          }
+
+          url = res?.url || "";
         }
         const payload = {
           name: data.name,

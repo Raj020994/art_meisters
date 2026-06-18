@@ -1,7 +1,7 @@
 "use client";
 import useFetch from "@/hooks/useFetch";
 import { onBoardingSchema } from "@/schema/user";
-import { uploadDummy } from "@/service/upload";
+import { upload, uploadDummy } from "@/service/upload";
 import { updateUser } from "@/service/user";
 import { useAuthStore } from "@/store/user";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -133,12 +133,12 @@ const onboarding = () => {
       let image = "";
       let bannerImage = "";
       if (logoRef?.current?.files?.[0]) {
-        const logoImgRes = await uploadDummy(logoRef.current.files[0]);
+        const logoImgRes = await upload(logoRef.current.files[0]);
         image = logoImgRes?.Url;
       }
 
       if (bannerRef?.current?.files?.[0]) {
-        const bannerImgRes = await uploadDummy(bannerRef.current.files[0]);
+        const bannerImgRes = await upload(bannerRef.current.files[0]);
         console.log("banner", bannerImgRes);
         bannerImage = bannerImgRes?.Url;
       }

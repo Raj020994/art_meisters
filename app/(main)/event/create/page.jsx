@@ -6,7 +6,7 @@ import { createEvent, getEventById, updateEvent } from "@/service/event";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { eventSchema } from "@/schema/event";
-import { uploadDummy } from "@/service/upload";
+import { upload, uploadDummy } from "@/service/upload";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/user";
 
@@ -134,14 +134,21 @@ const CreateEventPage = () => {
       let image = "";
       let bannerImage = "";
       if (logoRef?.current?.files?.[0]) {
-        const logoImgRes = await uploadDummy(logoRef.current.files[0]);
-        image = logoImgRes?.Url;
+        const logoImgRes = await upload(logoRef.current.files[0]);
+        if(!logoImgRes?.success){
+          toast.error("Image upload error");
+          return;
+        }
+        image = logoImgRes?.url;
       }
 
       if (bannerRef?.current?.files?.[0]) {
-        const bannerImgRes = await uploadDummy(bannerRef.current.files[0]);
-        console.log("banner", bannerImgRes);
-        bannerImage = bannerImgRes?.Url;
+        const bannerImgRes = await upload(bannerRef.current.files[0]);
+        if(!bannerImgRes?.success){
+          toast.error("Image upload error");
+          return;
+        }
+        bannerImage = bannerImgRes?.url;
       }
       payload.name =
         data.name?.trim() !== (Event?.Data?.Name ?? "").trim()
@@ -171,16 +178,24 @@ const CreateEventPage = () => {
       }
       return;
     }
-    const bannerUrl = await uploadDummy(bannerRef.current?.files[0]);
-    const logoUrl = await uploadDummy(logoRef.current?.files[0]);
+    const bannerUrlRes = await upload(bannerRef.current?.files[0]);
+    if(!bannerUrlRes?.success){
+      toast.error("Image upload error");
+      return;
+    }
+    const logoUrlRes = await upload(logoRef.current?.files[0]);
+    if(!logoUrlRes?.success){
+      toast.error("Image upload error");
+      return;
+    }
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("description", data.description);
     formData.append("venue", data.venue);
     formData.append("status", data.status);
     formData.append("date", data.date);
-    formData.append("LogoUrl", logoUrl?.Url);
-    formData.append("bannerUrl", bannerUrl?.Url);
+    formData.append("LogoUrl", logoUrlRes?.url);
+    formData.append("bannerUrl", bannerUrlRes?.url);
     createEventFn(formData);
   };
   useEffect(() => {

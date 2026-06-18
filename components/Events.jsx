@@ -1,8 +1,6 @@
 import React from "react";
 import { EventListItem } from "./EventListItem";
-import data from "@/data.json";
 import { MoveRight, Calendar, MapPin, Clock } from "lucide-react";
-import { FeaturedEvent } from "./FeaturedEvent";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getAllEvents } from "@/service/event";

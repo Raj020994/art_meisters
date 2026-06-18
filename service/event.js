@@ -8,7 +8,6 @@ export const getEventById = async (id) => {
   return api(`/event/${id}`);
 };
 
-// User
 
 export const joinEvent = async (id) => {
   return api(`/event/${id}/join`, {

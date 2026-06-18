@@ -7,6 +7,9 @@ export const usrById=(id)=>{
 export const getAllUser=()=>{
   return api(`/auth/users`);
 }
+export const getAllApprovedUser=()=>{
+  return api(`/auth/main-users`);
+}
 export const updateUser = async (id, data) => {
   return api(`/auth/users/${id}`, {
     method: "PATCH",

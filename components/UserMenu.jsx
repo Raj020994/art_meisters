@@ -21,15 +21,9 @@ const UserMenu = () => {
   const handleLogOut = async () => { logginOut();
   };
   useEffect(() => {
-    console.log("logOut");
-    console.log(res);
-    
     if (!loading&&res?.Success) {
-
       setUser(null);
-      console.log(user);
-      
-      router.push(`/u/${user.ID}`);
+      router.push(`/sign-in`);
     }
   }, [res]);
 

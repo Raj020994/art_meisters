@@ -21,3 +21,34 @@ export const logOutUser = () => {
     method: "POST",
   });
 };
+
+export const forgotPassword = async (formData) => {
+  const res = await fetch("/api/auth/forgot-password", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(formData),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.Data?.Error || "Something went wrong");
+  }
+  return data;
+};
+
+export const resetPassword = async (formData) => {
+  const res = await fetch("/api/auth/reset-password", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(formData),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.Data?.Error || "Something went wrong");
+  }
+  return data;
+};
+

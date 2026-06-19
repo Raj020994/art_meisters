@@ -9,10 +9,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import useFetch from "@/hooks/useFetch";
 import { toast } from "sonner";
+import { sendResetEmail } from "@/service/reset-email";
 
 const ForgotPasswordPage = () => {
   const [successLink, setSuccessLink] = useState(null);
-  
+
   const {
     register,
     reset,
@@ -30,22 +31,37 @@ const ForgotPasswordPage = () => {
     loading: isSubmitting,
     data: data,
   } = useFetch(forgotPassword);
+  const {
+    fn: sendEmail,
+    loading: sending,
+    data: sent,
+  } = useFetch(sendResetEmail);
 
-  const onsubmit = async (formData) => {
-    await requestPasswordReset(formData);
+  const onsubmit = (formData) => {
+    requestPasswordReset(formData);
   };
 
   useEffect(() => {
     if (data?.Success && !isSubmitting) {
       toast.success("Reset link generated successfully");
+      const email = data.Data?.email;
       reset();
-      
-      // Save resetLink for dev/testing demo purposes
       if (data.Data?.resetLink) {
         setSuccessLink(data.Data.resetLink);
+        const payload = {
+          to: email,
+          resetURL: data.Data?.resetLink,
+        };
+        console.log(payload);
+        sendEmail(payload);
       }
     }
   }, [data, isSubmitting]);
+  useEffect(() => {
+    if (sent?.Success && !sending) {
+      toast.success("Reset link sent successfully");
+    }
+  }, [sent, sending]);
 
   return (
     <div className="relative py-20 px-4 overflow-hidden w-full">
@@ -66,7 +82,9 @@ const ForgotPasswordPage = () => {
           <form className="space-y-4" onSubmit={handleSubmit(onsubmit)}>
             {/* Email */}
             <div className="animate-item space-y-1.5">
-              <label className="text-xs font-medium text-white/80 ml-1">Email Address</label>
+              <label className="text-xs font-medium text-white/80 ml-1">
+                Email Address
+              </label>
               <div className="relative group">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-white/40 group-focus-within:text-red-800 transition-colors" />
                 <input
@@ -76,7 +94,11 @@ const ForgotPasswordPage = () => {
                   className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 outline-none focus:border-red-800/50 focus:bg-white/10 transition-all text-sm text-white placeholder:text-white/20"
                   required
                 />
-                {errors?.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+                {errors?.email && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.email.message}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -96,7 +118,7 @@ const ForgotPasswordPage = () => {
         ) : (
           <div className="space-y-6 text-center">
             <div className="p-4 bg-red-950/20 border border-red-800/30 rounded-2xl text-white/80 text-sm leading-relaxed">
-              If an account with that email exists, we have logged the password reset link. Check your server console.
+              If an account with that email exists, The reset Link has been sent to you
             </div>
 
             {successLink && (

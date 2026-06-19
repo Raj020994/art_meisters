@@ -56,7 +56,8 @@ export async function POST(req) {
       Success: true,
       Data: {
         message: "If an account with that email exists, we have sent password reset instructions.",
-        resetLink, // returned to make development testing seamless
+        email,
+        resetLink,
       },
     });
   } catch (error) {

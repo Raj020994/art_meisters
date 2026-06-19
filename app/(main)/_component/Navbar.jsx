@@ -24,7 +24,7 @@ export const Navbar = () => {
 useEffect(() => {
   if (user) return;
   refetchUser();
-}, []); // fetch once on mount
+}, []); 
 
 useEffect(() => {
   if (!res) return;

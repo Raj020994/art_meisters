@@ -31,7 +31,6 @@ const ImageInput = ({ label, inputRef, existingImage, onFileChange }) => {
     const url = URL.createObjectURL(file);
     setPreview(url);
 
-
     onFileChange?.(file);
   };
   const handleRemove = () => {
@@ -134,13 +133,14 @@ const onboarding = () => {
       let bannerImage = "";
       if (logoRef?.current?.files?.[0]) {
         const logoImgRes = await upload(logoRef.current.files[0]);
-        image = logoImgRes?.Url;
+        image = logoImgRes?.url;
       }
 
       if (bannerRef?.current?.files?.[0]) {
         const bannerImgRes = await upload(bannerRef.current.files[0]);
         console.log("banner", bannerImgRes);
-        bannerImage = bannerImgRes?.Url;
+        bannerImage = bannerImgRes?.url;
+        console.log(bannerImage);
       }
 
       const payload = {
@@ -174,6 +174,7 @@ const onboarding = () => {
       );
 
       setUser(updatedUser?.Data);
+      
       router.push(`/u/${updatedUser?.Data?.ID}`);
     }
   }, [updatedUser, updating, isEdit, router, setUser]);

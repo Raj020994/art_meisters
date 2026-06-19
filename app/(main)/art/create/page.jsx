@@ -136,11 +136,9 @@ const page = () => {
         let url = preview;
         if (file) {
           const res = await upload(file);
-
           if (!res?.success) {
             throw new Error("Image upload error");
           }
-
           url = res?.url || "";
         }
         const payload = {

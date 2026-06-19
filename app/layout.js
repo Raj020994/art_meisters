@@ -1,8 +1,5 @@
 import { Toaster } from "sonner";
 import "./globals.css";
-import { Navbar } from "@/components/Navbar";
-
-
 export const metadata = {
   title: "Art Meisters | Art Society",
   description:

@@ -21,7 +21,11 @@ export const getArtById = (id) => {
 export const getAllArt = () => {
   return api(`/art`);
 };
-export const deleteArt = () => {};
+export const deleteArt = (id) => {
+  return api(`/art/${id}`, {
+    method: "DELETE",
+  });
+};
 export const likeArt = () => {};
 export const saveArt = () => {};
 export const updateArt = (id, data) => {

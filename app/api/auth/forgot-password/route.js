@@ -14,8 +14,6 @@ export async function POST(req) {
         { status: 400 }
       );
     }
-
-    // Check if user exists in the database
     const userRes = await query("SELECT id, name FROM users WHERE email = $1", [
       email,
     ]);
@@ -30,7 +28,6 @@ export async function POST(req) {
       );
     }
 
-    // Generate secure random token
     const token = crypto.randomBytes(32).toString("hex");
 
     // Token expires in 1 hour
@@ -44,13 +41,6 @@ export async function POST(req) {
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
     const resetLink = `${baseUrl}/reset-password?token=${token}`;
-
-    // Log the link in the terminal console for developers/testing
-    console.log("\n==================================================");
-    console.log("PASSWORD RESET REQUEST");
-    console.log(`Email: ${email}`);
-    console.log(`Reset Link: ${resetLink}`);
-    console.log("==================================================\n");
 
     return Response.json({
       Success: true,

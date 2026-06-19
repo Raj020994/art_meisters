@@ -118,26 +118,11 @@ const ForgotPasswordPage = () => {
         ) : (
           <div className="space-y-6 text-center">
             <div className="p-4 bg-red-950/20 border border-red-800/30 rounded-2xl text-white/80 text-sm leading-relaxed">
-              If an account with that email exists, The reset Link has been sent to you
+              If an account with that email exists, The reset Link has been sent to you. Check your spam folder as well.
             </div>
-
-            {successLink && (
-              <div className="p-4 bg-white/5 border border-white/10 rounded-2xl text-left">
-                <p className="text-[10px] text-yellow font-bold uppercase tracking-wider mb-2">
-                  Development Mode Debug Link
-                </p>
-                <a
-                  href={successLink}
-                  className="text-xs text-red-400 hover:underline break-all block"
-                >
-                  {successLink}
-                </a>
-              </div>
-            )}
-
             <button
               onClick={() => reset()}
-              className="text-sm text-white/60 hover:text-white transition-colors"
+              className="inline-flex items-center gap-2 text-white/40 text-sm hover:text-white transition-colors"
             >
               Request another reset link
             </button>

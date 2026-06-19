@@ -1,14 +1,27 @@
 "use client";
 import Link from "next/link";
-import { MoveLeft, Palette, ExternalLink, Upload, Pencil } from "lucide-react";
+import {
+  MoveLeft,
+  MoreVertical,
+  Palette,
+  ExternalLink,
+  Upload,
+  Pencil,
+} from "lucide-react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import useFetch from "@/hooks/useFetch";
 import { useEffect, useState } from "react";
-import { getAllArtistArt, getArtistProfile } from "@/service/art";
+import { deleteArt, getAllArtistArt, getArtistProfile } from "@/service/art";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/user";
 import { changeUserRoleStatus } from "@/service/admin";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 export default function ArtistProfile() {
   const capitalizeFirst = (str) => str.charAt(0).toUpperCase() + str.slice(1);
   const params = useParams();
@@ -33,10 +46,14 @@ export default function ArtistProfile() {
     fn: getArt,
     loading: fetchingArtworks,
   } = useFetch(getAllArtistArt);
+  const {
+    data: deletedData,
+    fn: deleteFn,
+    loading: deleting,
+  } = useFetch(deleteArt);
 
   const isUserProfile = user?.ID === usrId;
 
-  // Initial fetch
   useEffect(() => {
     if (!usrId) return;
 
@@ -78,7 +95,19 @@ export default function ArtistProfile() {
     }
   }, [data, arts, user, isUserProfile, fetchingData, fetchingArtworks]);
   const handleStatusOfUser = (status) => {
+    if (role !== "admin") {
+      toast.error("You are not authorized to perform this action");
+      return;
+    }
     changeFn(artist?.ID, { status: status });
+  };
+  const handleDelete = (id) => {
+    if (role !== "artist") {
+      toast.error("You are not authorized to perform this action");
+      return;
+    }
+    deleteFn(id);
+    setArtistArtworks(artistArtworks.filter((art) => art.ID !== id));
   };
   useEffect(() => {
     if (updating || !roledata) return;
@@ -86,8 +115,21 @@ export default function ArtistProfile() {
       toast.error(roledata.message);
       return;
     }
-    setArtist({...artist, Status: roledata.Data.Status});
+    setArtist({ ...artist, Status: roledata.Data.Status });
   }, [roledata, updating]);
+  useEffect(() => {
+    if (deleting || !deletedData) return;
+    if (!deletedData.Success) {
+      toast.error(deletedData.message);
+      return;
+    }
+    setArtistArtworks(
+      artistArtworks.filter((art) => art.ID !== deletedData.Data.ID)
+    );
+  }, [deletedData, deleting]);
+  useEffect(() => {
+    console.log("artistArtworks", artistArtworks);
+  }, [artistArtworks]);
 
   if (fetchingData || fetchingArtworks) {
     return (
@@ -114,7 +156,6 @@ export default function ArtistProfile() {
   }
   return (
     <main className="min-h-screen bg-black text-white selection:bg-accent pb-20">
-      {/* Hero Header */}
       <section className="relative h-[40vh] w-full overflow-hidden">
         <img
           src={
@@ -167,7 +208,7 @@ export default function ArtistProfile() {
                     <Pencil size={18} className="text-white/80" />
                   </Link>
                 )}
-                {role === "admin" && (
+                {role === "admin" && artist?.Role !== "admin" && (
                   <div className="opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
                     {artist?.Status === "approved" ? (
                       <button
@@ -315,6 +356,28 @@ export default function ArtistProfile() {
                   key={art.ID}
                   className="group relative aspect-square rounded-2xl overflow-hidden glass border border-white/5"
                 >
+                  {role === "artist" && (
+                    <div className="absolute top-3 right-3 z-20">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button className="text-white bg-black/50 hover:bg-black/70 p-2 rounded-md">
+                            <MoreVertical size={16} />
+                          </button>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => {
+                              handleDelete(art.ID);
+                            }}
+                            className="text-red-500 focus:text-red-500"
+                          >
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  )}
                   <img
                     src={art.Image}
                     alt={art.Name}

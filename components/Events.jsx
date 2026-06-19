@@ -18,8 +18,8 @@ export const Events = () => {
 
   useEffect(() => {
     if (eventsRes?.Success) {
-      setEvents(eventsRes.Data);
-      if (eventsRes.Data.length > 0) {
+      setEvents(eventsRes?.Data);
+      if (eventsRes?.Data?.length > 0) {
         setSelectedEvent(eventsRes.Data[0]);
       }
     }
@@ -58,7 +58,7 @@ export const Events = () => {
         {/* Event List */}
 
         <div className="flex flex-col gap-4 lg:col-span-1">
-          {events.map((event) => (
+          {events?.map((event) => (
             <div
               key={event.ID}
               onClick={() => setSelectedEvent(event)}

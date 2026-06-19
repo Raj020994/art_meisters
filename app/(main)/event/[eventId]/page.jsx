@@ -86,8 +86,10 @@ export default function EventDetail() {
   };
   useEffect(() => {
     getEventFn(eventId);
-    myEventFn(eventId);
-  }, [eventId]);
+    if (user?.Username?.Valid) {
+      myEventFn(eventId);
+    }
+  }, [eventId, user]);
 
   useEffect(() => {
     if (!getEventLoading && eventDetails?.Success) {
@@ -96,7 +98,7 @@ export default function EventDetail() {
   }, [eventDetails, getEventLoading]);
   useEffect(() => {
     if (!myEventLoading) {
-      setisRegistered(!!myEventDetails?.Success);
+      setisRegistered(!!myEventDetails?.Data);
     }
   }, [myEventDetails, myEventLoading]);
 

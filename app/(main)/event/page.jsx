@@ -14,6 +14,8 @@ if (typeof window !== "undefined") {
 export default function EventPage() {
   const [allEvents, setAllEvents] = useState(null);
   const { data, fn, loading } = useFetch(getAllEvents);
+  const user = useAuthStore((state) => state.user);
+  const isAdmin=user?.Role==="admin"
   const containerRef = useRef(null);
   useEffect(() => {
     fn();
@@ -43,7 +45,7 @@ export default function EventPage() {
     },
     { scope: containerRef },
   );
-
+ 
   return (
     <main className="min-h-screen bg-black pt-32 pb-20 selection:bg-red-500/30">
       <section className="container mx-auto px-6 lg:px-12">
@@ -81,7 +83,7 @@ export default function EventPage() {
               href={`/event/${event.ID}`}
               className="event-card-link block h-full"
             >
-              <EventCard event={event} />
+              <EventCard event={event} isAdmin={isAdmin} />
             </Link>
           ))}
         </div>

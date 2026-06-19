@@ -3,18 +3,14 @@ import { api } from "./api";
 export const getAllEvents = async () => {
   return api("/event/");
 };
-
 export const getEventById = async (id) => {
   return api(`/event/${id}`);
 };
-
-
 export const joinEvent = async (id) => {
   return api(`/event/${id}/join`, {
     method: "POST",
   });
 };
-
 export const deleteEventAttendee = async (payload) => {
   return api(`/event/${payload?.id}/attendee/${payload?.userid}`, {
     method: "DELETE",
@@ -26,7 +22,6 @@ export const getEventAttendees = async (id) => {
 };
 
 // Admin
-
 export const createEvent = async (eventData) => {
   return api("/event/", {
     method: "POST",

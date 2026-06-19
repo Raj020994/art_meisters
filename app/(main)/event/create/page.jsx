@@ -6,7 +6,7 @@ import { createEvent, getEventById, updateEvent } from "@/service/event";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { eventSchema } from "@/schema/event";
-import { upload, uploadDummy } from "@/service/upload";
+import { upload } from "@/service/upload";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/user";
 

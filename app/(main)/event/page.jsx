@@ -89,7 +89,7 @@ export default function EventPage() {
         </div>
       </section>
 
-      {/* Background Decorative Elements */}
+
       <div className="fixed top-0 right-0 -z-10 w-[50vw] h-[50vw] bg-red-900/10 blur-[120px] rounded-full pointer-events-none" />
       <div className="fixed bottom-0 left-0 -z-10 w-[30vw] h-[30vw] bg-red-600/5 blur-[100px] rounded-full pointer-events-none" />
     </main>

@@ -46,3 +46,8 @@ export const getMyEvent = async (id) => {
     method: "GET",
   });
 };
+export const getMyAllEvents = async () => {
+  return api(`/event/u/all`, {
+    method: "GET",
+  });
+};

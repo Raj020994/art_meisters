@@ -1,7 +1,5 @@
+import { Toaster } from "sonner";
 import "./globals.css";
-import { Navbar } from "@/components/Navbar";
-
-
 export const metadata = {
   title: "Art Meisters | Art Society",
   description:
@@ -16,7 +14,7 @@ export default function RootLayout({ children }) {
       data-scroll-behavior="smooth"
       >
       <body className="min-h-full bg-black flex flex-col font-sans selection:bg-accent ">
-        <Navbar />
+          <Toaster richColors/>
         <main>
         {children}
         </main>

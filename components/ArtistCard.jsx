@@ -1,6 +1,8 @@
 import Link from 'next/link';
 
 export function ArtistCard({ id, name, role, desc, img, instagram, youtube }) {
+    console.log("hello");
+    
     return (
         <div className="glass rounded-2xl overflow-hidden group hover:-translate-y-2 transition-all duration-300 hover:shadow-[0_10px_30px_rgba(229,9,20,0.1)] hover:border-white/20 flex flex-col h-full">
             <Link href={`/u/${id}`} className="flex-1 flex flex-col">

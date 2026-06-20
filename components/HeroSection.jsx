@@ -56,7 +56,7 @@ const Hero = () => {
                                 We provide a space where imagination knows no bounds and
                                 creativity is celebrated in every form.
                             </p>
-                            <a href="#art">Explore Gallery</a>
+                            <a href="/art">Explore Gallery</a>
                         </div>
                     </div>
                 </div>

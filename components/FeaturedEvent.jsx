@@ -3,10 +3,6 @@ import { Clock } from 'lucide-react'
 import { MapPin } from 'lucide-react'
 import { MoveRight } from 'lucide-react'
 import React from 'react'
-import data from "@/data.json";
-
-const event = data.featuredEvent;
-
 export const FeaturedEvent = () => {
     return (
         <div className="lg:col-span-2 relative rounded-2xl overflow-hidden group glass h-[400px]">

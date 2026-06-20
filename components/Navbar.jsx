@@ -1,67 +1,42 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import data from "@/data.json";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Plus } from "lucide-react";
+import useFetch from "@/hooks/useFetch";
+import { getCurrUser } from "@/service/auth";
+import UserMenu from "./UserMenu";
+import { useAuthStore } from "@/store/user";
 
 export const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
+  const user = useAuthStore((state) => state.user);
+  const setUser = useAuthStore((state) => state.setUser);
+  const clearUser = useAuthStore((state) => state.clearUser);
   const [activeSection, setActiveSection] = useState("hero");
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  const user = {
-    Success: true,
-    Data: {
-      Image: {
-        String: "/me.png",
-        Valid: true,
-      },
-    },
-  };
+  const {
+    data: res,
+    fn: refetchUser,
+    loading: userLoading,
+  } = useFetch(getCurrUser);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-
-    window.addEventListener("scroll", handleScroll);
-
-    const sections = data.navLinks.map((link) =>
-      link.href.replace("#", ""),
-    );
-
-    const observerOptions = {
-      root: null,
-      rootMargin: "-20% 0px -70% 0px",
-      threshold: 0,
-    };
-
-    const observerCallback = (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id);
-        }
-      });
-    };
-
-    const observer = new IntersectionObserver(
-      observerCallback,
-      observerOptions,
-    );
-
-    sections.forEach((id) => {
-      const element = document.getElementById(id);
-
-      if (element) {
-        observer.observe(element);
-      }
-    });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      observer.disconnect();
-    };
+    if (user) return;
+    refetchUser();
   }, []);
+
+  useEffect(() => {
+    if (!res) return;
+
+    if (res.Success && res.Data) {
+      setUser(res.Data);
+    } else {
+      clearUser();
+    }
+  }, [res?.Success]);
 
   return (
     <nav
@@ -72,7 +47,6 @@ export const Navbar = () => {
       }`}
     >
       <div className="flex items-center justify-between px-4 py-3">
-
         <Link href="/">
           <div className="flex items-center gap-3">
             <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-white">
@@ -110,25 +84,38 @@ export const Navbar = () => {
 
         {/* Right Side */}
         <div className="flex items-center gap-4">
-          {/* Profile */}
-          <div className="relative h-12 w-12 overflow-hidden rounded-full border border-white/20">
-            <Image
-              src={user.Data.Image.String}
-              alt="profile"
-              fill
-              className="object-cover"
-            />
-          </div>
+          {user ? (
+            <>
+              <Link href={"/art/create"}>
+                <button className="border px-3 py-2 bg-black/20 rounded-full text-white flex items-center gap-2 hover:bg-black/10">
+                  <Plus size={20} />
+                  <span className="text-sm font-semibold">create</span>
+                </button>
+              </Link>
 
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden"
-          >
-            {mobileOpen ? <X size={28} /> : <Menu size={28} />}
-          </button>
+              {user.Role == "admin" && (
+                <Link href={"/admin"}>
+                  <button className="border px-3 py-2 rounded-md bg-red-900">
+                    Admin Dashboard
+                  </button>
+                </Link>
+              )}
+
+              <div className="relative h-12 w-12 overflow-hidden flex items-center justify-center rounded-full border border-white/20">
+                <UserMenu user={user} />
+              </div>
+            </>
+          ) : (
+            <>
+              <Link href={"/sign-in"}>
+                <button className="border px-3 py-2 rounded-md bg-red-900">
+                  Login
+                </button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
-
 
       {mobileOpen && (
         <div className="flex flex-col gap-4 px-4 pb-4 pt-2 md:hidden">

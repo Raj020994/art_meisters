@@ -14,7 +14,29 @@
   --font-sans: "Mona Sans", sans-serif;
   --font-serif: "DM Serif Text", serif;
 }
+/* Chrome, Edge, Safari */
 
+::-webkit-scrollbar {
+
+  display: none;
+
+}
+
+/* Firefox */
+
+html {
+
+  scrollbar-width: none;
+
+}
+
+/* IE and old Edge */
+
+body {
+
+  -ms-overflow-style: none;
+
+}
 html,
 body {
   width: 100%;

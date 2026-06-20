@@ -308,7 +308,7 @@ export default function EventDetail() {
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDeleteEvent()}>Continue</AlertDialogAction>
+                            <AlertDialogAction className={"bg-red-500 text-white hover:bg-red-600"} onClick={() => handleDeleteEvent()}>Continue</AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>

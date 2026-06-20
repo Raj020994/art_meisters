@@ -35,7 +35,19 @@ const ApproveArt = ({ art }) => {
       toast.success(`Artwork successfully ${res.Data.Status}`);
     }
   }, [error, res]);
-
+if(!artWorks){
+    return (
+        <div className="col-span-1 md:col-span-2 flex flex-col items-center justify-center py-16 text-center border border-white/5 rounded-2xl bg-white/5 border-dashed space-y-3">
+            <div className="p-4 rounded-full bg-white/5 text-gray-500">
+              <ImageIcon className="w-8 h-8" />
+            </div>
+            <div>
+              <p className="text-gray-300 font-medium text-lg">All caught up!</p>
+              <p className="text-gray-500 text-sm max-w-xs mx-auto">No pending artworks to review at the moment.</p>
+            </div>
+          </div>
+    );
+}
   return (
     <div className="space-y-8 w-full max-w-5xl mx-auto animate-fade-in">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -147,17 +159,6 @@ const ApproveArt = ({ art }) => {
           </div>
         ))}
 
-        {artWorks?.length === 0 && (
-          <div className="col-span-1 md:col-span-2 flex flex-col items-center justify-center py-16 text-center border border-white/5 rounded-2xl bg-white/5 border-dashed space-y-3">
-            <div className="p-4 rounded-full bg-white/5 text-gray-500">
-              <ImageIcon className="w-8 h-8" />
-            </div>
-            <div>
-              <p className="text-gray-300 font-medium text-lg">All caught up!</p>
-              <p className="text-gray-500 text-sm max-w-xs mx-auto">No pending artworks to review at the moment.</p>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

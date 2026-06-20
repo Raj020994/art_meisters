@@ -19,6 +19,19 @@ import useFetch from "@/hooks/useFetch";
 import { toast } from "sonner";
 
 export const EventCard = ({ event, isAdmin }) => {
+    const getEventState = (eventDate) => {
+    const now = new Date();
+    const start = new Date(eventDate);
+
+    // assuming event lasts 1 day
+    const end = new Date(start);
+    end.setDate(end.getDate() + 1);
+
+    if (now < start) return "Upcoming";
+    if (now >= start && now <= end) return "Ongoing";
+    return "Completed";
+  };
+  const eventState = getEventState(event.EventDate);
   const {
     data: deletedEventData,
     fn: deleteEventFn,
@@ -142,13 +155,19 @@ export const EventCard = ({ event, isAdmin }) => {
         {/* Status Badge */}
         <div className="absolute top-6 right-6">
           <span
-            className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] backdrop-blur-md border ${
-              event?.Status === "upcoming"
-                ? "bg-green-500/20 text-green-400 border-green-500/30"
-                : "bg-white/10 text-gray-400 border-white/10"
+            className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-md ${
+              eventState === "Upcoming"
+                ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                : eventState === "Ongoing"
+                  ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                  : "bg-white/10 text-gray-300 border border-white/10"
             }`}
           >
-            {event?.Status === "upcoming" ? "Upcoming" : "Completed"}
+            {eventState === "Upcoming"
+              ? "● Upcoming"
+              : eventState === "Ongoing"
+                ? "● Ongoing"
+                : "● Completed"}
           </span>
         </div>
       </div>

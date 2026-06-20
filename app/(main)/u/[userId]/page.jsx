@@ -11,7 +11,7 @@ import {
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import useFetch from "@/hooks/useFetch";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { deleteArt, getAllArtistArt, getArtistProfile } from "@/service/art";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/user";
@@ -51,19 +51,30 @@ export default function ArtistProfile() {
     fn: deleteFn,
     loading: deleting,
   } = useFetch(deleteArt);
-
   const isUserProfile = user?.ID === usrId;
+const ranRef = useRef(false);
 
-  useEffect(() => {
-    if (!usrId) return;
+useEffect(() => {
 
-    if (isUserProfile) {
-      setArtist(user);
-      getArt(usrId);
-    } else {
-      getData(usrId);
-    }
-  }, [usrId, isUserProfile, user]);
+  if (!usrId || !user?.ID) return;
+
+  if (ranRef.current) return;
+
+  ranRef.current = true;
+
+  if (user.ID === usrId) {
+
+    setArtist(user);
+
+    getArt(usrId);
+
+  } else {
+
+    getData(usrId);
+
+  }
+
+}, [usrId, user?.ID]);
 
   useEffect(() => {
     if (!isUserProfile) {
@@ -124,10 +135,9 @@ export default function ArtistProfile() {
       return;
     }
     setArtistArtworks(
-      artistArtworks.filter((art) => art.ID !== deletedData.Data.ID)
+      artistArtworks.filter((art) => art.ID !== deletedData.Data.ID),
     );
   }, [deletedData, deleting]);
-
 
   if (fetchingData || fetchingArtworks) {
     return (

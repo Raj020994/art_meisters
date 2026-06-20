@@ -22,8 +22,6 @@ export const EventCard = ({ event, isAdmin }) => {
     const getEventState = (eventDate) => {
     const now = new Date();
     const start = new Date(eventDate);
-
-    // assuming event lasts 1 day
     const end = new Date(start);
     end.setDate(end.getDate() + 1);
 

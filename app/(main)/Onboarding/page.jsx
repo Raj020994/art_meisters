@@ -138,9 +138,7 @@ const onboarding = () => {
 
       if (bannerRef?.current?.files?.[0]) {
         const bannerImgRes = await upload(bannerRef.current.files[0]);
-        console.log("banner", bannerImgRes);
         bannerImage = bannerImgRes?.url;
-        console.log(bannerImage);
       }
 
       const payload = {

@@ -107,12 +107,7 @@ export default function ArtPage() {
     }
     router.push(`/u/${userId}`);
   }, [deletedData, deleting]);
-  useEffect(() => {
-    console.log("Art", art);
-  }, [art]);
-  useEffect(() => {
-    console.log("Artist", artist);
-  }, [artist]);
+
 
   if (fetchingArt) {
     return (

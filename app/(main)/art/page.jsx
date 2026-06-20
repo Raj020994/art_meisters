@@ -304,8 +304,7 @@ const Page = () => {
   const [allArts, setAllArts] = useState([]);
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_BATCH);
   useEffect(() => {
-    console.log("arts:", arts);
-    console.log("loading:", loading);
+   
   }, [arts, loading]);
   const loaderRef = useRef(null);
 

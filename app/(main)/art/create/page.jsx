@@ -130,7 +130,6 @@ const page = () => {
         toast.error("You are banned, can't upload");
         return;
       }
-      console.log(data);
 
       if (!isEdit) {
         let url = preview;
@@ -171,7 +170,7 @@ const page = () => {
         }
       }
     } catch (err) {
-      console.log(err);
+
       toast.error("Something went wrong");
     }
   };
@@ -194,10 +193,6 @@ const page = () => {
           <form
             onSubmit={handleSubmit(
               handleOnSubmit,
-
-              (errors) => {
-                console.log("Validation errors:", errors);
-              },
             )}
           >
             {/* Upload Image */}

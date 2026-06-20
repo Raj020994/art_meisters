@@ -1,10 +1,26 @@
 "use client";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import data from "@/data.json";
 import Link from "next/link";
-import { MoveLeft, Calendar, MapPin, Clock } from "lucide-react";
+import { MoveLeft, Calendar, MapPin, Clock, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import useFetch from "@/hooks/useFetch";
-import { getEventById, getMyEvent, joinEvent } from "@/service/event";
+import {
+  deleteEvent,
+  getEventById,
+  getMyEvent,
+  joinEvent,
+} from "@/service/event";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/user";
 import { toast } from "sonner";
@@ -48,6 +64,11 @@ export default function EventDetail() {
     errors: getEventError,
   } = useFetch(getEventById);
   const {
+    data: deletedEvent,
+    fn: deleteEventfn,
+    loading: deletingEvent,
+  } = useFetch(deleteEvent);
+  const {
     data: myEventDetails,
     fn: myEventFn,
     loading: myEventLoading,
@@ -84,12 +105,21 @@ export default function EventDetail() {
   const isDisabled = () => {
     if (event) return isBanned || (isRegistered && role !== "admin");
   };
+  const handleDeleteEvent = () => {
+    deleteEventfn(eventId);
+  };
   useEffect(() => {
     getEventFn(eventId);
     if (user?.Username?.Valid) {
       myEventFn(eventId);
     }
   }, [eventId, user]);
+  useEffect(() => {
+    if (deletedEvent?.Success) {
+      toast.success(deletedEvent?.Message);
+      router.push("/event");
+    }
+  }, [deletedEvent]);
 
   useEffect(() => {
     if (!getEventLoading && eventDetails?.Success) {
@@ -97,8 +127,8 @@ export default function EventDetail() {
     }
   }, [eventDetails, getEventLoading]);
   useEffect(() => {
-    if (!myEventLoading) {
-      setisRegistered(!!myEventDetails?.Data);
+    if (!myEventLoading && myEventDetails?.Success) {
+      setisRegistered(true);
     }
   }, [myEventDetails, myEventLoading]);
 
@@ -231,28 +261,58 @@ export default function EventDetail() {
                 </div>
 
                 {eventState !== "Completed" && (
-                  <button
-                    onClick={handleEventClick}
-                    disabled={isDisabled()}
-                    title={
-                      isBanned
-                        ? "You are banned from registering for events"
+                  <div className="flex gap-3">
+                    {/* Main button */}
+                    <button
+                      onClick={handleEventClick}
+                      disabled={isDisabled()}
+                      title={
+                        isBanned
+                          ? "You are banned from registering for events"
+                          : isRegistered
+                            ? "You already registered for this event"
+                            : eventState === "Ongoing"
+                              ? "This event is currently live"
+                              : ""
+                      }
+                      className="px-6 py-3 rounded-xl bg-red-500 text-white font-bold text-sm md:text-base hover:bg-red-600 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {role === "admin"
+                        ? "Edit Event"
                         : isRegistered
-                          ? "You already registered for this event"
+                          ? "Already Registered"
                           : eventState === "Ongoing"
-                            ? "This event is currently live"
-                            : ""
-                    }
-                    className="px-6 py-3 rounded-xl bg-red-500 text-white font-bold text-sm md:text-base hover:bg-red-600 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {role === "admin"
-                      ? "Edit Event"
-                      : isRegistered
-                        ? "Already Registered"
-                        : eventState === "Ongoing"
-                          ? "Join Live"
-                          : "Register Now"}
-                  </button>
+                            ? "Join Live"
+                            : "Register Now"}
+                    </button>
+
+                    {/* Delete button for admin */}
+
+                    {role === "admin" && (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <button className="w-12 h-12 flex items-center justify-center rounded-xl bg-red-500/20 border border-red-500/30 hover:bg-red-500/30 transition">
+                            <Trash2 size={18} className="text-red-400" />
+                          </button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Are you absolutely sure?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will
+                              permanently delete Event from our servers.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDeleteEvent()}>Continue</AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
+                  </div>
                 )}
               </div>
             </div>

@@ -1,21 +1,34 @@
 "use client";
 import React, { useEffect, useState } from "react";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import Link from "next/link";
-import { MoveLeft, ArrowRight, Check, Pencil, Ban } from "lucide-react";
-import { useParams } from "next/navigation";
+import { MoveLeft, ArrowRight, Check, Pencil, Ban, Trash2 } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 import useFetch from "@/hooks/useFetch";
-import { getArtProfileById } from "@/service/art";
+import { deleteArt, getArtProfileById } from "@/service/art";
 import { useArtStore } from "@/store/art";
 import { useAuthStore } from "@/store/user";
 import { changeArtStatus } from "@/service/admin";
 import { toast } from "sonner";
 export default function ArtPage() {
   const params = useParams();
+  const router = useRouter();
   const artId = params.artid;
   const userId = params.userId;
   const user = useAuthStore((state) => state.user);
   const [artist, setartist] = useState(user);
-  const role = user?.ID === userId ? "artist" : user?.Role;
+  const role = user?.ID === userId ? "artist" : role;
   const [art, setArt] = useState(null);
   const artWork = useArtStore((state) => state.arts[artId]);
   const addArt = useArtStore((state) => state.addArt);
@@ -61,7 +74,7 @@ export default function ArtPage() {
     fn: changeArtStatusFn,
   } = useFetch(changeArtStatus);
   const handleArtChange = (id, status) => {
-    if (user?.Role !== "admin") {
+    if (role !== "admin") {
       toast.error("You are not authorized to perform this action");
       return;
     }
@@ -75,6 +88,26 @@ export default function ArtPage() {
       toast.success(`Artwork successfully ${verdict.Data.Status}`);
     }
   }, [error, verdict]);
+  const {
+    data: deletedData,
+    fn: deleteFn,
+    loading: deleting,
+  } = useFetch(deleteArt);
+  const handleDelete = () => {
+    if (role !== "artist") {
+      toast.error("You are not authorized to perform this action");
+      return;
+    }
+    deleteFn(artId);
+  };
+  useEffect(() => {
+    if (deleting || !deletedData) return;
+    if (!deletedData.Success) {
+      toast.error(deletedData.message);
+      return;
+    }
+    router.push(`/u/${userId}`);
+  }, [deletedData, deleting]);
   if (fetchingArt && !art) {
     return <div>Loading...</div>;
   }
@@ -103,16 +136,55 @@ export default function ArtPage() {
           <div className="md:col-span-2 md:row-span-2 glass rounded-3xl overflow-hidden relative border border-white/5 group h-[400px] md:h-[624px]">
             <div className="absolute top-6 right-6 z-20 flex gap-3">
               {/* Artist edit */}
+              {/* Artist actions */}
+
               {role === "artist" && (
-                <Link
-                  href={`/art/create?id=${artId}`}
-                  className="w-12 h-12 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-all group"
-                >
-                  <Pencil
-                    size={18}
-                    className="text-white group-hover:scale-110 transition-transform"
-                  />
-                </Link>
+                <>
+                  {/* Edit */}
+
+                  <Link
+                    href={`/art/create?id=${artId}`}
+                    className="w-12 h-12 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-all group"
+                  >
+                    <Pencil
+                      size={18}
+                      className="text-white group-hover:scale-110 transition-transform"
+                    />
+                  </Link>
+
+                  {/* Delete */}
+
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <button className="w-12 h-12 flex items-center justify-center rounded-full bg-red-500/20 backdrop-blur-md border border-red-500/30 hover:bg-red-500/30 transition-all group">
+                        <Trash2
+                          size={18}
+                          className="text-red-400 group-hover:scale-110 transition-transform"
+                        />
+                      </button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Are you absolutely sure?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently
+                          delete your Art from our servers.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          className={"bg-red-500 text-white hover:bg-red-600"}
+                          onClick={() => handleDelete()}
+                        >
+                          Continue
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </>
               )}
 
               {role === "admin" && (

@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { EventCard } from "../event/_components/EventCard";
 import Link from "next/link";
-
 import useFetch from "@/hooks/useFetch";
 import { getMyAllEvents } from "@/service/event";
 
@@ -31,21 +30,20 @@ const MyEvent = () => {
               My Registered Events
             </span>
           </div>
-<div className="flex flex-col justify-center items-center">
+          <div className="flex flex-col justify-center items-center">
+            <h2 className="text-3xl flex flex-wrap justify-center items-center gap-4 md:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight">
+              My
+              <span className="text-transparent bg-clip-text bg-linear-to-br from-red-400 via-red-600 to-red-900">
+                EVENTS
+              </span>
+            </h2>
 
-          <h2 className="text-3xl flex flex-wrap justify-center items-center gap-4 md:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight">
-            My
-            <span className="text-transparent bg-clip-text bg-linear-to-br from-red-400 via-red-600 to-red-900">
-              EVENTS
-            </span>
-          </h2>
-
-          <p className="text-gray-400 text-sm text-center  md:text-md max-w-2xl font-light leading-relaxed">
-            All the events you’ve registered for—your creative journey, neatly
-            lined up like browser tabs you swear you’ll revisit.
-          </p>
+            <p className="text-gray-400 text-sm text-center  md:text-md max-w-2xl font-light leading-relaxed">
+              All the events you’ve registered for—your creative journey, neatly
+              lined up like browser tabs you swear you’ll revisit.
+            </p>
+          </div>
         </div>
-</div>
 
         {/* Loading */}
         {loading && (

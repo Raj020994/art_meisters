@@ -127,9 +127,7 @@ export default function ArtistProfile() {
       artistArtworks.filter((art) => art.ID !== deletedData.Data.ID)
     );
   }, [deletedData, deleting]);
-  useEffect(() => {
-    console.log("artistArtworks", artistArtworks);
-  }, [artistArtworks]);
+
 
   if (fetchingData || fetchingArtworks) {
     return (
@@ -394,7 +392,6 @@ export default function ArtistProfile() {
                     </p>
 
                     <div className="mt-4 flex items-center gap-3 flex-wrap">
-                      {/* View details for everyone */}
                       <Link href={`/u/${usrId}/${art.ID}`}>
                         <button className="text-accent text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:opacity-80 transition-opacity">
                           View Details <ExternalLink size={12} />

@@ -200,6 +200,48 @@ const page = () => {
               },
             )}
           >
+            {/* Upload Image */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-white/80">
+                Artwork Image
+              </label>
+
+              {preview ? (
+                <div className="relative rounded-2xl overflow-hidden border-2 border-white/10">
+                  <img
+                    src={preview}
+                    alt="Artwork preview"
+                    className="w-full h-64 object-cover"
+                  />
+                  {!isEdit && (
+                    <button
+                      type="button"
+                      onClick={handleRemove}
+                      className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white rounded-full p-1.5 transition-all"
+                    >
+                      <X size={16} />
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center border-2 border-dashed border-white/10 rounded-2xl p-10 cursor-pointer hover:border-red-800/40 transition-all">
+                  <Upload size={40} className="text-white/40 mb-3" />
+                  <span className="text-white/70 font-medium">
+                    Click to upload artwork
+                  </span>
+                  <span className="text-white/30 text-sm mt-1">
+                    PNG, JPG, WEBP
+                  </span>
+                  <input
+                    ref={inputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleChange}
+                  />
+                </label>
+              )}
+            </div>
             {/* Title */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-white/80">
@@ -218,23 +260,6 @@ const page = () => {
               )}
             </div>
 
-            {/* Description */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-white/80">
-                Description
-              </label>
-              <textarea
-                rows={5}
-                placeholder="Tell viewers about your artwork..."
-                {...register("description")}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-red-800/50 focus:bg-white/10 transition-all text-white placeholder:text-white/20 resize-none"
-              />
-              {errors.description?.message && (
-                <p className="text-red-800/50 text-sm">
-                  {errors.description?.message}
-                </p>
-              )}
-            </div>
 
             {/* Category */}
             <div className="space-y-2">
@@ -298,46 +323,21 @@ const page = () => {
               </Popover>
             </div>
 
-            {/* Upload Image */}
+            {/* Description */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-white/80">
-                Artwork Image
+                Description
               </label>
-
-              {preview ? (
-                <div className="relative rounded-2xl overflow-hidden border-2 border-white/10">
-                  <img
-                    src={preview}
-                    alt="Artwork preview"
-                    className="w-full h-64 object-cover"
-                  />
-                  {!isEdit && (
-                    <button
-                      type="button"
-                      onClick={handleRemove}
-                      className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white rounded-full p-1.5 transition-all"
-                    >
-                      <X size={16} />
-                    </button>
-                  )}
-                </div>
-              ) : (
-                <label className="flex flex-col items-center justify-center border-2 border-dashed border-white/10 rounded-2xl p-10 cursor-pointer hover:border-red-800/40 transition-all">
-                  <Upload size={40} className="text-white/40 mb-3" />
-                  <span className="text-white/70 font-medium">
-                    Click to upload artwork
-                  </span>
-                  <span className="text-white/30 text-sm mt-1">
-                    PNG, JPG, WEBP
-                  </span>
-                  <input
-                    ref={inputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleChange}
-                  />
-                </label>
+              <textarea
+                rows={5}
+                placeholder="Tell viewers about your artwork..."
+                {...register("description")}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-red-800/50 focus:bg-white/10 transition-all text-white placeholder:text-white/20 resize-none"
+              />
+              {errors.description?.message && (
+                <p className="text-red-800/50 text-sm">
+                  {errors.description?.message}
+                </p>
               )}
             </div>
 

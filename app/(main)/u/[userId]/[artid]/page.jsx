@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,7 +27,7 @@ export default function ArtPage() {
   const userId = params.userId;
   const user = useAuthStore((state) => state.user);
   const [artist, setartist] = useState(user);
-  const role = user?.ID === userId ? "artist" : role;
+  const role = user?.ID === userId ? "artist" : user?.Role;
   const [art, setArt] = useState(null);
   const artWork = useArtStore((state) => state.arts[artId]);
   const addArt = useArtStore((state) => state.addArt);
@@ -108,13 +107,32 @@ export default function ArtPage() {
     }
     router.push(`/u/${userId}`);
   }, [deletedData, deleting]);
-  if (fetchingArt && !art) {
-    return <div>Loading...</div>;
-  }
+if (fetchingArt) {
+  return (
+    <main className="min-h-screen bg-black text-white flex items-center justify-center">
+      <p className="text-gray-400 text-lg animate-pulse">Loading artwork...</p>
+    </main>
+  );
+}
 
-  if (!fetchingArt && !art) {
-    return <div>Art Not Found</div>;
-  }
+if (!art?.Success || !art?.Data) {
+  return (
+    <main className="min-h-screen bg-black text-white flex items-center justify-center px-6">
+      <div className="text-center max-w-md">
+        <h1 className="text-4xl font-bold mb-3">Artwork Not Found</h1>
+        <p className="text-gray-400 mb-6">
+          This artwork may have been removed or doesn’t exist.
+        </p>
+        <Link
+          href="/"
+          className="inline-flex px-5 py-3 bg-red-900 rounded-xl bg-accent text-white font-semibold hover:opacity-90 transition"
+        >
+          Go Back Home
+        </Link>
+      </div>
+    </main>
+  );
+}
 
   return (
     <main className="min-h-screen bg-black text-white selection:bg-accent pb-20 pt-8  px-6 md:px-12">

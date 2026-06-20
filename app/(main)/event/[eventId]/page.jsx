@@ -97,13 +97,14 @@ export default function EventDetail() {
     if (!registerEventLoading && registerEventDetails?.Success) {
       toast.success(registerEventDetails?.Message);
     }
-    if (!registerEventLoading && !registerEventDetails?.Success) {
-      toast.error(registerEventDetails?.Message);
-    }
+
   }, [registerEventDetails, registerEventLoading]);
   const featured = data.featuredEvent;
   const isDisabled = () => {
     if (event) return isBanned || (isRegistered && role !== "admin");
+    const eventDate = new Date(event.EventDate);
+    const now = new Date();
+    return now > eventDate;
   };
   const handleDeleteEvent = () => {
     deleteEventfn(eventId);

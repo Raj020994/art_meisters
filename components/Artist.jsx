@@ -46,7 +46,7 @@ if(loading){
             id={artist.ID}
             name={artist.Name}
             role={artist.Role}
-            desc={artist.Description?.String}
+            desc={artist.Description?.String.slice(0,35)+"...."}
             img={artist.Image?.String}
             instagram={artist.SocialLinks?.instagram}
             youtube={artist.SocialLinks?.youtube}

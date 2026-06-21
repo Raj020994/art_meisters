@@ -96,7 +96,7 @@ export default function EventDetail() {
   };
   useEffect(() => {
     if (!registerEventLoading && registerEventDetails?.Success) {
-      toast.success(registerEventDetails?.Message);
+      router.push(`/my-events`)
     }
 
   }, [registerEventDetails, registerEventLoading]);

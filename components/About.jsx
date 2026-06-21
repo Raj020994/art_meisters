@@ -57,7 +57,7 @@ const About = () => {
         },
         {
             "eventImage": {
-                "src": "/Drawing1.png",
+                "src": "/Event5.jpeg",
                 "width": 450,
                 "height": 300,
                 "alt": "hero",

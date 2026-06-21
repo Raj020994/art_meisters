@@ -277,11 +277,20 @@ export default function EventDetail() {
                     <div className="flex gap-3">
                       {/* Edit button for admin */}
                       {role === "admin" && (
-                        <Link href={`/admin/events/create?id=${eventId}`}>
-                          <button className="px-6 py-3 rounded-xl bg-zinc-700 text-white font-bold text-sm md:text-base hover:bg-zinc-600 transition shadow-lg">
-                            Edit Event
-                          </button>
-                        </Link>
+                        <>
+                          <Link href={`/admin/events/create?id=${eventId}`}>
+                            <button className="px-6 py-3 rounded-xl bg-zinc-700 text-white font-bold text-sm md:text-base hover:bg-zinc-600 transition shadow-lg">
+                              Edit Event
+                            </button>
+                          </Link>
+                          <Link href={`/event/${eventId}/member`}>
+                            <button
+                              className="px-6 py-3 rounded-xl bg-red-500 text-white font-bold text-sm md:text-base hover:bg-red-600 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              Check Attendees
+                            </button>
+                          </Link>
+                        </>
                       )}
 
                       {/* Main action button (for everyone, including admin) */}

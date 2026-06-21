@@ -36,7 +36,7 @@ const page = () => {
   }, [eventId]);
   useEffect(() => {
     if (!loading && attendeesInfo?.Success) {
-      setAttendees(attendees)
+      setAttendees(attendeesInfo.Data)
     }
   }, [loading, attendeesInfo]);
   useEffect(() => {

@@ -10,6 +10,7 @@ import { getPendingArt } from "@/service/admin";
 
 import ManageAccount from "./_components/ManageAccount";
 import { getAllUser } from "@/service/user";
+import { AdminSkeleton } from "@/components/skeletons";
 
 export default function Page() {
   const [artWorks, setartWorks] = useState(null);
@@ -46,12 +47,7 @@ export default function Page() {
 
   if (accountLoading||artLoading) {
     return (
-      <div className="min-h-screen bg-black flex-center flex-col gap-4">
-        <div className="w-12 h-12 border-4 border-red-500/20 border-t-red-500 rounded-full animate-spin"></div>
-        <p className="text-gray-400 font-medium tracking-widest animate-pulse text-xs uppercase">
-          Loading Admin Hub
-        </p>
-      </div>
+     <AdminSkeleton/>
     );
   }
 

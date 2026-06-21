@@ -24,6 +24,7 @@ import {
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/user";
 import { toast } from "sonner";
+import { EventDetailSkeleton } from "@/components/skeletons";
 
 // Helper to parse backend EventDate and extract day, month, and full readable date format
 const parseEventDate = (dateStr) => {
@@ -135,12 +136,7 @@ export default function EventDetail() {
 
   if (getEventLoading) {
     return (
-      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 selection:bg-red-500">
-        <div className="w-16 h-16 border-4 border-t-red-500 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin mb-6"></div>
-        <p className="text-gray-400 font-light text-lg tracking-wider animate-pulse">
-          Loading Event Details...
-        </p>
-      </div>
+     <EventDetailSkeleton/>
     );
   }
 

@@ -1,4 +1,5 @@
 "use client";
+import { AttendeesSkeleton } from "@/components/skeletons";
 import useFetch from "@/hooks/useFetch";
 import { deleteEventAttendee, getEventAttendees } from "@/service/event";
 import Link from "next/link";
@@ -43,7 +44,11 @@ const page = () => {
       setAttendees(attendees.filter((atd)=>atd.ID !== deletedAttendeeRes?.Data));
     }
   }, [deleting, deletedAttendeeRes]);
-
+if(loading){
+  return (
+    <AttendeesSkeleton/>
+  )
+}
 
   return (
     <main className="min-h-screen bg-black text-white px-6 py-10">

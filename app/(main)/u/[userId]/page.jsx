@@ -1,4 +1,5 @@
 "use client";
+import { ProfileSkeleton } from "@/components/skeletons";
 import Link from "next/link";
 import {
   MoveLeft,
@@ -137,11 +138,7 @@ export default function ArtistProfile() {
   }, [deletedData, deleting]);
 
   if (fetchingData || fetchingArtworks) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        Loading...
-      </div>
-    );
+    return <ProfileSkeleton />;
   }
   if (!artist) {
     return (

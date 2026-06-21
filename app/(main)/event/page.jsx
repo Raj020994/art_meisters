@@ -47,7 +47,7 @@ export default function EventPage() {
   );
  
   return (
-    <main className="min-h-screen bg-black pt-32 pb-20 selection:bg-red-500/30">
+    <main className="min-h-screen bg-black  pb-20 selection:bg-red-500/30">
       <section className="container mx-auto px-6 lg:px-12">
         {/* Header Section */}
         <div className="mb-24 space-y-6">

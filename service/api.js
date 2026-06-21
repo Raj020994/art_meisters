@@ -14,9 +14,12 @@ export async function api(endpoint, options = {}) {
 
     ...options,
   });
+  console.log(`${backendUrl}${endpoint}`);
+  
 
   const data = await res.json();
-
+  console.log(data,"res");
+  
   if (!res.ok) {
     throw new Error(data.Data.Error || "Something went wrong");
   }

@@ -10,13 +10,12 @@ const useFetch = (cb) => {
     setLoading(true);
     setErrors(null);
     try {
+      await new Promise((resolve) => setTimeout(resolve, 500));
       const response = await cb(...args);
-      console.log("res", response);
       setData(response);
       return response;
     } catch (error) {
       setErrors(error);
-      console.log(error);
       toast.error(error.message || "An error occurred");
     } finally {
       setLoading(false);
@@ -27,4 +26,3 @@ const useFetch = (cb) => {
 };
 
 export default useFetch;
-

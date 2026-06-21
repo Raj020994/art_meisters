@@ -27,7 +27,7 @@ export default function ArtistProfile() {
   const params = useParams();
   const router = useRouter();
   const [artist, setArtist] = useState(null);
-  const [artistArtworks, setArtistArtworks] = useState(null);
+  const [artistArtworks, setArtistArtworks] = useState([]);
   const user = useAuthStore((state) => state.user);
   const usrId = params.userId;
   const role = user?.ID === usrId ? "artist" : user?.Role;
@@ -52,29 +52,26 @@ export default function ArtistProfile() {
     loading: deleting,
   } = useFetch(deleteArt);
   const isUserProfile = user?.ID === usrId;
-const ranRef = useRef(false);
+  const hasHydrated = useAuthStore((state) => state._hasHydrated);
+  const hasFetchedArt = useRef(false);
+  const hasFetchedProfile = useRef(false);
 
-useEffect(() => {
+  useEffect(() => {
+    if (!usrId || !hasHydrated) return;
 
-  if (!usrId || !user?.ID) return;
+    if (isUserProfile) {
+      if (hasFetchedArt.current) return;
+      hasFetchedArt.current = true;
 
-  if (ranRef.current) return;
+      setArtist(user);
+      getArt(usrId);
+      return;
+    }
 
-  ranRef.current = true;
-
-  if (user.ID === usrId) {
-
-    setArtist(user);
-
-    getArt(usrId);
-
-  } else {
-
+    if (hasFetchedProfile.current) return;
+    hasFetchedProfile.current = true;
     getData(usrId);
-
-  }
-
-}, [usrId, user?.ID]);
+  }, [usrId, user?.ID, hasHydrated]);
 
   useEffect(() => {
     if (!isUserProfile) {
@@ -104,7 +101,7 @@ useEffect(() => {
 
       setArtistArtworks(arts.Data);
     }
-  }, [data, arts, user, isUserProfile, fetchingData, fetchingArtworks]);
+  }, [data, arts, isUserProfile, fetchingData, fetchingArtworks]);
   const handleStatusOfUser = (status) => {
     if (role !== "admin") {
       toast.error("You are not authorized to perform this action");
@@ -164,7 +161,7 @@ useEffect(() => {
   }
   return (
     <main className="min-h-screen bg-black text-white selection:bg-accent pb-20">
-      <section className="relative h-[40vh] w-full overflow-hidden">
+      <section className="relative h-[40vh] w-full rounded-2xl overflow-hidden">
         <img
           src={
             artist?.BannerImage?.Valid && artist?.BannerImage?.String
@@ -176,8 +173,6 @@ useEffect(() => {
           alt={artist?.Name}
           className="w-full h-full object-cover blur-sm opacity-40 scale-110"
         />
-
-        <div className="absolute inset-0 bg-linear-to-t from-black via-black/60 to-transparent"></div>
 
         <div className="absolute bottom-0 left-0 w-full p-6 md:p-12">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-end gap-8">

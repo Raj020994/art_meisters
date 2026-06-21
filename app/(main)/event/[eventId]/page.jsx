@@ -84,21 +84,17 @@ export default function EventDetail() {
       toast.error("You are banned from registering for events");
       return;
     }
-    if (role === "admin") {
-      router.push(`/event/create?id=${eventId}`);
-    } else {
-      if (!user) {
-        toast.error("Please Login First");
-        return;
-      }
-      registerEventFn(eventId);
+
+    if (!user) {
+      toast.error("Please Login First");
+      return;
     }
+    registerEventFn(eventId);
   };
   useEffect(() => {
     if (!registerEventLoading && registerEventDetails?.Success) {
-      router.push(`/my-events`)
+      router.push(`/my-events`);
     }
-
   }, [registerEventDetails, registerEventLoading]);
   const featured = data.featuredEvent;
   const isDisabled = () => {
@@ -135,9 +131,7 @@ export default function EventDetail() {
   }, [myEventDetails, myEventLoading]);
 
   if (getEventLoading) {
-    return (
-     <EventDetailSkeleton/>
-    );
+    return <EventDetailSkeleton />;
   }
 
   if (
@@ -164,7 +158,36 @@ export default function EventDetail() {
       </div>
     );
   }
+  const getButtonConfig = () => {
+    if (isBanned)
+      return {
+        label: "Register Now",
+        disabled: true,
+        title: "You are banned from registering",
+      };
 
+    if (isRegistered)
+      return {
+        label: "Already Registered",
+        disabled: true,
+        title: "You already registered",
+      };
+
+    if (eventState === "Ongoing")
+      return {
+        label: "Join Live",
+        disabled: false,
+        title: "",
+      };
+
+    return {
+      label: "Register Now",
+      disabled: false,
+      title: "",
+    };
+  };
+
+  const { label, disabled, title } = getButtonConfig();
   const isFeatured = featured && featured.title === event.Name;
 
   const { day, month, fullDate } = parseEventDate(event.EventDate);
@@ -230,14 +253,11 @@ export default function EventDetail() {
                           ? "● Ongoing"
                           : "● Completed"}
                     </span>
-
-              
                   </div>
 
                   <h3 className="font-heading font-bold text-3xl md:text-6xl leading-tight">
                     {event.Name}
                   </h3>
-             
                 </div>
               </div>
 
@@ -254,28 +274,26 @@ export default function EventDetail() {
                 {eventState !== "Completed" && (
                   <div className="flex gap-3">
                     {/* Main button */}
-                    <button
-                      onClick={handleEventClick}
-                      disabled={isDisabled()}
-                      title={
-                        isBanned
-                          ? "You are banned from registering for events"
-                          : isRegistered
-                            ? "You already registered for this event"
-                            : eventState === "Ongoing"
-                              ? "This event is currently live"
-                              : ""
-                      }
-                      className="px-6 py-3 rounded-xl bg-red-500 text-white font-bold text-sm md:text-base hover:bg-red-600 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {role === "admin"
-                        ? "Edit Event"
-                        : isRegistered
-                          ? "Already Registered"
-                          : eventState === "Ongoing"
-                            ? "Join Live"
-                            : "Register Now"}
-                    </button>
+                    <div className="flex gap-3">
+                      {/* Edit button for admin */}
+                      {role === "admin" && (
+                        <Link href={`/admin/events/create?id=${eventId}`}>
+                          <button className="px-6 py-3 rounded-xl bg-zinc-700 text-white font-bold text-sm md:text-base hover:bg-zinc-600 transition shadow-lg">
+                            Edit Event
+                          </button>
+                        </Link>
+                      )}
+
+                      {/* Main action button (for everyone, including admin) */}
+                      <button
+                        onClick={handleEventClick}
+                        disabled={disabled}
+                        title={title}
+                        className="px-6 py-3 rounded-xl bg-red-500 text-white font-bold text-sm md:text-base hover:bg-red-600 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {label}
+                      </button>
+                    </div>
 
                     {/* Delete button for admin */}
 
@@ -298,7 +316,14 @@ export default function EventDetail() {
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction className={"bg-red-500 text-white hover:bg-red-600"} onClick={() => handleDeleteEvent()}>Continue</AlertDialogAction>
+                            <AlertDialogAction
+                              className={
+                                "bg-red-500 text-white hover:bg-red-600"
+                              }
+                              onClick={() => handleDeleteEvent()}
+                            >
+                              Continue
+                            </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>

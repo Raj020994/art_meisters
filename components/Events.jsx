@@ -61,7 +61,7 @@ export const Events = () => {
         {/* Event List */}
 
         <div className="flex flex-col gap-4 lg:col-span-1">
-          {events?.map((event) => (
+          {events?.slice(0, 3)?.map((event) => (
             <div
               key={event.ID}
               onClick={() => setSelectedEvent(event)}

@@ -4,6 +4,7 @@ import { EventCard } from "../event/_components/EventCard";
 import Link from "next/link";
 import useFetch from "@/hooks/useFetch";
 import { getMyAllEvents } from "@/service/event";
+import { EventsListSkeleton } from "@/components/skeletons";
 
 const MyEvent = () => {
   const [registeredEvents, setRegisteredEvents] = useState([]);
@@ -47,9 +48,7 @@ const MyEvent = () => {
 
         {/* Loading */}
         {loading && (
-          <div className="text-center text-gray-400 py-20">
-            Loading your events...
-          </div>
+          <EventsListSkeleton/>
         )}
 
         {/* Empty State */}

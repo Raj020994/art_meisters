@@ -211,10 +211,10 @@ const CreateEventPage = () => {
     }
   }, [createdEvent]);
   useEffect(() => {
-    console.log(Event);
+
     if (Event?.Success) {
       const eventDetails = Event?.Data;
-      console.log(eventDetails);
+
 
       reset({
         name: eventDetails?.Name ?? "",

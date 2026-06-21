@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getAllEvents } from "@/service/event";
 import useFetch from "@/hooks/useFetch";
+import { EventsSectionSkeleton } from "./skeletons";
 export const Events = () => {
   const [events, setEvents] = useState([]);
 
@@ -24,7 +25,9 @@ export const Events = () => {
       }
     }
   }, [eventsRes]);
-
+  if(loading){
+   return <EventsSectionSkeleton/>
+  }
   return (
     <section id="events" className="max-w-7xl mx-auto px-6 md:px-12 mb-32">
       <div className="flex justify-between items-end mb-12">
@@ -100,7 +103,7 @@ export const Events = () => {
               </h3>
 
               <p className="text-gray-300 mb-6">
-                {selectedEvent.Description?.String}
+                {selectedEvent.Description?.String.slice(0,90)}....
               </p>
 
               <div className="flex flex-wrap gap-6 mb-8 text-sm text-gray-300">

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import useFetch from "@/hooks/useFetch";
 import { getAllArt } from "@/service/art";
 import Link from "next/link";
+import { ArtGallerySkeleton } from "@/components/skeletons";
 
 const ITEMS_PER_BATCH = 12;
 
@@ -303,10 +304,7 @@ const Page = () => {
   const { data: arts, loading, fn: getArts } = useFetch(getAllArt);
   const [allArts, setAllArts] = useState([]);
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_BATCH);
-  useEffect(() => {
-    console.log("arts:", arts);
-    console.log("loading:", loading);
-  }, [arts, loading]);
+  useEffect(() => {}, [arts, loading]);
   const loaderRef = useRef(null);
 
   useEffect(() => {
@@ -344,11 +342,7 @@ const Page = () => {
   }, [hasMore, loadMore]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-white text-xl bg-black">
-        Loading art...
-      </div>
-    );
+    return <ArtGallerySkeleton />;
   }
 
   return (
@@ -370,45 +364,44 @@ const Page = () => {
               className="break-inside-avoid overflow-hidden rounded-2xl relative group cursor-pointer"
             >
               <Link href={`/u/${art.UserID}/${art.ID}`}>
-                
-              <img
-                src={art.Image}
-                alt={art.Name}
-                className="w-full object-cover rounded-2xl"
+                <img
+                  src={art.Image}
+                  alt={art.Name}
+                  className="w-full object-cover rounded-2xl"
                 />
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl flex flex-col justify-end p-4">
-                <p className="font-semibold text-white">{art.Name}</p>
-                {art.Description?.Valid && (
-                  <p className="text-sm text-white/70">
-                    {art.Description.String}
-                  </p>
-                )}
-                <div className="flex gap-2 mt-2 flex-wrap">
-                  {art.Tags?.map((tag) => (
-                    <span
-                    key={tag}
-                    className="text-xs bg-white/20 px-2 py-0.5 rounded-full"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl flex flex-col justify-end p-4">
+                  <p className="font-semibold text-white">{art.Name}</p>
+                  {art.Description?.Valid && (
+                    <p className="text-sm text-white/70">
+                      {art.Description.String}
+                    </p>
+                  )}
+                  <div className="flex gap-2 mt-2 flex-wrap">
+                    {art.Tags?.map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-xs bg-white/20 px-2 py-0.5 rounded-full"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-          </Link>
+              </Link>
             </div>
           ))}
         </div>
         {hasMore && (
           <div
-          ref={loaderRef}
-          className="flex justify-center py-10 text-white/60"
+            ref={loaderRef}
+            className="flex justify-center py-10 text-white/60"
           >
-          Loading more art...
+            Loading more art...
           </div>
         )}
-        </div>
-        </section>
-      );
-    };
+      </div>
+    </section>
+  );
+};
 
 export default Page;

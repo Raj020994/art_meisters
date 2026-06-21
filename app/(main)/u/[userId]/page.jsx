@@ -1,4 +1,5 @@
 "use client";
+import { ProfileSkeleton } from "@/components/skeletons";
 import Link from "next/link";
 import {
   MoveLeft,
@@ -11,7 +12,7 @@ import {
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import useFetch from "@/hooks/useFetch";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { deleteArt, getAllArtistArt, getArtistProfile } from "@/service/art";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/user";
@@ -27,7 +28,7 @@ export default function ArtistProfile() {
   const params = useParams();
   const router = useRouter();
   const [artist, setArtist] = useState(null);
-  const [artistArtworks, setArtistArtworks] = useState(null);
+  const [artistArtworks, setArtistArtworks] = useState([]);
   const user = useAuthStore((state) => state.user);
   const usrId = params.userId;
   const role = user?.ID === usrId ? "artist" : user?.Role;
@@ -51,19 +52,27 @@ export default function ArtistProfile() {
     fn: deleteFn,
     loading: deleting,
   } = useFetch(deleteArt);
-
   const isUserProfile = user?.ID === usrId;
+  const hasHydrated = useAuthStore((state) => state._hasHydrated);
+  const hasFetchedArt = useRef(false);
+  const hasFetchedProfile = useRef(false);
 
   useEffect(() => {
-    if (!usrId) return;
+    if (!usrId || !hasHydrated) return;
 
     if (isUserProfile) {
+      if (hasFetchedArt.current) return;
+      hasFetchedArt.current = true;
+
       setArtist(user);
       getArt(usrId);
-    } else {
-      getData(usrId);
+      return;
     }
-  }, [usrId, isUserProfile, user]);
+
+    if (hasFetchedProfile.current) return;
+    hasFetchedProfile.current = true;
+    getData(usrId);
+  }, [usrId, user?.ID, hasHydrated]);
 
   useEffect(() => {
     if (!isUserProfile) {
@@ -93,7 +102,7 @@ export default function ArtistProfile() {
 
       setArtistArtworks(arts.Data);
     }
-  }, [data, arts, user, isUserProfile, fetchingData, fetchingArtworks]);
+  }, [data, arts, isUserProfile, fetchingData, fetchingArtworks]);
   const handleStatusOfUser = (status) => {
     if (role !== "admin") {
       toast.error("You are not authorized to perform this action");
@@ -124,17 +133,12 @@ export default function ArtistProfile() {
       return;
     }
     setArtistArtworks(
-      artistArtworks.filter((art) => art.ID !== deletedData.Data.ID)
+      artistArtworks.filter((art) => art.ID !== deletedData.Data.ID),
     );
   }, [deletedData, deleting]);
 
-
   if (fetchingData || fetchingArtworks) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        Loading...
-      </div>
-    );
+    return <ProfileSkeleton />;
   }
   if (!artist) {
     return (
@@ -154,7 +158,7 @@ export default function ArtistProfile() {
   }
   return (
     <main className="min-h-screen bg-black text-white selection:bg-accent pb-20">
-      <section className="relative h-[40vh] w-full overflow-hidden">
+      <section className="relative h-[40vh] w-full rounded-2xl overflow-hidden">
         <img
           src={
             artist?.BannerImage?.Valid && artist?.BannerImage?.String
@@ -166,8 +170,6 @@ export default function ArtistProfile() {
           alt={artist?.Name}
           className="w-full h-full object-cover blur-sm opacity-40 scale-110"
         />
-
-        <div className="absolute inset-0 bg-linear-to-t from-black via-black/60 to-transparent"></div>
 
         <div className="absolute bottom-0 left-0 w-full p-6 md:p-12">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-end gap-8">

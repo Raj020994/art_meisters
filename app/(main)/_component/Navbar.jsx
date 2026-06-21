@@ -9,6 +9,7 @@ import useFetch from "@/hooks/useFetch";
 import { getCurrUser } from "@/service/auth";
 import { useAuthStore } from "@/store/user";
 import UserMenu from "@/components/UserMenu";
+import AdminMenu from "@/components/AdminMenu";
 export const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const user = useAuthStore((state) => state.user);
@@ -75,11 +76,7 @@ useEffect(() => {
       </Link>
 
       {user.Role == "admin" && (
-        <Link href={"/admin"}>
-          <button className="border px-3 py-2 rounded-md bg-red-900">
-            Admin Dashboard
-          </button>
-        </Link>
+       <AdminMenu/>
       )}
 
       <div className="relative h-12 w-12 overflow-hidden flex items-center justify-center rounded-full border border-white/20">

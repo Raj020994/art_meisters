@@ -11,7 +11,7 @@ export function EventListItem({ id, date, month, title, desc, active }) {
             <div className="w-px h-12 bg-white/10"></div>
             <div className="flex-1">
                 <h4 className="font-heading font-bold text-xl mb-1 text-red-500">{title}</h4>
-                <p className="text-sm text-gray-400">{desc}</p>
+                <p className="text-sm text-gray-400">{desc.slice(0,45)}....</p>
             </div>
             <MoveRight className={`transition-transform duration-300 ${active ? 'text-accent' : 'text-gray-600'} ${active ? 'translate-x-0' : '-translate-x-2'}`} size={20} />
         </Link>

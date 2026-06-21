@@ -64,11 +64,19 @@ const page = () => {
     loading: getArtLoading,
     data: artDataRes,
   } = useFetch(getArtById);
-  const { fn: createArtFunc, data: createdArt } = useFetch(createArt);
-  const { fn: updateArtFunc, data: updatedArt } = useFetch(updateArt);
+  const {
+    fn: createArtFunc,
+    data: createdArt,
+    loading: createLoading,
+  } = useFetch(createArt);
+  const {
+    fn: updateArtFunc,
+    data: updatedArt,
+    loading: updateLoading,
+  } = useFetch(updateArt);
 
   useEffect(() => {
-    setIsBanned(user?.Status === "banned");
+    setIsBanned(user?.Status !== "approved");
   }, [user]);
 
   useEffect(() => {
@@ -130,7 +138,6 @@ const page = () => {
         toast.error("You are banned, can't upload");
         return;
       }
-      console.log(data);
 
       if (!isEdit) {
         let url = preview;
@@ -171,7 +178,6 @@ const page = () => {
         }
       }
     } catch (err) {
-      console.log(err);
       toast.error("Something went wrong");
     }
   };
@@ -191,15 +197,7 @@ const page = () => {
             </p>
           </div>
 
-          <form
-            onSubmit={handleSubmit(
-              handleOnSubmit,
-
-              (errors) => {
-                console.log("Validation errors:", errors);
-              },
-            )}
-          >
+          <form onSubmit={handleSubmit(handleOnSubmit)}>
             {/* Upload Image */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-white/80">
@@ -259,7 +257,6 @@ const page = () => {
                 </p>
               )}
             </div>
-
 
             {/* Category */}
             <div className="space-y-2">
@@ -344,17 +341,25 @@ const page = () => {
             {/* Submit */}
             <button
               type="submit"
-              disabled={isBanned}
-              className="w-full bg-red-800 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-red-900/20 flex items-center justify-center gap-2 group"
+              disabled={isBanned || createLoading || updateLoading}
+              className="w-full bg-red-800 hover:bg-red-700 disabled:bg-zinc-700 disabled:text-zinc-400 disabled:cursor-not-allowed disabled:shadow-none text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-red-900/20 flex items-center justify-center gap-2 group"
             >
-              {isBanned ? (
-                <>Your Account Is Haulted</>
+              {createLoading || updateLoading ? (
+                <>
+                  <div className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  {isEdit ? "Updating..." : "Uploading..."}
+                </>
+              ) : isBanned ? (
+                <>Your Account Is Halted</>
               ) : isEdit ? (
                 <>Update Artwork</>
               ) : (
                 <>Upload Artwork</>
               )}
-              <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
+
+              {!createLoading && !updateLoading && (
+                <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
+              )}
             </button>
           </form>
         </div>

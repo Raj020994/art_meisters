@@ -1,4 +1,5 @@
 "use client";
+import { ArtDetailSkeleton } from "@/components/skeletons";
 import React, { useEffect, useState } from "react";
 import {
   AlertDialog,
@@ -107,21 +108,10 @@ export default function ArtPage() {
     }
     router.push(`/u/${userId}`);
   }, [deletedData, deleting]);
-  useEffect(() => {
-    console.log("Art", art);
-  }, [art]);
-  useEffect(() => {
-    console.log("Artist", artist);
-  }, [artist]);
+
 
   if (fetchingArt) {
-    return (
-      <main className="min-h-screen bg-black text-white flex items-center justify-center">
-        <p className="text-gray-400 text-lg animate-pulse">
-          Loading artwork...
-        </p>
-      </main>
-    );
+    return <ArtDetailSkeleton />;
   }
 
   if (!art) {

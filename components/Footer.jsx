@@ -28,12 +28,6 @@ export const Footer = () => {
                             ))}
                         </div>
                     </div>
-
-                   
-
-                 
-
-                  
                 </div>
 
                 <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/10 text-xs text-gray-500">

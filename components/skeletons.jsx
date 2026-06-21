@@ -56,10 +56,7 @@ export function ProfileSkeleton() {
             <Skeleton className="h-8 w-48 rounded-xl" />
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[1, 2, 3].map((i) => (
-                <Skeleton
-                  key={i}
-                  className="aspect-square rounded-2xl"
-                />
+                <Skeleton key={i} className="aspect-square rounded-2xl" />
               ))}
             </div>
           </div>
@@ -108,9 +105,7 @@ export function ArtDetailSkeleton() {
     </main>
   );
 }
-const handle=()=>{
-  
-}
+const handle = () => {};
 /* ─── Event Detail Page Skeleton ─── */
 export function EventDetailSkeleton() {
   return (
@@ -257,10 +252,7 @@ export function ArtGallerySkeleton() {
         <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-3 space-y-3">
           {heights.map((h, i) => (
             <div key={i} className="break-inside-avoid">
-              <Skeleton
-                className="w-full rounded-2xl"
-                style={{ height: h }}
-              />
+              <Skeleton className="w-full rounded-2xl" style={{ height: h }} />
             </div>
           ))}
         </div>
@@ -289,6 +281,111 @@ export function AttendeesSkeleton({ count = 5 }) {
           <Skeleton className="h-10 w-24 rounded-xl hidden md:block" />
         </div>
       ))}
+    </div>
+  );
+}
+
+
+export function EventsSectionSkeleton() {
+  return (
+    <section id="events" className="max-w-7xl mx-auto px-6 md:px-12 mb-32">
+      {/* Header */}
+      <div className="flex justify-between items-end mb-12">
+        <div>
+          <div className="flex items-center gap-4 mb-3">
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-px w-12" />
+          </div>
+          <Skeleton className="h-10 w-56" />
+        </div>
+        <Skeleton className="h-5 w-32 hidden sm:block" />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Event List */}
+        <div className="flex flex-col gap-4 lg:col-span-1">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <EventListItemSkeleton key={i} />
+          ))}
+        </div>
+
+        {/* Featured Event */}
+        <div className="lg:col-span-2 relative rounded-2xl overflow-hidden h-[400px]">
+          <Skeleton className="w-full h-full" />
+          <div className="absolute bottom-0 left-0 p-8 w-full space-y-3">
+            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-8 w-3/4" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-2/3" />
+            <div className="flex gap-6 pt-2">
+              <Skeleton className="h-4 w-28" />
+              <Skeleton className="h-4 w-28" />
+              <Skeleton className="h-4 w-28" />
+            </div>
+            <Skeleton className="h-10 w-36 rounded-full mt-2" />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function EventListItemSkeleton() {
+  return (
+    <div className="flex gap-4 p-4 rounded-xl border border-white/10">
+      {/* Date box */}
+      <Skeleton className="h-14 w-14 rounded-lg shrink-0" />
+      {/* Text */}
+      <div className="flex flex-col gap-2 flex-1">
+        <Skeleton className="h-4 w-3/4" />
+        <Skeleton className="h-3 w-full" />
+        <Skeleton className="h-3 w-2/3" />
+      </div>
+    </div>
+  );
+}
+
+export function ArtistsSectionSkeleton() {
+  return (
+    <section id="artists" className="max-w-7xl mx-auto px-6 md:px-12">
+      {/* Header */}
+      <div className="flex justify-between items-end mb-12">
+        <div>
+          <div className="flex items-center gap-4 mb-3">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-px w-12" />
+          </div>
+          <Skeleton className="h-10 w-52" />
+        </div>
+      </div>
+
+      {/* Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <ArtistCardSkeleton key={i} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ArtistCardSkeleton() {
+  return (
+    <div className="rounded-xl overflow-hidden">
+      {/* Image */}
+      <Skeleton className="w-full aspect-[3/4]" />
+      {/* Content */}
+      <div className="p-4 space-y-2">
+        <Skeleton className="h-5 w-3/4" />
+        <Skeleton className="h-4 w-1/2" />
+        <Skeleton className="h-3 w-full" />
+        <Skeleton className="h-3 w-5/6" />
+        {/* Social icons */}
+        <div className="flex gap-3 pt-1">
+          <Skeleton className="h-5 w-5 rounded-full" />
+          <Skeleton className="h-5 w-5 rounded-full" />
+        </div>
+      </div>
     </div>
   );
 }

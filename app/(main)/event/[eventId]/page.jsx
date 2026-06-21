@@ -231,19 +231,13 @@ export default function EventDetail() {
                           : "● Completed"}
                     </span>
 
-                    {isFeatured && (
-                      <span className="px-3 py-1 rounded-full bg-red-500/20 text-red-300 text-xs font-bold uppercase tracking-wider border border-red-500/30 backdrop-blur-md">
-                        Featured
-                      </span>
-                    )}
+              
                   </div>
 
-                  <h1 className="font-heading font-bold text-3xl md:text-6xl leading-tight">
+                  <h3 className="font-heading font-bold text-3xl md:text-6xl leading-tight">
                     {event.Name}
-                  </h1>
-                  <p className="text-gray-300 mt-2 text-base md:text-lg max-w-xl">
-                    {event.Description?.String}
-                  </p>
+                  </h3>
+             
                 </div>
               </div>
 

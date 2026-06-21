@@ -2,11 +2,11 @@
 
 import React, { useState } from "react";
 import { ArtistCard } from "./ArtistCard";
-import { MoveRight } from "lucide-react";
-import data from "@/data.json";
+
 import { useEffect } from "react";
 import useFetch from "@/hooks/useFetch";
 import { getAllApprovedUser } from "@/service/user";
+import { ArtistsSectionSkeleton } from "./skeletons";
 export const Artist = () => {
   const [artists, setArtist] = useState(null);
   const {
@@ -22,7 +22,9 @@ export const Artist = () => {
       setArtist(artistsRes.Data);
     }
   }, [artistsRes, loading]);
-
+if(loading){
+  return <ArtistsSectionSkeleton/>
+}
   return (
     <section id="artists" className="max-w-7xl mx-auto px-6 md:px-12 ">
       <div className="flex justify-between items-end mb-12">

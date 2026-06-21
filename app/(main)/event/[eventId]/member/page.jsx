@@ -3,11 +3,10 @@ import { AttendeesSkeleton } from "@/components/skeletons";
 import useFetch from "@/hooks/useFetch";
 import { deleteEventAttendee, getEventAttendees } from "@/service/event";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 const page = () => {
-  const router = useRouter();
   const params = useParams();
   const eventId = params.eventId;
   const [attendees, setAttendees] = useState(null);

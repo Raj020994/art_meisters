@@ -159,23 +159,16 @@ const onboarding = () => {
       onboardUser(user?.ID, payload);
     } catch (error) {
       console.log(error);
-      toast.error("Failed to update profile");
+      toast.error("Image size should be less than 5 MB");
     }
   };
 
   useEffect(() => {
     if (!updating && updatedUser) {
-      toast.success(
-        isEdit
-          ? "Profile updated successfully"
-          : "Profile created successfully",
-      );
-
       setUser(updatedUser?.Data);
-      
       router.push(`/u/${updatedUser?.Data?.ID}`);
     }
-  }, [updatedUser, updating, isEdit, router, setUser]);
+  }, [updatedUser, updating, router, setUser]);
 
   const logoRef = useRef(null);
   const bannerRef = useRef(null);

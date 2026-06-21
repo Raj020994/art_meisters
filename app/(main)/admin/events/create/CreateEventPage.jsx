@@ -108,7 +108,7 @@ const CreateEventPage = ({ id }) => {
   } = useForm({
     resolver: zodResolver(eventSchema),
   });
-  const eventId = id
+  const eventId = id;
   const {
     data: createdEvent,
     fn: createEventFn,
@@ -132,59 +132,63 @@ const CreateEventPage = ({ id }) => {
       const payload = {};
       let image = "";
       let bannerImage = "";
-      if (logoRef?.current?.files?.[0]) {
-        const logoImgRes = await upload(logoRef.current.files[0]);
-        if(!logoImgRes?.success){
-          toast.error("Image upload error");
-          return;
+      try {
+        if (logoRef?.current?.files?.[0]) {
+          const logoImgRes = await upload(logoRef.current.files[0]);
+          if (!logoImgRes?.success) {
+            toast.error("Image upload error");
+            return;
+          }
+          image = logoImgRes?.url;
         }
-        image = logoImgRes?.url;
-      }
 
-      if (bannerRef?.current?.files?.[0]) {
-        const bannerImgRes = await upload(bannerRef.current.files[0]);
-        if(!bannerImgRes?.success){
-          toast.error("Image upload error");
-          return;
+        if (bannerRef?.current?.files?.[0]) {
+          const bannerImgRes = await upload(bannerRef.current.files[0]);
+          if (!bannerImgRes?.success) {
+            toast.error("Image upload error");
+            return;
+          }
+          bannerImage = bannerImgRes?.url;
         }
-        bannerImage = bannerImgRes?.url;
+        payload.name =
+          data.name?.trim() !== (Event?.Data?.Name ?? "").trim()
+            ? data.name.trim()
+            : null;
+        payload.description =
+          data.description?.trim() !==
+          (Event?.Data?.Description?.String ?? "").trim()
+            ? data.description.trim()
+            : null;
+        payload.date =
+          data.date?.trim() !== (Event?.Data?.EventDate ?? "").trim()
+            ? data.date.trim()
+            : null;
+        payload.status =
+          data.status?.trim() !== (Event?.Data?.Status ?? "").trim()
+            ? data.status.trim()
+            : null;
+        payload.venue =
+          data.venue?.trim() !== (Event?.Data?.Venue?.String ?? "").trim()
+            ? data.venue.trim()
+            : null;
+        payload.image = image || null;
+        payload.bannerImage = bannerImage || null;
+        if (Object.values(payload).some((v) => v !== null)) {
+          updateEventFn(eventId, payload);
+        }
+        return;
+      } catch {
+        toast.error("Image size should be less than 5 MB");
       }
-      payload.name =
-        data.name?.trim() !== (Event?.Data?.Name ?? "").trim()
-          ? data.name.trim()
-          : null;
-      payload.description =
-        data.description?.trim() !==
-        (Event?.Data?.Description?.String ?? "").trim()
-          ? data.description.trim()
-          : null;
-      payload.date =
-        data.date?.trim() !== (Event?.Data?.EventDate ?? "").trim()
-          ? data.date.trim()
-          : null;
-      payload.status =
-        data.status?.trim() !== (Event?.Data?.Status ?? "").trim()
-          ? data.status.trim()
-          : null;
-      payload.venue =
-        data.venue?.trim() !== (Event?.Data?.Venue?.String ?? "").trim()
-          ? data.venue.trim()
-          : null;
-      payload.image = image || null;
-      payload.bannerImage = bannerImage || null;
-      if (Object.values(payload).some((v) => v !== null)) {
-        updateEventFn(eventId, payload);
-      }
-      return;
     }
     const bannerUrlRes = await upload(bannerRef.current?.files[0]);
-    if(!bannerUrlRes?.success){
-      toast.error("Image upload error");
+    if (!bannerUrlRes?.success) {
+      toast.error("Image Size Should be less than 5 MB");
       return;
     }
     const logoUrlRes = await upload(logoRef.current?.files[0]);
-    if(!logoUrlRes?.success){
-      toast.error("Image upload error");
+    if (!logoUrlRes?.success) {
+      toast.error("Image Size Should be less than 5 MB");
       return;
     }
     const formData = new FormData();
@@ -210,10 +214,8 @@ const CreateEventPage = ({ id }) => {
     }
   }, [createdEvent]);
   useEffect(() => {
-
     if (Event?.Success) {
       const eventDetails = Event?.Data;
-
 
       reset({
         name: eventDetails?.Name ?? "",

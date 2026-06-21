@@ -179,7 +179,7 @@ const CreateArt = ({ artid }) => {
         }
       }
     } catch (err) {
-      toast.error("Something went wrong");
+      toast.error("Image size should be less than 5 MB");
     }
   };
   return (

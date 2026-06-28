@@ -25,6 +25,7 @@ import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/user";
 import { toast } from "sonner";
 import { EventDetailSkeleton } from "@/components/skeletons";
+import { canModerate } from "@/lib/roles";
 
 // Helper to parse backend EventDate and extract day, month, and full readable date format
 const parseEventDate = (dateStr) => {
@@ -55,7 +56,7 @@ export default function EventDetail() {
   const [isRegistered, setisRegistered] = useState(false);
   const user = useAuthStore((state) => state.user);
   const [event, setEvent] = useState(null);
-  const role = user?.Role === "admin" ? "admin" : "user";
+  const isModerator = canModerate(user);
   const isBanned = user?.Status === "banned";
   const eventId = params.eventId;
   const {
@@ -98,7 +99,7 @@ export default function EventDetail() {
   }, [registerEventDetails, registerEventLoading]);
   const featured = data.featuredEvent;
   const isDisabled = () => {
-    if (event) return isBanned || (isRegistered && role !== "admin");
+    if (event) return isBanned || (isRegistered && !isModerator);
     const eventDate = new Date(event.EventDate);
     const now = new Date();
     return now > eventDate;
@@ -276,7 +277,7 @@ export default function EventDetail() {
                     {/* Main button */}
                     <div className="flex gap-3">
                       {/* Edit button for admin */}
-                      {role === "admin" && (
+                      {isModerator && (
                         <>
                           <Link href={`/admin/events/create?id=${eventId}`}>
                             <button className="px-6 py-3 rounded-xl bg-zinc-700 text-white font-bold text-sm md:text-base hover:bg-zinc-600 transition shadow-lg">
@@ -306,7 +307,7 @@ export default function EventDetail() {
 
                     {/* Delete button for admin */}
 
-                    {role === "admin" && (
+                    {isModerator && (
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <button className="w-12 h-12 flex items-center justify-center rounded-xl bg-red-500/20 border border-red-500/30 hover:bg-red-500/30 transition">

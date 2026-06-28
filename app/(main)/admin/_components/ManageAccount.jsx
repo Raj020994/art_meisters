@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -9,6 +9,17 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -23,11 +34,38 @@ import {
   UserCheck,
   UserX,
   RotateCcw,
+  Star,
+  Crown,
+  Medal,
+  Wrench,
+  Megaphone,
+  Pen,
+  UserRound,
 } from "lucide-react";
 import useFetch from "@/hooks/useFetch";
 import { changeUserRoleStatus } from "@/service/admin";
 import { useAuthStore } from "@/store/user";
 import { toast } from "sonner";
+import {
+  ROLES,
+  ROLE_DISPLAY,
+  ROLE_ORDER,
+  ROLE_WEIGHTS,
+  canAssignRoles,
+  getRoleWeight,
+} from "@/lib/roles";
+import Link from "next/link";
+
+const ROLE_ICONS = {
+  [ROLES.PRESIDENT]: Crown,
+  [ROLES.VICE_PRESIDENT]: Star,
+  [ROLES.GENERAL_SECRETARY]: Shield,
+  [ROLES.LOGISTIC]: Wrench,
+  [ROLES.SOCIAL_MEDIA_HEAD]: Megaphone,
+  [ROLES.CONTENT_HEAD]: Pen,
+  [ROLES.CORE_MEMBER]: Medal,
+  [ROLES.MEMBER]: UserRound,
+};
 
 const ManageAccount = ({ users }) => {
   const currUser = useAuthStore((state) => state.user);
@@ -37,6 +75,8 @@ const ManageAccount = ({ users }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [roleDialogUser, setRoleDialogUser] = useState(null);
+  const [selectedRole, setSelectedRole] = useState("");
   const {
     data,
     fn: changeFn,
@@ -69,19 +109,14 @@ const ManageAccount = ({ users }) => {
     changeFn(id, { status: "rejected" });
   };
 
-  const handleRoleToggle = (id, currentRole) => {
-    const user = userList.find((u) => u.ID === id);
-    if (user?.Status !== "approved"){
-      toast.error("User must be approved before changing role");
-      return;
-    }
-    const newRole = currentRole === "admin" ? "user" : "admin";
+  const handleRoleChange = (id, newRole) => {
     setPendingUpdate({
       id,
       updates: { Role: newRole },
     });
-
     changeFn(id, { role: newRole });
+    setRoleDialogUser(null);
+    setSelectedRole("");
   };
 
   const handleBanToggle = (id, currentStatus) => {
@@ -98,18 +133,24 @@ const ManageAccount = ({ users }) => {
   useEffect(() => {
     if (!updating && data?.Success && pendingUpdate) {
       updateUser(pendingUpdate.id, pendingUpdate.updates);
-
       setPendingUpdate(null);
     }
   }, [data, updating, pendingUpdate]);
+
+  const getAssignableRoles = (targetUser) => {
+    const actorWeight = getRoleWeight(currUser?.Role);
+    const targetWeight = getRoleWeight(targetUser?.Role);
+    return ROLE_ORDER.filter(
+      (role) => getRoleWeight(role) < actorWeight && role !== targetUser?.Role,
+    );
+  };
+
   let totalUsers = userList.length;
   let pendingUsers = userList.filter((u) => u.Status === "pending").length;
-  let adminUsers = userList.filter((u) => u.Role === "admin").length;
   let bannedUsers = userList.filter((u) => u.Status === "banned").length;
   useEffect(() => {
     totalUsers = userList.length;
     pendingUsers = userList.filter((u) => u.Status === "pending").length;
-    adminUsers = userList.filter((u) => u.Role === "admin").length;
     bannedUsers = userList.filter((u) => u.Status === "banned").length;
   }, [users]);
 
@@ -159,15 +200,6 @@ const ManageAccount = ({ users }) => {
           variant="outline"
           className="px-3 py-1 bg-white/5 border-white/10 text-gray-300 text-xs font-normal gap-1.5 rounded-xl"
         >
-          <ShieldCheck className="w-3.5 h-3.5 text-red-500" />
-          <span>Admins:</span>
-          <span className="font-semibold text-white">{adminUsers}</span>
-        </Badge>
-
-        <Badge
-          variant="outline"
-          className="px-3 py-1 bg-white/5 border-white/10 text-gray-300 text-xs font-normal gap-1.5 rounded-xl"
-        >
           <Ban className="w-3.5 h-3.5 text-red-500" />
           <span>Banned:</span>
           <span className="font-semibold text-white">{bannedUsers}</span>
@@ -198,8 +230,11 @@ const ManageAccount = ({ users }) => {
               className="bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-red-500/50"
             >
               <option value="all">All Roles</option>
-              <option value="admin">Admin</option>
-              <option value="user">User</option>
+              {ROLE_ORDER.map((role) => (
+                <option key={role} value={role}>
+                  {ROLE_DISPLAY[role]}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -221,6 +256,66 @@ const ManageAccount = ({ users }) => {
           </div>
         </div>
       </div>
+
+      {/* Role Change Dialog */}
+      <AlertDialog
+        open={!!roleDialogUser}
+        onOpenChange={(open) => {
+          if (!open) {
+            setRoleDialogUser(null);
+            setSelectedRole("");
+          }
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Change Role</AlertDialogTitle>
+            <AlertDialogDescription>
+              Select a new role for <strong>{roleDialogUser?.Name}</strong>.
+              Current role:{" "}
+              <strong>{ROLE_DISPLAY[roleDialogUser?.Role] || "Member"}</strong>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div className="flex flex-col gap-2 py-4">
+            {roleDialogUser &&
+              getAssignableRoles(roleDialogUser).map((role) => (
+                <button
+                  key={role}
+                  onClick={() => setSelectedRole(role)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all text-left ${
+                    selectedRole === role
+                      ? "border-red-500 bg-red-500/10 text-white"
+                      : "border-white/10 bg-white/5 text-gray-300 hover:border-white/20 hover:bg-white/10"
+                  }`}
+                >
+                  <span className="text-red-400">
+                    {React.createElement(ROLE_ICONS[role] || UserRound, {
+                      size: 18,
+                    })}
+                  </span>
+                  <span className="font-medium">{ROLE_DISPLAY[role]}</span>
+                </button>
+              ))}
+            {roleDialogUser &&
+              getAssignableRoles(roleDialogUser).length === 0 && (
+                <p className="text-gray-400 text-sm text-center py-4">
+                  No roles available to assign
+                </p>
+              )}
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={!selectedRole}
+              onClick={() => handleRoleChange(roleDialogUser.ID, selectedRole)}
+            >
+              {updating ? "Changing..." : "Change Role"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <div className="space-y-4">
         {filteredUsers.map((user) => {
@@ -259,19 +354,24 @@ const ManageAccount = ({ users }) => {
             }
           };
 
-          const getRoleBadge = (role) => {
-            if (role === "admin") {
-              return (
-                <Badge className="bg-indigo-500/10 text-indigo-400 border-indigo-500/20 font-medium flex items-center gap-1">
-                  <Shield className="w-3 h-3" /> Admin
-                </Badge>
-              );
-            }
-            return (
-              <Badge className="bg-slate-500/10 text-slate-400 border-slate-500/20 font-medium">
-                User
-              </Badge>
-            );
+          const RoleIcon = ROLE_ICONS[user.Role] || UserRound;
+
+          const roleBadgeColors = {
+            [ROLES.PRESIDENT]:
+              "bg-amber-500/10 text-amber-400 border-amber-500/20",
+            [ROLES.VICE_PRESIDENT]:
+              "bg-blue-500/10 text-blue-400 border-blue-500/20",
+            [ROLES.GENERAL_SECRETARY]:
+              "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
+            [ROLES.LOGISTIC]: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
+            [ROLES.SOCIAL_MEDIA_HEAD]:
+              "bg-pink-500/10 text-pink-400 border-pink-500/20",
+            [ROLES.CONTENT_HEAD]:
+              "bg-violet-500/10 text-violet-400 border-violet-500/20",
+            [ROLES.CORE_MEMBER]:
+              "bg-teal-500/10 text-teal-400 border-teal-500/20",
+            [ROLES.MEMBER]:
+              "bg-slate-500/10 text-slate-400 border-slate-500/20",
           };
 
           return (
@@ -282,9 +382,7 @@ const ManageAccount = ({ users }) => {
               <div className="flex items-center gap-4">
                 <div className="relative">
                   <img
-                    src={
-                      user.Image?.Valid ? user.Image.String : "/default.jpeg"
-                    }
+                    src={user.Image?.String || "/default.jpeg"}
                     alt={user.Name}
                     className="w-14 h-14 rounded-full object-cover border border-white/10 shadow-inner"
                   />
@@ -300,14 +398,21 @@ const ManageAccount = ({ users }) => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <h3 className="text-lg font-semibold text-white tracking-wide">
-                    {user.Name}
-                  </h3>
+                  <Link href={`/u/${user.ID}`}>
+                    <h3 className="text-lg font-semibold hover:underline text-white tracking-wide">
+                      {user.Name}
+                    </h3>
+                  </Link>
 
                   <p className="text-sm text-gray-400">{user.Email}</p>
 
                   <div className="flex gap-2 flex-wrap items-center">
-                    {getRoleBadge(user.Role)}
+                    <Badge
+                      className={`font-medium flex items-center gap-1 ${roleBadgeColors[user.Role] || "bg-slate-500/10 text-slate-400 border-slate-500/20"}`}
+                    >
+                      <RoleIcon className="w-3 h-3" />
+                      {ROLE_DISPLAY[user.Role] || "Member"}
+                    </Badge>
                     {getStatusBadge(user.Status)}
                   </div>
                 </div>
@@ -354,22 +459,16 @@ const ManageAccount = ({ users }) => {
                       </>
                     )}
 
-                    {user.Status !== "pending" && (
+                    {user.Status !== "pending" && canAssignRoles(currUser) && (
                       <DropdownMenuItem
-                        onClick={() => handleRoleToggle(user.ID, user.Role)}
+                        onClick={() => {
+                          setRoleDialogUser(user);
+                          setSelectedRole("");
+                        }}
                         className="flex items-center gap-2 px-2.5 py-2 hover:bg-indigo-500/10 hover:text-indigo-400 rounded-lg cursor-pointer"
                       >
-                        {user.Role === "admin" ? (
-                          <>
-                            <ShieldAlert className="w-4 h-4 text-indigo-400" />
-                            <span>Make User</span>
-                          </>
-                        ) : (
-                          <>
-                            <Shield className="w-4 h-4 text-indigo-400" />
-                            <span>Make Admin</span>
-                          </>
-                        )}
+                        <ShieldAlert className="w-4 h-4 text-indigo-400" />
+                        <span>Change Role</span>
                       </DropdownMenuItem>
                     )}
 

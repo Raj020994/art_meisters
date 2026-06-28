@@ -73,7 +73,7 @@ if(!artWorks){
             {/* Image Section */}
             <div className="h-56 w-full relative overflow-hidden bg-black/40">
               <img
-                src={artItem.Image}
+                src={artItem.Image || "/placeholder.png"}
                 alt={artItem.Name}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
               />

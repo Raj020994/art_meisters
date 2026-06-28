@@ -17,6 +17,7 @@ import { deleteArt, getAllArtistArt, getArtistProfile } from "@/service/art";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/user";
 import { changeUserRoleStatus } from "@/service/admin";
+import { canAssignRoles, getRoleDisplay } from "@/lib/roles";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -104,7 +105,7 @@ export default function ArtistProfile() {
     }
   }, [data, arts, isUserProfile, fetchingData, fetchingArtworks]);
   const handleStatusOfUser = (status) => {
-    if (role !== "admin") {
+    if (!canAssignRoles(user)) {
       toast.error("You are not authorized to perform this action");
       return;
     }
@@ -190,7 +191,7 @@ export default function ArtistProfile() {
             <div className="flex-1 pb-4">
               <div className="flex items-center gap-3 mb-2">
                 <span className="text-accent font-semibold tracking-widest text-sm uppercase">
-                  {artist?.Role}
+                  {getRoleDisplay(artist?.Role)}
                 </span>
                 <div className="h-px w-8 bg-accent/50"></div>
               </div>
@@ -208,7 +209,7 @@ export default function ArtistProfile() {
                     <Pencil size={18} className="text-white/80" />
                   </Link>
                 )}
-                {role === "admin" && artist?.Role !== "admin" && (
+                {canAssignRoles(user) && !canAssignRoles({ Role: artist?.Role }) && (
                   <div className="opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
                     {artist?.Status === "approved" ? (
                       <button
@@ -252,7 +253,7 @@ export default function ArtistProfile() {
                   Role
                 </p>
                 <p className="text-white font-medium">
-                  {capitalizeFirst(artist?.Role || "User")}
+                  {getRoleDisplay(artist?.Role)}
                 </p>
               </div>
 

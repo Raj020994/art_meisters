@@ -10,6 +10,7 @@ import { getCurrUser } from "@/service/auth";
 import { useAuthStore } from "@/store/user";
 import UserMenu from "@/components/UserMenu";
 import AdminMenu from "@/components/AdminMenu";
+import { canModerate } from "@/lib/roles";
 export const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const user = useAuthStore((state) => state.user);
@@ -75,7 +76,7 @@ useEffect(() => {
         </button>
       </Link>
 
-      {user.Role == "admin" && (
+      {canModerate(user) && (
        <AdminMenu/>
       )}
 

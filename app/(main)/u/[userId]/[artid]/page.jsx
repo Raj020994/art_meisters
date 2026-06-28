@@ -21,6 +21,7 @@ import { useArtStore } from "@/store/art";
 import { useAuthStore } from "@/store/user";
 import { changeArtStatus } from "@/service/admin";
 import { toast } from "sonner";
+import { canModerate } from "@/lib/roles";
 export default function ArtPage() {
   const params = useParams();
   const router = useRouter();
@@ -52,7 +53,7 @@ export default function ArtPage() {
   }, [artId, artWork, userId]);
   useEffect(() => {
     if (res?.Success) {
-      if (res.Data.Status === "rejected" && role == "user") {
+      if (res.Data.Status === "rejected" && !canModerate(user)) {
         toast.error("Artwork is rejected");
         return;
       }
@@ -74,7 +75,7 @@ export default function ArtPage() {
     fn: changeArtStatusFn,
   } = useFetch(changeArtStatus);
   const handleArtChange = (id, status) => {
-    if (role !== "admin") {
+    if (!canModerate(user)) {
       toast.error("You are not authorized to perform this action");
       return;
     }
@@ -208,7 +209,7 @@ export default function ArtPage() {
                 )}
 
                 {/* Admin Actions */}
-                {role === "admin" && (
+                {canModerate(user) && (
                   <>
                     {/* Approve */}
                     {(art?.data?.Status === "pending" ||

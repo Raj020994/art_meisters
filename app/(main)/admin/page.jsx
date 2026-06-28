@@ -11,8 +11,11 @@ import { getPendingArt } from "@/service/admin";
 import ManageAccount from "./_components/ManageAccount";
 import { getAllUser } from "@/service/user";
 import { AdminSkeleton } from "@/components/skeletons";
+import { useAuthStore } from "@/store/user";
+import { canModerate, canAssignRoles } from "@/lib/roles";
 
 export default function Page() {
+  const user = useAuthStore((state) => state.user);
   const [artWorks, setartWorks] = useState(null);
   const [users, setUsers] = useState(null);
   const {
@@ -27,9 +30,9 @@ export default function Page() {
   } = useFetch(getPendingArt);
 
   useEffect(() => {
-    getAllAccountFn();
-    getPenArtFn();
-  }, []);
+    if (canAssignRoles(user)) getAllAccountFn();
+    if (canModerate(user)) getPenArtFn();
+  }, [user?.Role]);
 
   useEffect(() => {
     if (!artLoading && arts?.Success) {
@@ -69,38 +72,46 @@ export default function Page() {
 
         {/* Dashboard Frame using Radix Tabs */}
         <Tabs
-          defaultValue="manage-account"
+          defaultValue={canAssignRoles(user) ? "manage-account" : "approve-art"}
           orientation="vertical"
           className="grid grid-cols-1 md:grid-cols-4 gap-8"
         >
           {/* Tab Navigation Sidebar */}
           <div className="md:col-span-1">
             <TabsList className="bg-white/5 border border-white/10 p-2 rounded-2xl flex md:flex-col gap-2 w-full md:sticky md:top-24 h-auto">
-              <TabsTrigger
-                value="manage-account"
-                className="rounded-xl w-full text-white text-sm py-3 px-4 flex items-center justify-center md:justify-start gap-2.5 transition-all data-[state=active]:bg-red-600 data-[state=active]:text-white hover:bg-white/5 cursor-pointer font-medium"
-              >
-                <Users className="w-4 h-4" />
-                <span>Accounts</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="approve-art"
-                className="rounded-xl w-full text-white text-sm py-3 px-4 flex items-center justify-center md:justify-start gap-2.5 transition-all data-[state=active]:bg-red-600 data-[state=active]:text-white hover:bg-white/5 cursor-pointer font-medium"
-              >
-                <Palette className="w-4 h-4" />
-                <span>Artworks</span>
-              </TabsTrigger>
+              {canAssignRoles(user) && (
+                <TabsTrigger
+                  value="manage-account"
+                  className="rounded-xl w-full text-white text-sm py-3 px-4 flex items-center justify-center md:justify-start gap-2.5 transition-all data-[state=active]:bg-red-600 data-[state=active]:text-white hover:bg-white/5 cursor-pointer font-medium"
+                >
+                  <Users className="w-4 h-4" />
+                  <span>Accounts</span>
+                </TabsTrigger>
+              )}
+              {canModerate(user) && (
+                <TabsTrigger
+                  value="approve-art"
+                  className="rounded-xl w-full text-white text-sm py-3 px-4 flex items-center justify-center md:justify-start gap-2.5 transition-all data-[state=active]:bg-red-600 data-[state=active]:text-white hover:bg-white/5 cursor-pointer font-medium"
+                >
+                  <Palette className="w-4 h-4" />
+                  <span>Artworks</span>
+                </TabsTrigger>
+              )}
             </TabsList>
           </div>
 
           {/* Tab Content Display Area */}
           <div className="md:col-span-3">
-            <TabsContent value="manage-account" className="mt-0 outline-none">
-              {users&&<ManageAccount users={users} />}
-            </TabsContent>
-            <TabsContent value="approve-art" className="mt-0 outline-none">
-              {artWorks&&<ApproveArt art={artWorks} />}
-            </TabsContent>
+            {canAssignRoles(user) && (
+              <TabsContent value="manage-account" className="mt-0 outline-none">
+                {users&&<ManageAccount users={users} />}
+              </TabsContent>
+            )}
+            {canModerate(user) && (
+              <TabsContent value="approve-art" className="mt-0 outline-none">
+                {artWorks&&<ApproveArt art={artWorks} />}
+              </TabsContent>
+            )}
           </div>
         </Tabs>
       </div>

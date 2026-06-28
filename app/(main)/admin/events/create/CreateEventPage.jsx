@@ -9,6 +9,7 @@ import { eventSchema } from "@/schema/event";
 import { upload } from "@/service/upload";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/user";
+import { canModerate } from "@/lib/roles";
 
 const ImageInput = ({ label, inputRef, existingImage, onFileChange }) => {
   const [preview, setPreview] = useState(null);
@@ -90,7 +91,7 @@ const CreateEventPage = ({ id }) => {
   const router = useRouter();
   useEffect(() => {
     if (!user) return;
-    if (user.Role !== "admin") {
+    if (!canModerate(user)) {
       router.push("/");
     }
     if (user.Status === "banned") {

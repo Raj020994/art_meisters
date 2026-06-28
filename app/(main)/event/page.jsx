@@ -9,6 +9,7 @@ import { getAllEvents } from "@/service/event";
 import { useAuthStore } from "@/store/user";
 import useFetch from "@/hooks/useFetch";
 import { EventsListSkeleton } from "@/components/skeletons";
+import { canModerate } from "@/lib/roles";
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
@@ -16,7 +17,7 @@ export default function EventPage() {
   const [allEvents, setAllEvents] = useState(null);
   const { data, fn, loading } = useFetch(getAllEvents);
   const user = useAuthStore((state) => state.user);
-  const isAdmin = user?.Role === "admin";
+  const isAdmin = canModerate(user);
   const containerRef = useRef(null);
   useEffect(() => {
     fn();
